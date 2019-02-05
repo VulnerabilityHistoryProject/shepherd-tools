@@ -11,14 +11,14 @@
 
     3.3. The file path of the text to be inserted. e.g. migration/inputs/input20190204.txt
 
-    3.4. The position you wish to insert the text relative to the regex. Currently, only `after` is implemented.
+    3.4. The position you wish to insert the text relative to the regex. The options are `after`, `before`, and `replace`.
 4. A new migration script will be generated in the `migration` folder
 5. Run the generated script, named after the date and time of generation
 
 ##### Examples:
 Initial generation of script:
 ```sh
-ruby scripts/migrate_gen.rb cves "CVE: CVE-\d{4}-\d+" migration/inputs/input20190204.txt
+ruby scripts/migrate_gen.rb cves "CVE: CVE-\d{4}-\d+" migration/inputs/input20190204.txt after
 ```
 Run generated script:
 ```sh
