@@ -6,15 +6,7 @@ class Migrate
     @dir = dir
     @regex = regex.gsub("\d", "\\d")
     @insert_file = insert_file
-    if(position.casecmp("after"))
-      @method = "insert_text_after"
-    elsif(position.casecmp("before"))
-      @method = "insert_text_before"
-    elsif(position.casecmp("replace"))
-      @method = "replace_text"
-    else
-      abort("Please use a valid position")
-    end
+    @position = position
   end
 
   def get_binding
