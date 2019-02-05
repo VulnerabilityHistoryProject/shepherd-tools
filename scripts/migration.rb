@@ -1,6 +1,6 @@
 require 'yaml'
 # Insert multiple lines into all yml files in a directory
-def insert_lines_dir(dir_path, line_above_regex, text_file)
+def insert_text_after(dir_path, line_above_regex, text_file)
   validate_yml(text_file, read_file(text_file))
   validate_ymls(dir_path)
   # replace tabs with spaces
@@ -11,7 +11,7 @@ def insert_lines_dir(dir_path, line_above_regex, text_file)
   puts dir_path
   Dir.glob(dir_path) do |file|
     #puts "file: " + file.to_s
-    insert_line(regex, text, file)
+    insert_text(regex, text, file)
   end
 end
 
@@ -29,7 +29,7 @@ end
 
 
 # inserts lines into a single file
-def insert_line(regex, text, file_path)
+def insert_text(regex, text, file_path)
   newymltxt = ""
   file = File.open(file_path, "r")
   file.each_line do |line|

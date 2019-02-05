@@ -1,0 +1,7 @@
+require_relative '../scripts/migration'
+
+def migrate()
+  <%= @method %>(<%= @dir %>, "<%= @regex %>", <%= @insert_file %>)
+end
+
+migrate()
