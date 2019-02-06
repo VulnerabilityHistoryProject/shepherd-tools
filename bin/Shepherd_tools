@@ -1,0 +1,4 @@
+#!/usr/bin/env ruby
+require 'shepherd_tools'
+
+ShepherdTools::interface.run
