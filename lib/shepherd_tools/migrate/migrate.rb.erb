@@ -1,7 +1,7 @@
-require_relative '../scripts/migration'
+require_relative '../migrate_tools'
 
 def migrate()
-  insert_text("<%= @dir %>", "<%= @regex %>", "<%= @insert_file %>", "<%= @position %>")
+  insert_text("<%= @regex %>", "<%= @insert_file %>", "<%= @position %>")
 end
 
 migrate()

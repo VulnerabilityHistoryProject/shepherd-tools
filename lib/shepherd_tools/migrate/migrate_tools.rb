@@ -1,7 +1,10 @@
 require 'yaml'
+require_relative '../path_finder'
 
 # Insert multiple lines into all yml files in a directory
-def insert_text(dir_path, regex, text_file, pos)
+def insert_text(regex, text_file, pos)
+  dir_path = find_CVE_dir()
+  puts dir_path
   validate_ymls(dir_path)
   # replace tabs with spaces
   text = read_file(text_file)
@@ -42,6 +45,7 @@ def insert_text_after(regex, text, file_path)
   save_yml(file_path, newymltxt)
 end
 
+# inserts lines before regex in a file
 def insert_text_before(regex, text, file_path)
   newymltxt = ""
   file = File.open(file_path, "r")
