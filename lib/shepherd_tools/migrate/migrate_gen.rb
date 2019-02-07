@@ -1,50 +1,51 @@
 require_relative 'migrate_tools'
 require "erb"
 require "fileutils"
+module ShepherdTools
+  class Migrate
+    def initialize(regex, insert_file, position, validate)
+      @regex = regex
+      @insert_file = insert_file
+      @position = position
+      @validate = validate
+    end
 
-class Migrate
-  def initialize(regex, insert_file, position)
-    @regex = regex.gsub("\d", "\\d")
-    @insert_file = insert_file
-    @position = position
+    def get_binding
+      binding
+    end
   end
 
-  def get_binding
-    binding
+  def self.save_script(file_name, file_txt)
+    dirname = Dir.pwd + "/lib/shepherd_tools/migrate/migrations/"
+    file_path = dirname + file_name + ".rb"
+    unless File.directory?(dirname)
+      FileUtils.mkdir_p(dirname)
+    end
+    File.open(file_path, 'w+'){|f| f.write(file_txt)}
+    puts "Saved: " + file_path
   end
 
-end
+  def self.gen_migrate(args, validate)
+    regex = args[0].gsub("\d", "\\d")
 
-def save_script(file_path, file_txt)
-  file_path = file_path + ".rb"
-  Dir.chdir(File.dirname(__FILE__))
-  dirname = "migrations"
-  unless File.directory?(dirname)
-    FileUtils.mkdir_p(dirname)
+    if(File.file?(args[1]))
+      insert_file = args[1]
+    else
+      abort("Invalid second argument. Please use a file name")
+    end
+
+    positions = ["after", "before", "replace"]
+    if(positions.include? args[2].downcase)
+      position = args[2]
+    else
+      abort("Invalid third argument. Please use after, before or replace.")
+    end
+
+    template = read_file("lib/shepherd_tools/migrate/migrate.rb.erb")
+    migrate = Migrate.new(regex, insert_file, position, validate)
+    render = ERB.new(template)
+    file_name = Time.now.strftime("migrate_%Y_%m_%d_%H_%M")
+    file_text = render.result(migrate.get_binding)
+    save_script(file_name, file_text)
   end
-  File.open(file_path, 'w+'){|f| f.write(file_txt)}
-  puts "Saved: " + file_path
 end
-
-
-# Process first arg
-regex = ARGV[0]
-
-
-# Process second arg
-if(File.file?(ARGV[1]))
-  file = ARGV[1]
-else
-  abort("Invalid third argument. Please use a file name")
-end
-
-# process third arg
-position = ARGV[2]
-
-#gen_script(regex, file, position)
-template = read_file("lib/shepherd_tools/migrate/migrate.rb.erb")
-migrate = Migrate.new(regex, file, position)
-render = ERB.new(template)
-file_name = "migrations/" + Time.now.strftime("migrate_%Y_%m_%d_%H_%M")
-file_text = render.result(migrate.get_binding)
-save_script(file_name, file_text)

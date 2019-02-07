@@ -1,4 +1,8 @@
-require_relative 'shepherd_tools/version'
+# -*- encoding: utf-8 -*-
+lib = File.expand_path('../lib/', __FILE__)
+$:.unshift lib unless $:.include?(lib)
+require_relative 'lib/shepherd_tools/version'
+
 
 Gem::Specification.new do |s|
   s.name        = "shepherd_tools"
@@ -8,9 +12,12 @@ Gem::Specification.new do |s|
   s.summary     = "Tools for VHP"
   s.description = "Tools for the vulnerability history project"
   s.authors     = ["Matt Thyng"]
-  s.files       = ["lib/scripts/migrate_gen.rb",
-                   "lib/scripts/migration.rb"]
+  s.files       = Dir.glob("{bin,lib}/**/*") + ["README.md"]
   s.homepage    = "https://github.com/VulnerabilityHistoryProject/shepherd-tools"
+
+  s.executables = ["shepherd_tools"]
+
+  s.require_path = "lib"
 
   s.add_runtime_dependency 'mercenary', '0.3.6'
 

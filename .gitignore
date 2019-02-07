@@ -1,2 +1,4 @@
 *.gem
 lib/cves/
+gemFile.lock
+test_file.txt

@@ -1,1 +1,1 @@
-testNew: true
+mercTest: true

@@ -1,10 +1,11 @@
 require 'mercenary'
-require_relative '../scripts/migrate_gen.rb'
+require_relative '../migrate/migrate_gen.rb'
+require_relative'../version.rb'
 
 module ShepherdTools
-  class interface
+  class CLI
 
-    def run
+    def run()
       Mercenary.program(:shepherd_tools) do |p|
         p.version ShepherdTools::VERSION
         p.description description = "Tools for the vulnerability history project"
@@ -16,15 +17,13 @@ module ShepherdTools
         end
 
         p.command(:migrate) do |c|
-          c.syntax "gen [options]"
+          c.syntax "migrate [options]"
           c.description "Migrates CVE YAMLs"
-
           c.option "validate", "--validate", "Validates YAMLs as you migrate"
-          c.option "posistion", "--pos Postion", "Where the text will be inserted relative to the regex. Options are AFTER, BEFORE and REPLACE"
 
-          c.action do |posistion|
-            #Not currently working
-            #ShepherdTools::Migrate.new(dir, regex, file, position)
+          c.action do |args, options|
+            validate = options.key? 'validate'
+            ShepherdTools.gen_migrate(args, validate)
           end
         end
       end

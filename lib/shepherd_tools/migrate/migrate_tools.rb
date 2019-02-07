@@ -2,30 +2,33 @@ require 'yaml'
 require_relative '../path_finder'
 
 # Insert multiple lines into all yml files in a directory
-def insert_text(regex, text_file, pos)
+def insert_text(regex, insert_file, position, validate)
+
   dir_path = find_CVE_dir()
-  puts dir_path
-  validate_ymls(dir_path)
-  # replace tabs with spaces
-  text = read_file(text_file)
-  text = text.gsub(/\t/,'  ')
-  regex = /#{regex}/
+  puts "CVE DIR: " + dir_path
+
   dir_path = dir_path + '/*.yml'
-  puts dir_path
-  if(pos.casecmp?("after"))
+  regex = /#{regex}/
+  if(insert_file=="")
+    text = ""
+  else
+    text = read_file(insert_file)
+  end
+
+  # Go through the directory and insert the text from the given file
+  # WET?? I may want to refactor this
+  case position
+  when "after"
     Dir.glob(dir_path) do |file|
-      #puts "file: " + file.to_s
-      insert_text_after(regex, text, file)
+      insert_text_after(regex, text, file, validate)
     end
-  elsif(pos.casecmp?("before"))
+  when "before"
     Dir.glob(dir_path) do |file|
-      #puts "file: " + file.to_s
-      insert_text_before(regex, text, file)
+      insert_text_before(regex, text, file, validate)
     end
-  elsif(pos.casecmp?("replace"))
+  when "replace"
     Dir.glob(dir_path) do |file|
-      #puts "file: " + file.to_s
-      replace_text(regex, text, file)
+      replace_text(regex, text, file, validate)
     end
   else
     abort("Not a valid position")
@@ -33,7 +36,7 @@ def insert_text(regex, text_file, pos)
 end
 
 # inserts lines after regex in a file
-def insert_text_after(regex, text, file_path)
+def insert_text_after(regex, text, file_path, validate)
   newymltxt = ""
   file = File.open(file_path, "r")
   file.each_line do |line|
@@ -42,11 +45,11 @@ def insert_text_after(regex, text, file_path)
       newymltxt << "\n" + text + "\n"
     end
   end
-  save_yml(file_path, newymltxt)
+  save_yml(file_path, newymltxt, validate)
 end
 
 # inserts lines before regex in a file
-def insert_text_before(regex, text, file_path)
+def insert_text_before(regex, text, file_path, validate)
   newymltxt = ""
   file = File.open(file_path, "r")
   file.reverse_each do |line|
@@ -55,11 +58,11 @@ def insert_text_before(regex, text, file_path)
       newymltxt = text + "\n\n" + newymltxt
     end
   end
-  save_yml(file_path, newymltxt)
+  save_yml(file_path, newymltxt, validate)
 end
 
 # replaces the line designated by the regex
-def replace_text(regex, text, file_path)
+def replace_text(regex, text, file_path, validate)
   newymltxt = ""
   file = File.open(file_path, "r")
   file.each_line do |line|
@@ -69,7 +72,7 @@ def replace_text(regex, text, file_path)
       newymltxt << line
     end
   end
-  save_yml(file_path, newymltxt)
+  save_yml(file_path, newymltxt, validate)
 end
 
 def read_file(file_path)
@@ -80,24 +83,18 @@ def read_file(file_path)
   end
 end
 
-def validate_ymls(dir_path)
-  dir_path = dir_path + '/*.yml'
-  Dir.glob(dir_path) do |file_path|
-    file_txt = read_file(file_path)
-    begin
-      Psych.parse(file_txt, file_path)
-    rescue Psych::SyntaxError => ex
-      abort("Migration failed:" + ex.message)
-    end
-  end
-end
-
-def save_yml(file_path, txt)
+def validate_yml(text)
   begin
     Psych.parse(txt, file_path)
-    File.open(file_path, 'w+') {|f| f.write(txt)}
-      puts "Migrated: " + file_path
   rescue Psych::SyntaxError => ex
     puts ex.message
   end
+end
+
+def save_yml(file_path, txt, validate)
+  if(validate)
+    validate_yml(txt, file_path)
+  end
+  File.open(file_path, 'w+') {|f| f.write(txt)}
+  puts "Migrated: " + file_path
 end
