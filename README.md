@@ -22,7 +22,7 @@ shepherd_tools migrate regexp insert_text_file position <options>
 ###### Options:
 * \-\-validate: Validates the Yamls during the migration. Migration will not stop but offending files will throw warnings.
 * \-\-run: The script generated will be automatically run.
-##### Examples:
+###### Examples:
 Initial generation of script:
 ```sh
 shepherd_tools migrate "CVE: CVE-\d{4}-\d+" insert_file.txt after --validate
@@ -31,3 +31,5 @@ If you didn't use the "--run" option, you can run your generated script like thi
 ```sh
 ruby migration/migrate_2019_02_04_12_41.rb
 ```
+###### Note:
+In insertion files, do not bother adding new lines as padding. New lines are adding automatically according to the insertion method.
