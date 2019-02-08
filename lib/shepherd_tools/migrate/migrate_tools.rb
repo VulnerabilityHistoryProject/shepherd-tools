@@ -42,7 +42,7 @@ def insert_text_after(regex, text, file_path, validate)
   file.each_line do |line|
     newymltxt << line
     if(regex.match(line))
-      newymltxt << "\n" + text + "\n"
+      newymltxt << text
     end
   end
   save_yml(file_path, newymltxt, validate)
@@ -55,7 +55,7 @@ def insert_text_before(regex, text, file_path, validate)
   file.reverse_each do |line|
     newymltxt =  line + newymltxt
     if(regex.match(line))
-      newymltxt = text + "\n\n" + newymltxt
+      newymltxt = text + "\n" + newymltxt
     end
   end
   save_yml(file_path, newymltxt, validate)

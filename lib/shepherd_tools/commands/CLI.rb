@@ -17,7 +17,7 @@ module ShepherdTools
         end
 
         p.command(:migrate) do |c|
-          c.syntax "migrate [options]"
+          c.syntax "migrate <ARGS> [options]"
           c.description "Migrates CVE YAMLs"
           c.option "validate", "--validate", "Validates YAMLs as you migrate"
 
