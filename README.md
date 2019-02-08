@@ -1,11 +1,16 @@
 # SHEPHERD TOOLS
 
 ### How to Install
+1. Navigate to your VHP repo
+2. git clone this repo
+3. run the following commands:
 ```sh
 gem build shepherd_tools.gemspec
 gem install shepherd_tools
 ```
 ### Commands:
+CURRENTLY COMMANDS ONLY WORK IN shepherd-tools DIR.
+
 After installing Shepherd Tools, you can use commands that follow the following format:
 ```sh
 shepherd_tools command [args] <options>
