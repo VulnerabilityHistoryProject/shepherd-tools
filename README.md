@@ -20,8 +20,8 @@ shepherd_tools migrate regexp insert_text_file position <options>
 2. insert_text_file: To insert text into the YAML files, you will need to create a file with the text you wish to insert. This ARG is the path to this file.
 3. position: There are three options for this ARG. "before, after, replace". This is where the insert text will be placed relative of the regexp.
 ###### Options:
--- \-\-validate: Validates the Yamls during the migration. Migration will not stop but offending files will throw warnings.
--- \-\-run: The script generated will be automatically run.
+* \-\-validate: Validates the Yamls during the migration. Migration will not stop but offending files will throw warnings.
+* \-\-run: The script generated will be automatically run.
 ##### Examples:
 Initial generation of script:
 ```sh
