@@ -25,7 +25,7 @@ module ShepherdTools
           c.action do |args, options|
             validate = options.key? 'validate'
             run = options.key? 'run'
-            ShepherdTools.gen_migrate(args, validate, run)
+            ShepherdTools::MigrateGenerator.new.gen(args, validate, run)
           end
         end
       end

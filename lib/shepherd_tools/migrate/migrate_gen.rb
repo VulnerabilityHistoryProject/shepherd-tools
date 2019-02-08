@@ -1,8 +1,9 @@
-require_relative 'migrate_tools'
+require File.expand_path("lib/shepherd_tools/helper.rb")
 require "erb"
 require "fileutils"
+
 module ShepherdTools
-  class Migrate
+  class MigrateTemplate
     def initialize(regex, insert_file, position, validate)
       @regex = regex
       @insert_file = insert_file
@@ -15,40 +16,42 @@ module ShepherdTools
     end
   end
 
-  def self.save_script(file_name, file_txt)
-    dirname = Dir.pwd + "/migrations/"
-    file_path = dirname + file_name + ".rb"
-    unless File.directory?(dirname)
-      FileUtils.mkdir_p(dirname)
+  class MigrateGenerator
+    def gen(args, validate, run)
+      regex = args[0].gsub("\d", "\\d")
+
+      if(File.file?(args[1]))
+        insert_file = args[1]
+      else
+        abort("Invalid second argument. Please use a file name")
+      end
+
+      positions = ["after", "before", "replace"]
+      if(positions.include? args[2].downcase)
+        position = args[2]
+      else
+        abort("Invalid third argument. Please use after, before or replace.")
+      end
+
+      template = ShepherdTools.read_file("lib/shepherd_tools/migrate/migrate.rb.erb")
+      migrateTemplate = MigrateTemplate.new(regex, insert_file, position, validate)
+      render = ERB.new(template)
+      file_name = Time.now.strftime("migrate_%Y_%m_%d_%H_%M")
+      file_text = render.result(migrateTemplate.get_binding)
+      save_script(file_name, file_text)
+      if(run)
+        system("ruby migrations/" + file_name + ".rb")
+      end
     end
-    File.open(file_path, 'w+'){|f| f.write(file_txt)}
-    puts "Saved: " + file_path
-  end
 
-  def self.gen_migrate(args, validate, run)
-    regex = args[0].gsub("\d", "\\d")
-
-    if(File.file?(args[1]))
-      insert_file = args[1]
-    else
-      abort("Invalid second argument. Please use a file name")
-    end
-
-    positions = ["after", "before", "replace"]
-    if(positions.include? args[2].downcase)
-      position = args[2]
-    else
-      abort("Invalid third argument. Please use after, before or replace.")
-    end
-
-    template = read_file("lib/shepherd_tools/migrate/migrate.rb.erb")
-    migrate = Migrate.new(regex, insert_file, position, validate)
-    render = ERB.new(template)
-    file_name = Time.now.strftime("migrate_%Y_%m_%d_%H_%M")
-    file_text = render.result(migrate.get_binding)
-    save_script(file_name, file_text)
-    if(run)
-      system("ruby migrations/" + file_name + ".rb")
+    def save_script(file_name, file_txt)
+      dirname = Dir.pwd + "/migrations/"
+      file_path = dirname + file_name + ".rb"
+      unless File.directory?(dirname)
+        FileUtils.mkdir_p(dirname)
+      end
+      File.open(file_path, 'w+'){|f| f.write(file_txt)}
+      puts "Saved: " + file_path
     end
   end
 end

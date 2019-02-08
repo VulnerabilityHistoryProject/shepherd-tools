@@ -1,7 +1,8 @@
-require File.expand_path("lib/shepherd_tools/migrate/migrate_tools.rb")
+require File.expand_path("lib/shepherd_tools/migrate/migration.rb")
 
+include ShepherdTools
 def migrate()
-  insert_text("<%= @regex %>", "<%= @insert_file %>", "<%= @position %>", <%= @validate %>)
+  ShepherdTools::Migration.new.insert_text("<%= @regex %>", "<%= @insert_file %>", "<%= @position %>", <%= @validate %>)
 end
 
 migrate()
