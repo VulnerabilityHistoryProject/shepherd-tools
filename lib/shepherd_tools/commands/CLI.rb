@@ -1,6 +1,7 @@
 require 'mercenary'
-require_relative '../migrate/migrate_gen.rb'
-require_relative'../version.rb'
+require_relative '../migrate/migrate_gen'
+require_relative '../validate/validator'
+require_relative'../version'
 
 module ShepherdTools
   class CLI
@@ -26,6 +27,14 @@ module ShepherdTools
             validate = options.key? 'validate'
             run = options.key? 'run'
             ShepherdTools::MigrateGenerator.new.gen(args, validate, run)
+          end
+        end
+        p.command(:validate) do |c|
+          c.syntax "validate"
+          c.description "Validates CVE YAMLs"
+
+          c.action do |args, options|
+            ShepherdTools::Validator.new.validate_ymls
           end
         end
       end
