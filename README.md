@@ -27,7 +27,7 @@ Initial generation of script:
 ```sh
 shepherd_tools migrate "CVE: CVE-\d{4}-\d+" insert_file.txt after --validate
 ```
-Run generated script:
+If you didn't use the "--run" option, you can run your generated script like this:
 ```sh
 ruby migration/migrate_2019_02_04_12_41.rb
 ```
