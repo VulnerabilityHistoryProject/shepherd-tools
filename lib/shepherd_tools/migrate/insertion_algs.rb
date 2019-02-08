@@ -37,9 +37,9 @@ class InsertTextAfter
       newymltxt = ""
       file = File.open(file_path, "r")
       file.each_line do |line|
-        newymltxt << line
+        newymltxt <<  line
         if(context.regex.match(line))
-          newymltxt << context.text
+          newymltxt << "\n" + context.text + "\n"
         end
       end
       context.save_yml(file_path, newymltxt, context.validate)
@@ -56,7 +56,7 @@ class InsertTextBefore
       file.reverse_each do |line|
         newymltxt =  line + newymltxt
         if(context.regex.match(line))
-          newymltxt = context.text + "\n" + newymltxt
+          newymltxt = "\n" + context.text + "\n\n" + newymltxt
         end
       end
       context.save_yml(file_path, newymltxt, context.validate)
