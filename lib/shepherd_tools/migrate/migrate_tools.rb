@@ -83,7 +83,7 @@ def read_file(file_path)
   end
 end
 
-def validate_yml(text)
+def validate_yml(txt, file_path)
   begin
     Psych.parse(txt, file_path)
   rescue Psych::SyntaxError => ex

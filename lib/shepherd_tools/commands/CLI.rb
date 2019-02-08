@@ -20,10 +20,12 @@ module ShepherdTools
           c.syntax "migrate <ARGS> [options]"
           c.description "Migrates CVE YAMLs"
           c.option "validate", "--validate", "Validates YAMLs as you migrate"
+          c.option "run", "--run", "Runs the migration script you generated"
 
           c.action do |args, options|
             validate = options.key? 'validate'
-            ShepherdTools.gen_migrate(args, validate)
+            run = options.key? 'run'
+            ShepherdTools.gen_migrate(args, validate, run)
           end
         end
       end

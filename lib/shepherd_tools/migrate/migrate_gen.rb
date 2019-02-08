@@ -16,7 +16,7 @@ module ShepherdTools
   end
 
   def self.save_script(file_name, file_txt)
-    dirname = Dir.pwd + "/lib/shepherd_tools/migrate/migrations/"
+    dirname = Dir.pwd + "/migrations/"
     file_path = dirname + file_name + ".rb"
     unless File.directory?(dirname)
       FileUtils.mkdir_p(dirname)
@@ -25,7 +25,7 @@ module ShepherdTools
     puts "Saved: " + file_path
   end
 
-  def self.gen_migrate(args, validate)
+  def self.gen_migrate(args, validate, run)
     regex = args[0].gsub("\d", "\\d")
 
     if(File.file?(args[1]))
@@ -47,5 +47,8 @@ module ShepherdTools
     file_name = Time.now.strftime("migrate_%Y_%m_%d_%H_%M")
     file_text = render.result(migrate.get_binding)
     save_script(file_name, file_text)
+    if(run)
+      system("ruby migrations/" + file_name + ".rb")
+    end
   end
 end

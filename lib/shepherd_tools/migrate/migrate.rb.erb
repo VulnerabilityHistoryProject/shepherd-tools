@@ -1,4 +1,4 @@
-require_relative '../migrate_tools'
+require File.expand_path("lib/shepherd_tools/migrate/migrate_tools.rb")
 
 def migrate()
   insert_text("<%= @regex %>", "<%= @insert_file %>", "<%= @position %>", <%= @validate %>)
