@@ -1,5 +1,5 @@
 require 'yaml'
-require_relative "../helper"
+require_relative '../helper'
 module ShepherdTools
   class Validator
     def validate_ymls
@@ -8,11 +8,12 @@ module ShepherdTools
         file_txt = ShepherdTools.read_file(file_path)
         begin
           Psych.parse(file_txt, file_path)
+          puts '.'
         rescue Psych::SyntaxError => ex
-          puts "Validation failed:" + ex.message
+          puts 'Validation failed:' + ex.message
         end
       end
-      puts "Done"
+      puts 'Done'
     end
 
     def validate_yml(txt, file_path)

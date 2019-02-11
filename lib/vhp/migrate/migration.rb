@@ -7,26 +7,26 @@ module ShepherdTools
     # Insert multiple lines into all yml files in a directory
     def insert_text(regex, insert_file, position, validate)
 
-      dir_path = "../cves/"
-      puts "CVE DIR: " + dir_path
+      dir_path = '../cves/'
+      puts 'CVE DIR: ' + dir_path
 
       dir_path = dir_path + '/*.yml'
       regex = /#{regex}/
-      if(insert_file=="")
-        text = ""
+      if(insert_file=='')
+        text = ''
       else
         text = ShepherdTools.read_file(insert_file)
       end
 
       case position
-      when "after"
+      when 'after'
         alg = InsertionAlg.new(regex, text, dir_path, validate, InsertTextAfter.new)
-      when "before"
+      when 'before'
         alg = InsertionAlg.new(regex, text, dir_path, validate, InsertTextBefore.new)
-      when "replace"
+      when 'replace'
         alg = InsertionAlg.new(regex, text, dir_path, validate, ReplaceText.new)
       else
-        abort("Not a valid position")
+        abort('Not a valid position')
       end
       alg.run
     end
