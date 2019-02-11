@@ -35,7 +35,7 @@ module ShepherdTools
         abort("Invalid third argument. Please use after, before or replace.")
       end
 
-      template = ShepherdTools.read_file(File.join(File.dirname(__FILE__),'migrate.rb.erb'))
+      template = ShepherdTools.read_file(File.join(File.dirname(__FILE__), 'migrate_template.rb.erb'))
       migrateTemplate = MigrateTemplate.new(regex, insert_file, position, validate)
       render = ERB.new(template)
       file_name = Time.now.strftime("migrate_%Y_%m_%d_%H_%M")
