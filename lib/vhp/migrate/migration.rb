@@ -7,7 +7,7 @@ module ShepherdTools
     # Insert multiple lines into all yml files in a directory
     def insert_text(regex, insert_file, position, validate)
 
-      dir_path = '../cves/'
+      dir_path = ShepherdTools.find_CVE_dir
       puts 'CVE DIR: ' + dir_path
 
       dir_path = dir_path + '/*.yml'
