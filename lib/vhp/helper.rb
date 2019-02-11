@@ -8,9 +8,13 @@ module ShepherdTools
   end
 
   def self.find_CVE_dir
-    subdirs = Dir.glob('**/')
-    puts subdirs
-    cve_path = ""
+    puts File.basename(Dir.getwd)
+    if(File.basename(Dir.getwd).eql? 'shepherd-tools')
+      subdirs = Dir.glob('../**/')
+    else
+      subdirs = Dir.glob('**/')
+    end
+    cve_path = ''
     subdirs.each do |dir|
       if(/cves\/$/.match(dir)!=nil)
         cve_path = dir

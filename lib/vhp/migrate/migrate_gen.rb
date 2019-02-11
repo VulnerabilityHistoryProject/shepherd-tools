@@ -5,11 +5,12 @@ require_relative '../helper.rb'
 
 module ShepherdTools
   class MigrateTemplate
-    def initialize(regex, insert_file, position, validate)
+    def initialize(regex, insert_file, dir, position, validate)
       @regex = regex
       @insert_file = insert_file
       @position = position
       @validate = validate
+      @dir = dir
     end
 
     def get_binding
@@ -18,7 +19,15 @@ module ShepherdTools
   end
 
   class MigrateGenerator
-    def gen(args, validate, run)
+    def gen(args, options)
+      validate = !(options.key? 'voff')
+      run = options.key? 'run'
+      if(options.key? 'dir')
+        dir = options['dir']
+      else
+        dir = ShepherdTools.find_CVE_dir
+      end
+
       regex = args[0].gsub('\d', '\\d')
 
       # Canonicalization of path? TODO
@@ -35,15 +44,19 @@ module ShepherdTools
         abort('Invalid third argument. Please use after, before or replace.')
       end
 
-      template = ShepherdTools.read_file(File.join(File.dirname(__FILE__), 'migrate_template.rb.erb'))
-      migrateTemplate = MigrateTemplate.new(regex, insert_file, position, validate)
-      render = ERB.new(template)
       file_name = Time.now.strftime('migrate_%Y_%m_%d_%H_%M')
-      file_text = render.result(migrateTemplate.get_binding)
+      file_text = get_script_text(regex, insert_file, dir, position, validate)
       save_script(file_name, file_text)
       if(run)
         system('ruby migrations/' + file_name + '.rb')
       end
+    end
+
+    def get_script_text(regex, insert_file, dir, position, validate)
+      template = ShepherdTools.read_file(File.join(File.dirname(__FILE__), 'migrate_template.rb.erb'))
+      migrateTemplate = MigrateTemplate.new(regex, insert_file, dir, position, validate)
+      render = ERB.new(template)
+      render.result(migrateTemplate.get_binding)
     end
 
     def save_script(file_name, file_txt)

@@ -5,12 +5,11 @@ require_relative 'insertion_algs.rb'
 module ShepherdTools
   class Migration
     # Insert multiple lines into all yml files in a directory
-    def insert_text(regex, insert_file, position, validate)
+    def insert_text(regex, insert_file, dir, position, validate)
 
-      dir_path = ShepherdTools.find_CVE_dir
-      puts 'CVE DIR: ' + dir_path
+      puts 'CVE DIR: ' + dir
 
-      dir_path = dir_path + '/*.yml'
+      dir = dir + '/*.yml'
       regex = /#{regex}/
       if(insert_file=='')
         text = ''
@@ -20,11 +19,11 @@ module ShepherdTools
 
       case position
       when 'after'
-        alg = InsertionAlg.new(regex, text, dir_path, validate, InsertTextAfter.new)
+        alg = InsertionAlg.new(regex, text, dir, validate, InsertTextAfter.new)
       when 'before'
-        alg = InsertionAlg.new(regex, text, dir_path, validate, InsertTextBefore.new)
+        alg = InsertionAlg.new(regex, text, dir, validate, InsertTextBefore.new)
       when 'replace'
-        alg = InsertionAlg.new(regex, text, dir_path, validate, ReplaceText.new)
+        alg = InsertionAlg.new(regex, text, dir, validate, ReplaceText.new)
       else
         abort('Not a valid position')
       end
