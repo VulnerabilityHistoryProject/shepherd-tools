@@ -1,8 +1,8 @@
-require_relative "../lib/shepherd_tools/migrate/migration"
+require '/vhp'
 
 include ShepherdTools
-def migrate()
+def migrate
   ShepherdTools::Migration.new.insert_text("<%= @regex %>", "<%= @insert_file %>", "<%= @position %>", <%= @validate %>)
 end
 
-migrate()
+migrate

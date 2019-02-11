@@ -6,7 +6,7 @@ require_relative'../version'
 module ShepherdTools
   class CLI
 
-    def run()
+    def run
       Mercenary.program(:shepherd_tools) do |p|
         p.version ShepherdTools::VERSION
         p.description description = "Tools for the vulnerability history project"

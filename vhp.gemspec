@@ -1,11 +1,11 @@
 # -*- encoding: utf-8 -*-
 lib = File.expand_path('../lib/', __FILE__)
 $:.unshift lib unless $:.include?(lib)
-require_relative 'lib/shepherd_tools/version'
+require_relative 'lib/vhp/version'
 
 
 Gem::Specification.new do |s|
-  s.name        = "shepherd_tools"
+  s.name        = "vhp"
   s.version     = ShepherdTools::VERSION
   s.license     = 'MIT'
   s.date        = "2019-02-05"
@@ -15,7 +15,7 @@ Gem::Specification.new do |s|
   s.files       = Dir.glob("{bin,lib}/**/*") + ["README.md"]
   s.homepage    = "https://github.com/VulnerabilityHistoryProject/shepherd-tools"
 
-  s.executables = ["shepherd_tools"]
+  s.executables = ["vhp"]
 
   s.require_path = "lib"
 

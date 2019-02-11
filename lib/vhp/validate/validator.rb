@@ -2,7 +2,7 @@ require 'yaml'
 require_relative "../helper"
 module ShepherdTools
   class Validator
-    def validate_ymls()
+    def validate_ymls
       dir_path = '../cves/*.yml'
       Dir.glob(dir_path) do |file_path|
         file_txt = ShepherdTools.read_file(file_path)

@@ -28,7 +28,7 @@ module ShepherdTools
       else
         abort("Not a valid position")
       end
-      alg.run()
+      alg.run
     end
   end
 end
