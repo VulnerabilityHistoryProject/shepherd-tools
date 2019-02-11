@@ -1,6 +1,7 @@
-require File.expand_path("lib/shepherd_tools/helper.rb")
 require "erb"
 require "fileutils"
+require 'pathname'
+require_relative "../helper.rb"
 
 module ShepherdTools
   class MigrateTemplate
@@ -20,6 +21,7 @@ module ShepherdTools
     def gen(args, validate, run)
       regex = args[0].gsub("\d", "\\d")
 
+      # Canonicalization of path? TODO
       if(File.file?(args[1]))
         insert_file = args[1]
       else
@@ -33,7 +35,8 @@ module ShepherdTools
         abort("Invalid third argument. Please use after, before or replace.")
       end
 
-      template = ShepherdTools.read_file("lib/shepherd_tools/migrate/migrate.rb.erb")
+      #template = ShepherdTools.read_file("lib/shepherd_tools/migrate/migrate.rb.erb")
+      template = ShepherdTools.read_file(File.join(File.dirname(__FILE__), 'migrate.rb.erb'))
       migrateTemplate = MigrateTemplate.new(regex, insert_file, position, validate)
       render = ERB.new(template)
       file_name = Time.now.strftime("migrate_%Y_%m_%d_%H_%M")
@@ -45,8 +48,9 @@ module ShepherdTools
     end
 
     def save_script(file_name, file_txt)
-      dirname = Dir.pwd + "/migrations/"
-      file_path = dirname + file_name + ".rb"
+      dirname = Pathname.new(File.join(Dir.pwd, 'migrations')).cleanpath
+      file_name = file_name + ".rb"
+      file_path = File.join(dirname, file_name)
       unless File.directory?(dirname)
         FileUtils.mkdir_p(dirname)
       end
