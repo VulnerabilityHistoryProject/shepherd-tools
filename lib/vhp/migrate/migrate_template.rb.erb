@@ -2,7 +2,7 @@ require 'vhp'
 
 include ShepherdTools
 def migrate
-  ShepherdTools::Migration.new.insert_text("<%= @regex %>", "<%= @insert_file %>", "<%= @dir %>", "<%= @position %>", <%= @validate %>, "<%= @filetype %>")
+  ShepherdTools::Migration.new.insert_text("<%= @regex %>", "<%= @insert_file %>", "<%= @dir %>", "<%= @command %>", <%= @validate %>, "<%= @filetype %>", "<%= @regex_end %>")
 end
 
 migrate

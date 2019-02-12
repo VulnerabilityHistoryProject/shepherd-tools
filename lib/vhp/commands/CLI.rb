@@ -7,10 +7,10 @@ module ShepherdTools
   class CLI
 
     def run
-      Mercenary.program(:shepherd_tools) do |p|
+      Mercenary.program(:vhp) do |p|
         p.version ShepherdTools::VERSION
         p.description description = 'Tools for the vulnerability history project'
-        p.syntax 'shepherd_tools <subcommand> [options]'
+        p.syntax 'vhp <subcommand> [options]'
 
         p.command(:migrate) do |c|
           c.syntax 'migrate <ARGS> [options]'
@@ -19,6 +19,8 @@ module ShepherdTools
           c.option 'run', '--run', 'Runs the migration script you generated'
           c.option 'dir', '--dir DIR', 'Sets the dir for the files to be migrated'
           c.option 'filetype', '--type TYPE', 'The extension of the files to be migrated'
+          c.option 'regex_end', '--end REGEX',
+           'Only use if replacing text. All text before this regex (After and including the first regex) will be replaced.'
 
           c.action do |args, options|
             ShepherdTools::MigrateGenerator.new.gen(args, options)

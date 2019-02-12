@@ -1,11 +1,12 @@
-class InsertionAlg
-  attr_reader :regex, :text, :dir_path, :validate
-  attr_accessor :Alg
-  def initialize(regex, text, dir_path, validate, alg)
+class MigrationAlg
+  attr_reader :regex, :text, :dir_path, :validate, :regex_end
+  attr_accessor :alg
+  def initialize(regex, text, dir_path, validate, regex_end, alg)
     @regex = regex
     @text = text
     @dir_path = dir_path
     @validate = validate
+    @regex_end = regex_end
     @alg = alg
   end
 
@@ -26,7 +27,7 @@ class InsertionAlg
       validate_yml(txt, file_path)
     end
     File.open(file_path, 'w+') {|f| f.write(txt)}
-    puts "Migrated: " + file_path
+    puts 'Migrated: ' + file_path
   end
 end
 
@@ -34,12 +35,12 @@ class InsertTextAfter
   # inserts lines after regex in a file
   def run(context)
     Dir.glob(context.dir_path) do |file_path|
-      newymltxt = ""
-      file = File.open(file_path, "r")
+      newymltxt = ''
+      file = File.open(file_path, 'r')
       file.each_line do |line|
         newymltxt <<  line
         if(context.regex.match(line))
-          newymltxt << "\n" + context.text + "\n"
+          newymltxt << '\n' + context.text + '\n'
         end
       end
       context.save_yml(file_path, newymltxt, context.validate)
@@ -51,12 +52,12 @@ class InsertTextBefore
   # inserts lines before regex in a file
   def run(context)
     Dir.glob(context.dir_path) do |file_path|
-      newymltxt = ""
-      file = File.open(file_path, "r")
+      newymltxt = ''
+      file = File.open(file_path, 'r')
       file.reverse_each do |line|
         newymltxt =  line + newymltxt
         if(context.regex.match(line))
-          newymltxt = "\n" + context.text + "\n\n" + newymltxt
+          newymltxt = '\n' + context.text + '\n\n' + newymltxt
         end
       end
       context.save_yml(file_path, newymltxt, context.validate)
@@ -68,11 +69,11 @@ end
 class ReplaceText
   def run(context)
     Dir.glob(context.dir_path) do |file_path|
-      newymltxt = ""
-      file = File.open(file_path, "r")
+      newymltxt = ''
+      file = File.open(file_path, 'r')
       file.each_line do |line|
         if(context.regex.match(line))
-          newymltxt << context.text + "\n"
+          newymltxt << context.text + '\n'
         else
           newymltxt << line
         end
@@ -80,4 +81,28 @@ class ReplaceText
       context.save_yml(file_path, newymltxt, context.validate)
     end
   end
+end
+
+# replaces all lines including and after the regex until regex_end
+class ReplaceTextBlock
+  def run(context)
+    Dir.glob(context.dir_path) do |file_path|
+      replace = false
+      newymltxt = ''
+      file = File.open(file_path, 'r')
+      file.each_line do |line|
+        if(context.regex.match(line))
+          newymltxt << context.text + '\n\n'
+          replace = true
+        elsif(context.regex_end.match(line))
+          replace = false
+          newymltxt << line
+        elsif(!replace)
+          newymltxt << line
+        end
+      end
+      context.save_yml(file_path, newymltxt, context.validate)
+    end
+  end
+
 end
