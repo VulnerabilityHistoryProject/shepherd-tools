@@ -18,6 +18,7 @@ module ShepherdTools
           c.option 'voff', '--voff', 'Turns off validation as you migrate'
           c.option 'run', '--run', 'Runs the migration script you generated'
           c.option 'dir', '--dir DIR', 'Sets the dir for the files to be migrated'
+          c.option 'filetype', '--type TYPE', 'The extension of the files to be migrated'
 
           c.action do |args, options|
             ShepherdTools::MigrateGenerator.new.gen(args, options)

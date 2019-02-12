@@ -5,12 +5,13 @@ require_relative '../helper.rb'
 
 module ShepherdTools
   class MigrateTemplate
-    def initialize(regex, insert_file, dir, position, validate)
+    def initialize(regex, insert_file, dir, position, validate, filetype)
       @regex = regex
       @insert_file = insert_file
       @position = position
       @validate = validate
       @dir = dir
+      @filetype = filetype
     end
 
     def get_binding
@@ -24,6 +25,9 @@ module ShepherdTools
       run = options.key? 'run'
       if(options.key? 'dir')
         dir = options['dir']
+        unless(File.directory? dir)
+          abort("Not a valid directory")
+        end
       else
         dir = ShepherdTools.find_CVE_dir
       end
@@ -44,17 +48,23 @@ module ShepherdTools
         abort('Invalid third argument. Please use after, before or replace.')
       end
 
+      if(options.key? 'filetype')
+        filetype = options['filetype']
+      else
+        filetype = '.yml'
+      end
+
       file_name = Time.now.strftime('migrate_%Y_%m_%d_%H_%M')
-      file_text = get_script_text(regex, insert_file, dir, position, validate)
+      file_text = get_script_text(regex, insert_file, dir, position, validate, filetype)
       save_script(file_name, file_text)
       if(run)
         system('ruby migrations/' + file_name + '.rb')
       end
     end
 
-    def get_script_text(regex, insert_file, dir, position, validate)
+    def get_script_text(regex, insert_file, dir, position, validate, filetype)
       template = ShepherdTools.read_file(File.join(File.dirname(__FILE__), 'migrate_template.rb.erb'))
-      migrateTemplate = MigrateTemplate.new(regex, insert_file, dir, position, validate)
+      migrateTemplate = MigrateTemplate.new(regex, insert_file, dir, position, validate, filetype)
       render = ERB.new(template)
       render.result(migrateTemplate.get_binding)
     end

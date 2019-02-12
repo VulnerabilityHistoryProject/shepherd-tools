@@ -1,15 +1,14 @@
-require 'yaml'
 require_relative '../helper'
 require_relative 'insertion_algs.rb'
 
 module ShepherdTools
   class Migration
     # Insert multiple lines into all yml files in a directory
-    def insert_text(regex, insert_file, dir, position, validate)
+    def insert_text(regex, insert_file, dir, position, validate, filetype)
 
-      puts 'CVE DIR: ' + dir
+      puts 'DIR: ' + dir
 
-      dir = dir + '/*.yml'
+      dir = dir + '/*' + filetype
       regex = /#{regex}/
       if(insert_file=='')
         text = ''
