@@ -26,6 +26,7 @@ vhp migrate regexp insert_text_file position <options>
 * \-\-voff: Validation of migrated Yamls is on by default. Use this option if not migrating ymls or it annoys you.
 * \-\-run: The script generated will be automatically run.
 * \-\-dir DIR: By default, migrate will automatically locate your "cves/" directory. This option will set the migration directory.
+* \-\-type TYPE: By default, migrate will touch .yml files. This options allows you to specify your own filename extension.
 ###### Examples
 Initial generation of script:
 ```sh
