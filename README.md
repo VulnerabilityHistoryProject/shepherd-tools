@@ -14,13 +14,13 @@ After installing Shepherd Tools, you can use commands that follow the following 
 vhp command [args] <options>
 ```
 #### Migration
-Migration has three arguments and one option and follows the following format:
+Migration has three arguments and three option and follows the following format:
 ```sh
 vhp migrate regexp insert_text_file position <options>
 ```
 ###### ARGS
-1. regexp: This is the regex for a line in the CVE YAMLS.
-2. insert_text_file: To insert text into the YAML files, you will need to create a file with the text you wish to insert. This ARG is the path to this file.
+1. regexp: This is the regex for a common line in the files.
+2. insert_text_file: To insert text into a directory files, you will need to create a file with the text you wish to insert. This ARG is the path to this file.
 3. position: There are three options for this ARG. "before, after, replace". This is where the insert text will be placed relative of the regexp.
 ###### Options
 * \-\-voff: Validation of migrated Yamls is on by default. Use this option if not migrating ymls or it annoys you.
