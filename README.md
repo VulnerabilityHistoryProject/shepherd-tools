@@ -9,9 +9,11 @@ gem build vhp.gemspec
 gem install vhp
 ```
 ### Commands
-After installing Shepherd Tools, you can use commands that follow the following format:
+After installing Shepherd Tools, you can use commands that follow the following formats:
 ```sh
 vhp command [args] <options>
+vhp command <options>
+vhp command subcommand <options>
 ```
 #### Migration
 Migration has three arguments and five option and follows the following format:
@@ -48,7 +50,29 @@ vhp migrate "CVE: CVE" insert_file.txt replace --end "security_bulletin" --run
 ###### Note
 In insertion files, do not bother adding new lines as padding. New lines are adding automatically according to the insertion method.
 #### Validation
-You can validate your CVE YAMLs with the following command:
+Validation of YAMLs follows the following format:
+```sh
+vhp validate <options>
+```
+###### Options
+* \-\-dir DIR: By default, validate will automatically locate your "cves/" directory. This option will set the migration directory.
+###### Examples
 ```sh
 vhp validate
+vhp validate --dir ../mydir
+```
+#### Find
+The find command follows the following format:
+```sh
+vhp find subcommand <options>
+```
+###### Subcommands
+* curated: Find all curated CVE YAMLs.
+* uncurated: Find all uncurated CVE YAMLs.
+###### Options
+* \-\-dir DIR: By default, find will automatically locate your "cves/" directory. This option will set the migration directory.
+###### Examples
+```sh
+vhp find curated
+vhp find uncurated --dir ../mydir
 ```
