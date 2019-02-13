@@ -27,6 +27,7 @@ vhp migrate regexp insert_text_file position <options>
 * \-\-run: The script generated will be automatically run.
 * \-\-dir DIR: By default, migrate will automatically locate your "cves/" directory. This option will set the migration directory.
 * \-\-type TYPE: By default, migrate will touch .yml files. This options allows you to specify your own filename extension.
+* \-\-end REGEX: This option is only for when replacing text. If you would like to replace multiple lines, use this option and give it the regex of the line you would like to replace until. This line will not be replaced, but all lines above it will be.
 ###### Examples
 Initial generation of script:
 ```sh
@@ -39,6 +40,10 @@ ruby migration/migrate_2019_02_04_12_41.rb
 Alternatively, you can generate and run in one command:
 ```sh
 vhp migrate "CVE: CVE-\d{4}-\d+" insert_file.txt after --run
+```
+Replace multiple lines example:
+```sh
+vhp migrate "CVE: CVE" insert_file.txt replace --end "security_bulletin" --run
 ```
 ###### Note
 In insertion files, do not bother adding new lines as padding. New lines are adding automatically according to the insertion method.
