@@ -1,7 +1,8 @@
 require 'mercenary'
 require_relative '../migrate/migrate_gen'
 require_relative '../validate/validator'
-require_relative'../version'
+require_relative '../version'
+require_relative '../find/finder'
 
 module ShepherdTools
   class CLI
@@ -26,12 +27,39 @@ module ShepherdTools
             ShepherdTools::MigrateGenerator.new.gen(args, options)
           end
         end
+
         p.command(:validate) do |c|
-          c.syntax 'validate'
+          c.syntax 'validate <options>'
           c.description 'Validates CVE YAMLs'
+          c.option 'dir', '--dir DIR', 'Sets the CVE directory'
 
           c.action do |args, options|
-            ShepherdTools::Validator.new.validate_ymls
+            ShepherdTools::Validator.new(options).validate_ymls
+          end
+        end
+
+        p.command(:find) do |c|
+          c.syntax 'find [subcommand]'
+          c.description 'Finds information about CVEs'
+
+          c.command(:curated) do |s|
+            s.syntax 'find curated <options>'
+            s.description 'Finds all curated CVEs'
+            s.option 'dir', '--dir DIR', 'Sets the CVE directory'
+
+            s.action do |args, options|
+              ShepherdTools::Finder.new(options).find_curated
+            end
+          end
+
+          c.command(:uncurated) do |s|
+            s.syntax 'find uncurated <options>'
+            s.description 'Finds all uncurated CVEs'
+            s.option 'dir', '--dir DIR', 'Sets the CVE directory'
+
+            s.action do |args, options|
+              ShepherdTools::Finder.new(options).find_curated(false)
+            end
           end
         end
       end
