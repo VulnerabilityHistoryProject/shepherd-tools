@@ -14,7 +14,7 @@ After installing Shepherd Tools, you can use commands that follow the following 
 vhp command [args] <options>
 ```
 #### Migration
-Migration has three arguments and three option and follows the following format:
+Migration has three arguments and five option and follows the following format:
 ```sh
 vhp migrate regexp insert_text_file position <options>
 ```
