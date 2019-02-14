@@ -1,5 +1,5 @@
 require 'yaml'
-require_relative '../helper'
+require_relative '../helpers/helper'
 module ShepherdTools
   class Validator
     def initialize(options)
@@ -12,6 +12,7 @@ module ShepherdTools
         abort(@dir + ' is not a valid directory')
       end
     end
+
     def validate_ymls
       dir = @dir+ '/*.yml'
       Dir.glob(dir) do |file_path|

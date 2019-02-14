@@ -1,5 +1,5 @@
 require 'yaml'
-require_relative '../helper'
+require_relative '../helpers/helper'
 module ShepherdTools
   class Finder
     def initialize(options)

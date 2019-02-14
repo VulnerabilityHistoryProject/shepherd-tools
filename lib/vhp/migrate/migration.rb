@@ -1,4 +1,4 @@
-require_relative '../helper'
+require_relative '../helpers/helper'
 require_relative 'migration_algs.rb'
 
 module ShepherdTools

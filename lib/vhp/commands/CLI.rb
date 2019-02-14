@@ -6,7 +6,6 @@ require_relative '../find/finder'
 
 module ShepherdTools
   class CLI
-
     def run
       Mercenary.program(:vhp) do |p|
         p.version ShepherdTools::VERSION
@@ -39,7 +38,7 @@ module ShepherdTools
         end
 
         p.command(:find) do |c|
-          c.syntax 'find [subcommand]'
+          c.syntax 'find subcommand <options>'
           c.description 'Finds information about CVEs'
 
           c.command(:curated) do |s|
@@ -60,6 +59,19 @@ module ShepherdTools
             s.action do |args, options|
               ShepherdTools::Finder.new(options).find_curated(false)
             end
+          end
+        end
+        p.command(:report) do |c|
+          c.syntax 'report timeperiod'
+          c.description 'Generates a report'
+
+          c.command(:weekly) do |s|
+            s.syntax 'report weekly <options>'
+            s.description 'Generates a commit report by week'
+            s.option 'save', '--save DIR', 'Sets the directory where the reports are saved'
+            s.option 'repo', '--repo DIR', 'Sets the repo directory'
+            s.option 'cves', '--cve Dir', 'Sets the cve directory'
+            #s.option 'skip_existing', '--skip_existing', 'Skips '
           end
         end
       end
