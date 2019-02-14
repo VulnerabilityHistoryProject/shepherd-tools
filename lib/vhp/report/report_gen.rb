@@ -1,6 +1,7 @@
 require 'git'
 require 'json'
 require 'logger'
+require 'parallel'
 require 'active_support/core_ext/hash'
 require_relative 'weekly_report'
 require_relative '../utils/git'
@@ -15,8 +16,9 @@ module Report
 
       puts "Generating a report with options: #{options}"
       git_utils = ShepherdTools::GitLog.new(options[:repo])
-
+      puts 'here1'
       weekly_report = Report::WeeklyReport.new(options)
+      puts 'here2'
       yml_path = options[:cves] + '/**/*.yml'
       ymls = Dir[yml_path].to_a
       prog_string = 'Generating Weeklies'

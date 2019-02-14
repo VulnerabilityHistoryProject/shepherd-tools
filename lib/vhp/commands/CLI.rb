@@ -3,6 +3,7 @@ require_relative '../migrate/migrate_gen'
 require_relative '../validate/validator'
 require_relative '../version'
 require_relative '../find/finder'
+require_relative '../report/report_gen'
 
 module ShepherdTools
   class CLI
@@ -72,6 +73,10 @@ module ShepherdTools
             s.option 'repo', '--repo DIR', 'Sets the repo directory'
             s.option 'cves', '--cve Dir', 'Sets the cve directory'
             #s.option 'skip_existing', '--skip_existing', 'Skips '
+
+            s.action do |args, options|
+              Report::ReportGenerator.new.gen_weekly(options)
+            end
           end
         end
       end

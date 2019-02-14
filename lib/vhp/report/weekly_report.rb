@@ -5,7 +5,7 @@ module Report
     @@SECONDS_IN_WEEK = 604800
     @@START_DATE = Time.new(1991, 8, 5) # Monday before the birth of WWW
 
-    def initalize(options)
+    def initialize(options)
       @git = Git.open(options[:repo])
       @repo_dir = options[:repo]
       #@skip_existing = options[:skip_existing]

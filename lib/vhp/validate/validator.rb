@@ -1,5 +1,5 @@
 require 'yaml'
-require_relative '../helpers/helper'
+require_relative '../utils/helper'
 module ShepherdTools
   class Validator
     def initialize(options)

@@ -1,7 +1,7 @@
 require 'erb'
 require 'fileutils'
 require 'pathname'
-require_relative '../helper.rb'
+require_relative '../utils/helper.rb'
 
 module ShepherdTools
   class MigrateTemplate
