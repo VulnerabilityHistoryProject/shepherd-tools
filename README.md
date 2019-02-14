@@ -1,5 +1,4 @@
 # SHEPHERD TOOLS
-
 ### How to Install
 1. Navigate to your VHP repo
 2. git clone this repo
@@ -75,4 +74,20 @@ vhp find subcommand <options>
 ```sh
 vhp find curated
 vhp find uncurated --dir ../mydir
+```
+
+#### Report
+Generating reports follows the following format
+```sh
+vhp report timeperiod <options>
+```
+###### Time periods
+* weekly: Time period of one week
+###### Options
+* \-\-save DIR: By default, reports are saved in commits/weeklies. Manually set the directory with this option.
+* \-\-repo DIR: By default, the working directory is assumed to be the repo directory. Manually set the directory with this option.
+* \-\-cve DIR: By default, the cve directory is assumed to be "/cves". Manually set the directory with this option.
+###### Examples
+```sh
+vhp report weekly --save reports, --repo ../src
 ```
