@@ -32,7 +32,7 @@ vhp migrate regexp insert_text_file position <options>
 ###### Examples
 Initial generation of script:
 ```sh
-vhp migrate "CVE: CVE-\d{4}-\d+" insert_file.txt after 
+vhp migrate "CVE: CVE-\d{4}-\d+" insert_file.txt after
 ```
 You can run your generated script like this:
 ```sh
@@ -76,7 +76,7 @@ vhp find curated
 vhp find uncurated --dir ../mydir
 ```
 
-#### Report
+#### Report - CURRENTLY NOT WORKING
 Generating reports follows the following format
 ```sh
 vhp report timeperiod <options>

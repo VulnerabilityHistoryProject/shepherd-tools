@@ -62,6 +62,7 @@ module ShepherdTools
             end
           end
         end
+        =begin
         p.command(:report) do |c|
           c.syntax 'report timeperiod'
           c.description 'Generates a report'
@@ -79,6 +80,7 @@ module ShepherdTools
             end
           end
         end
+        =end
       end
     end
   end
