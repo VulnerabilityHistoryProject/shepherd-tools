@@ -1,6 +1,6 @@
 require 'json'
 
-module Report
+module ShepherdTools
   class WeeklyReport
     @@SECONDS_IN_WEEK = 604800
     @@START_DATE = Time.new(1991, 8, 5) # Monday before the birth of WWW
