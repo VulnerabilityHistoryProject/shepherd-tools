@@ -24,7 +24,7 @@ module ShepherdTools
            'Only use if replacing text. All text before this regex (After and including the first regex) will be replaced.'
 
           c.action do |args, options|
-            MigrateGenerator.new.gen(args, options)
+            ShepherdTools::MigrateGenerator.new.gen(args, options)
           end
         end
 
@@ -34,7 +34,7 @@ module ShepherdTools
           c.option 'dir', '--dir DIR', 'Sets the CVE directory'
 
           c.action do |args, options|
-            Validator.new(options).validate_ymls
+            ShepherdTools::Validator.new(options).validate_ymls
           end
         end
 
@@ -48,7 +48,7 @@ module ShepherdTools
             s.option 'dir', '--dir DIR', 'Sets the CVE directory'
 
             s.action do |args, options|
-              Finder.new(options).find_curated
+              ShepherdTools::Finder.new(options).find_curated
             end
           end
 
@@ -58,7 +58,7 @@ module ShepherdTools
             s.option 'dir', '--dir DIR', 'Sets the CVE directory'
 
             s.action do |args, options|
-              Finder.new(options).find_curated(false)
+              ShepherdTools::Finder.new(options).find_curated(false)
             end
           end
         end
