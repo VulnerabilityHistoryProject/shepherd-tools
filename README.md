@@ -70,9 +70,10 @@ vhp find subcommand <options>
 * uncurated: Find all uncurated CVE YAMLs.
 * publicvulns: Find all files associated with public vulnerabilities.
 ###### Options
-######## curated/uncurated
+curated/uncurated
 * \-\-dir DIR: Sets the cve directory. Default: cves
-######## publicvulns
+
+publicvulns
 * \-\-json JSON: Sets the gitlog_json location. Default: commits/gitlog.json
 * \-\-repo DIR: Sets the repository directory. Default: current working directory
 * \-\-cves DIR: Sets the CVE directory. Default: cves
