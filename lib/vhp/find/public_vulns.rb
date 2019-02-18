@@ -26,14 +26,14 @@ module ShepherdTools
         end
         shas.each do |sha|
           Dir.chdir(options[:repo]) do
-            put '.'
+            print '.'
             filepaths << `git log --stat -1 --pretty="" --name-only #{sha}`.split
           end
         end
       end
       filepaths = filepaths.flatten.sort.uniq.delete_if {|f| f == 'DEPS' }
 
-      puts "Vulnerable files: #{filepaths}"
+      puts "\nVulnerable files: #{filepaths}"
 
       puts "Getting file edits for #{filepaths.size} files"
       edit_shas = []
