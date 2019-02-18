@@ -26,8 +26,8 @@ vhp migrate regexp insert_text_file position <options>
 ###### Options
 * \-\-voff: Validation of migrated Yamls is on by default. Use this option if not migrating ymls or it annoys you.
 * \-\-run: The script generated will be automatically run.
-* \-\-dir DIR: By default, migrate will automatically locate your "cves/" directory. This option will set the migration directory.
-* \-\-type TYPE: By default, migrate will touch .yml files. This options allows you to specify your own filename extension.
+* \-\-dir DIR:  This option will set the migration directory. Default: cves dir
+* \-\-type TYPE:  Specifies filename extension. Default: .yml
 * \-\-end REGEX: This option is only for when replacing text. If you would like to replace multiple lines, use this option and give it the regex of the line you would like to replace until. This line will not be replaced, but all lines above it will be.
 ###### Examples
 Initial generation of script:
@@ -68,12 +68,21 @@ vhp find subcommand <options>
 ###### Subcommands
 * curated: Find all curated CVE YAMLs.
 * uncurated: Find all uncurated CVE YAMLs.
+* publicvulns: Find all files associated with public vulnerabilities.
 ###### Options
-* \-\-dir DIR: By default, find will automatically locate your "cves/" directory. This option will set the migration directory.
+######## curated/uncurated
+* \-\-dir DIR: Sets the cve directory. Default: cves
+######## publicvulns
+* \-\-json JSON: Sets the gitlog_json location. Default: commits/gitlog.json
+* \-\-repo DIR: Sets the repository directory. Default: current working directory
+* \-\-cves DIR: Sets the CVE directory. Default: cves
+* \-\-skip_existing: Skips shas that are already in the JSON. 
 ###### Examples
 ```sh
 vhp find curated
 vhp find uncurated --dir ../mydir
+vhp find publicvulns
+vhp find publicvulns --repo tmp/src --skip_existing
 ```
 
 #### Report - CURRENTLY NOT WORKING

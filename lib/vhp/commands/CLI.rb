@@ -4,6 +4,7 @@ require_relative '../validate/validator'
 require_relative '../version'
 require_relative '../find/finder'
 require_relative '../report/report_gen'
+require_relative '../find/public_vulns'
 
 module ShepherdTools
   class CLI
@@ -59,6 +60,19 @@ module ShepherdTools
 
             s.action do |args, options|
               ShepherdTools::Finder.new(options).find_curated(false)
+            end
+          end
+
+          c.command(:publicvulns) do |s|
+            s.syntax 'find publicvulns <options>'
+            s.description 'Finds all files with a public vulnerability and exports data to a json'
+            s.option 'gitlog_json', '--json JSON', 'Sets the location of gitlog.json'
+            s.option 'repo', '--repo DIR', 'Sets the repository directory'
+            s.option 'cves', '--cves DIR', 'Sets the CVE directory'
+            s.option 'skip_existing', '--skip_existing', 'Skips shas that already exist in the gitlog.json'
+
+            s.action do |args, options|
+              ShepherdTools::PublicVulnGenerator.new.gen_data(options)
             end
           end
         end
