@@ -22,7 +22,8 @@ module ShepherdTools
       Dir["#{options[:cves]}/**/*.yml"].each do |file|
         yml = YAML.load(File.open(file))
         unless yml['fixes'].nil?
-        shas += yml['fixes'].map { |fix| fix[:commit] || fix['commit'] }
+          shas += yml['fixes'].map { |fix| fix[:commit] || fix['commit'] }
+        end
         shas.each do |sha|
           Dir.chdir(options[:repo]) do
             put '.'
