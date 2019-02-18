@@ -1,8 +1,7 @@
 # SHEPHERD TOOLS
 ### How to Install
-1. Navigate to your VHP repo
-2. git clone this repo
-3. run the following commands:
+1. git clone this repo
+2. run the following commands:
 ```sh
 gem build vhp.gemspec
 gem install vhp
@@ -77,7 +76,7 @@ publicvulns
 * \-\-json JSON: Sets the gitlog_json location. Default: commits/gitlog.json
 * \-\-repo DIR: Sets the repository directory. Default: current working directory
 * \-\-cves DIR: Sets the CVE directory. Default: cves
-* \-\-skip_existing: Skips shas that are already in the JSON. 
+* \-\-skip_existing: Skips shas that are already in the JSON.
 ###### Examples
 ```sh
 vhp find curated

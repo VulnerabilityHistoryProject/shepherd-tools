@@ -79,7 +79,7 @@ module ShepherdTools
     end
 
     def repo(options)
-      repo = 'struts'
+      repo = Dir.pwd
       if options.key? 'repo'
         repo = options['repo']
       end
