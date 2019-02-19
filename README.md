@@ -66,24 +66,30 @@ vhp find subcommand <options>
 ###### Subcommands
 * curated: Find all curated CVE YAMLs.
 * uncurated: Find all uncurated CVE YAMLs.
-* publicvulns: Find all files associated with public vulnerabilities.
 ###### Options
-curated/uncurated
 * \-\-dir DIR: Sets the cve directory. Default: cves
-
-publicvulns
-* \-\-json JSON: Sets the gitlog_json location. Default: commits/gitlog.json
-* \-\-repo DIR: Sets the repository directory. Default: current working directory
-* \-\-cves DIR: Sets the CVE directory. Default: cves
-* \-\-skip_existing: Skips shas that are already in the JSON.
 ###### Examples
 ```sh
 vhp find curated
 vhp find uncurated --dir ../mydir
-vhp find publicvulns
-vhp find publicvulns --repo tmp/src --skip_existing
 ```
-
+#### Load commits
+Loading the git log JSON with commit data follows the following format
+```sh
+vhp loadcommits subcommand <options>
+```
+###### Subcommands
+* mentioned: All commits mentioned in a CVE YAML
+###### Options
+* --json JSON: Sets the gitlog_json location. Default: commits/gitlog.json
+* --repo DIR: Sets the repository directory. Default: current working directory
+* --cves DIR: Sets the CVE directory. Default: cves
+* --skip_existing: Skips shas that are already in the JSON.
+###### Examples
+```sh
+vhp loadcommits mentioned --repo struts
+vhp loadcommits mentioned --json ../../data/commits/gitlog.json --skip_existing
+```
 #### Report - CURRENTLY NOT WORKING
 Generating reports follows the following format
 ```sh
