@@ -1,10 +1,9 @@
 # SHEPHERD TOOLS
 ### How to Install
 1. git clone this repo
-2. run the following commands:
+2. run the following command:
 ```sh
-gem build vhp.gemspec
-gem install vhp
+rake install:gem
 ```
 ### Commands
 After installing Shepherd Tools, you can use commands that follow the following formats:
