@@ -3,7 +3,7 @@ require 'json'
 
 module ShepherdTools
   class GitLog
-    def initialize(repo)
+    def initialize(options)
       @git = Git.open(repo)
     end
 
@@ -17,6 +17,7 @@ module ShepherdTools
       end
       return files.flatten.uniq
     end
+
   end
 
   class GitSaver

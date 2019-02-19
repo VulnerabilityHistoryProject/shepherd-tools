@@ -4,7 +4,7 @@ require_relative '../validate/validator'
 require_relative '../version'
 require_relative '../find/finder'
 require_relative '../report/report_gen'
-require_relative '../find/public_vulns'
+require_relative '../commits/load_commits'
 
 module ShepherdTools
   class CLI
@@ -62,17 +62,20 @@ module ShepherdTools
               ShepherdTools::Finder.new(options).find_curated(false)
             end
           end
+        end
+        p.command(:loadcommits) do |c|
+          c.syntax 'loadcommits subcommand <options>'
+          c.description 'Finds all mentioned commits in CVE Yamls and load them into the gitlog'
 
-          c.command(:publicvulns) do |s|
-            s.syntax 'find publicvulns <options>'
-            s.description 'Finds all files with a public vulnerability and exports data to a json'
+          c.command(:mentioned) do |s|
+            s.syntax 'loadcommits mentioned'
             s.option 'gitlog_json', '--json JSON', 'Sets the location of gitlog.json'
             s.option 'repo', '--repo DIR', 'Sets the repository directory'
             s.option 'cves', '--cves DIR', 'Sets the CVE directory'
             s.option 'skip_existing', '--skip_existing', 'Skips shas that already exist in the gitlog.json'
 
             s.action do |args, options|
-              ShepherdTools::PublicVulnGenerator.new.gen_data(options)
+              ShepherdTools::CommitLoader.new(options).add_mentioned_commits
             end
           end
         end
