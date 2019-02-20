@@ -1,16 +1,9 @@
 require 'yaml'
 require_relative '../utils/helper'
 module ShepherdTools
-  class Finder
+  class ListCuration
     def initialize(options)
-      if options.key?('dir')
-        @dir = options['dir']
-      else
-        @dir = ShepherdTools.find_CVE_dir
-      end
-      unless File.directory? @dir
-        abort(@dir + ' is not a valid directory')
-      end
+      @dir = ShepherdTools.handle_cves(options)
     end
 
     def find_curated(curated = true)

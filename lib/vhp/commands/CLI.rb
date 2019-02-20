@@ -2,7 +2,8 @@ require 'mercenary'
 require_relative '../migrate/migrate_gen'
 require_relative '../validate/validator'
 require_relative '../version'
-require_relative '../find/finder'
+require_relative '../cve_info/list_curation'
+require_relative '../cve_info/list_fixes'
 require_relative '../report/report_gen'
 require_relative '../commits/load_commits'
 require_relative '../commits/vuln_files'
@@ -33,10 +34,45 @@ module ShepherdTools
         p.command(:validate) do |c|
           c.syntax 'validate <options>'
           c.description 'Validates CVE YAMLs'
-          c.option 'dir', '--dir DIR', 'Sets the CVE directory'
+          c.option 'cves', '--cves DIR', 'Sets the CVE directory'
 
           c.action do |args, options|
             ShepherdTools::Validator.new(options).validate_ymls
+          end
+        end
+
+        p.command(:list) do |c|
+          c.syntax 'list subcommand <options>'
+          c.description 'Lists information in terminal'
+
+          c.command(:curated) do |s|
+            s.syntax 'list curated <options>'
+            s.description 'Lists all curated CVEs'
+            s.option 'cves', '--cves DIR', 'Sets the CVE directory'
+
+            s.action do |args, options|
+              ShepherdTools::ListCuration.new(options).find_curated
+            end
+          end
+
+          c.command(:uncurated) do |s|
+            s.syntax 'list uncurated <options>'
+            s.description 'Lists all uncurated CVEs'
+            s.option 'cves', '--cves DIR', 'Sets the CVE directory'
+
+            s.action do |args, options|
+              ShepherdTools::ListCuration.new(options).find_curated(false)
+            end
+          end
+
+          c.command(:fixes) do |s|
+            s.syntax 'list fixes <options>'
+            s.description 'Lists all fixes for CVEs'
+            s.option 'cves', '--cves DIR', 'Sets the CVE directory'
+
+            s.action do |args, options|
+              ShepherdTools::ListFixes.new_CLI(options).print_fixes
+            end
           end
         end
 
@@ -44,25 +80,6 @@ module ShepherdTools
           c.syntax 'find subcommand <options>'
           c.description 'Finds information'
 
-          c.command(:curated) do |s|
-            s.syntax 'find curated <options>'
-            s.description 'Finds all curated CVEs'
-            s.option 'dir', '--dir DIR', 'Sets the CVE directory'
-
-            s.action do |args, options|
-              ShepherdTools::Finder.new(options).find_curated
-            end
-          end
-
-          c.command(:uncurated) do |s|
-            s.syntax 'find uncurated <options>'
-            s.description 'Finds all uncurated CVEs'
-            s.option 'dir', '--dir DIR', 'Sets the CVE directory'
-
-            s.action do |args, options|
-              ShepherdTools::Finder.new(options).find_curated(false)
-            end
-          end
           c.command(:publicvulns) do |s|
             s.syntax 'find publicvulns <options>'
             s.description 'Finds all files with vulnerabilities'
@@ -75,8 +92,8 @@ module ShepherdTools
               ShepherdTools::VulnerableFileExtractor.new(options).extract
             end
           end
-
         end
+
         p.command(:loadcommits) do |c|
           c.syntax 'loadcommits subcommand <options>'
           c.description 'Finds all mentioned commits in CVE Yamls and load them into the gitlog'

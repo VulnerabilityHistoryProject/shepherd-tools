@@ -1,6 +1,6 @@
 require 'csv'
 require 'date'
-require_relative 'list_cve_data'
+require_relative '../cve_info/list_fixes'
 require_relative '../utils/git'
 
 module ShepherdTools
@@ -16,7 +16,7 @@ module ShepherdTools
 
     def extract
       puts 'Getting vulnerable files list'
-      tmpFixes = ListCVEData.new(@options[:cves]).get_fixes
+      tmpFixes = ListFixes.new(@options[:cves]).get_fixes
       fixes = []
       if @options[:period].eql? 'all_time'
         puts 'Period: all time'
