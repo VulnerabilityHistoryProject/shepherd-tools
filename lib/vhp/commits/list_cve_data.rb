@@ -29,15 +29,19 @@ module ShepherdTools
       @cve_ymls.each do |yml_file|
         begin
           cve = File.open(yml_file) { |f| YAML.load(f) }
-          cve['fixes'].each do |fix|
-            sha = fix['commit'].to_s +
-                  fix[':commit:'].to_s +
-                  fix[:commit].to_s
-            unless sha.strip.empty?
-              fixes << sha
+          if cve['fixes'].nil?
+            puts "Fixes nil for #{yml_file}"
+          else
+            cve['fixes'].each do |fix|
+              sha = fix['commit'].to_s +
+                    fix[':commit:'].to_s +
+                    fix[:commit].to_s
+              unless sha.strip.empty?
+                fixes << sha
+              end
             end
           end
-        rescue
+        rescue => e
           puts "ERROR on #{yml_file}"
           puts e.backtrace
         end
