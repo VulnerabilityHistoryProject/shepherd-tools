@@ -66,12 +66,21 @@ vhp find subcommand <options>
 ###### Subcommands
 * curated: Find all curated CVE YAMLs.
 * uncurated: Find all uncurated CVE YAMLs.
+* publicvulns: Find all vulnerable fines from the gitlog
 ###### Options
+curated/uncurated
 * \-\-dir DIR: Sets the cve directory. Default: cves
+vulnfiles
+* --repo DIR: Sets the repository directory. Default: current working directory
+* --cves DIR: Sets the CVE directory. Default: cves
+* --period PERIOD: Sets the time period for the test. Either "6_month" or "all_time"
+* --output DIR: Sets the directory where the CSV will be saved.
 ###### Examples
 ```sh
 vhp find curated
 vhp find uncurated --dir ../mydir
+vhp find publicvulns --repo struts --period 6_month
+vhp find publicvulns --repo tomcat
 ```
 #### Load commits
 Loading the git log JSON with commit data follows the following format
