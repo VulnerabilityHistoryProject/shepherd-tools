@@ -3,15 +3,16 @@ require 'json'
 require 'yaml'
 require 'fileutils'
 require_relative '../utils/git'
+require_relative '../utils/helper'
 
 module ShepherdTools
   class CommitLoader
     def initialize(input_options)
       @options = {}
       @options[:gitlog_json] = gitlog_json(input_options)
-      check_file_path(@options[:gitlog_json])
-      @options[:repo] = repo(input_options)
-      @options[:cves] = cves(input_options)
+      ShepherdTools.check_file_path(@options[:gitlog_json], 'json')
+      @options[:repo] = ShepherdTools.handle_repo(input_options)
+      @options[:cves] = ShepherdTools.handle_cves(input_options)
       @options[:skip_existing] = skip_existing(input_options)
     end
 
@@ -63,36 +64,12 @@ module ShepherdTools
       pp failed
     end
 
-    def check_file_path(path)
-      dir = File.dirname(path)
-      unless File.directory?(dir)
-        FileUtils.mkdir_p(dir)
-      end
-      File.open(path, 'w+') {|file| file.write("{}")}
-    end
-
     def gitlog_json(options)
       dir = 'commits/gitlog.json'
       if options.key? 'git_log.json'
         dir = options['git_log.json']
       end
       dir
-    end
-
-    def repo(options)
-      repo = Dir.pwd
-      if options.key? 'repo'
-        repo = options['repo']
-      end
-      repo
-    end
-
-    def cves(options)
-      cves = 'cves'
-      if options.key? 'cves'
-        cves = options['cves']
-      end
-      cves
     end
 
     def skip_existing(options)
