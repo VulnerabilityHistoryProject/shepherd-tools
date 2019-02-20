@@ -70,7 +70,8 @@ vhp find subcommand <options>
 ###### Options
 curated/uncurated
 * \-\-dir DIR: Sets the cve directory. Default: cves
-vulnfiles
+
+publicvulns
 * --repo DIR: Sets the repository directory. Default: current working directory
 * --cves DIR: Sets the CVE directory. Default: cves
 * --period PERIOD: Sets the time period for the test. Either "6_month" or "all_time"
