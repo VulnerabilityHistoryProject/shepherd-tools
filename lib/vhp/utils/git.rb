@@ -3,18 +3,21 @@ require 'json'
 
 module ShepherdTools
   class GitLog
-    def initialize(options)
+    def initialize(repo)
       @git = Git.open(repo)
     end
 
-    def get_files_from_sha(commit_shas)
+    def get_files_from_shas(commit_shas)
       files = []
-      commits_shas.each do |sha|
+      commit_shas.each do |sha|
         commit = @git.object(sha)
         diff = @git.diff(commit, commit.parent)
-        files << diff.stats[:files].keys
+        unless diff.stats[:files].nil?
+          files << diff.stats[:files].keys
+        end
       rescue #catch file not found exception
       end
+      puts 'here'
       return files.flatten.uniq
     end
 

@@ -24,4 +24,32 @@ module ShepherdTools
     cve_path
   end
 
+  def self.handle_cves(options)
+    cves = 'cves'
+    if options.key? 'cves'
+      cves = options['cves']
+    end
+    cves
+  end
+
+  def self.handle_repo(options)
+    repo = Dir.pwd
+    if options.key? 'repo'
+      repo = options['repo']
+    end
+    repo
+  end
+
+  def self.check_file_path(path, type)
+    dir = File.dirname(path)
+    unless File.directory?(dir)
+      FileUtils.mkdir_p(dir)
+    end
+    if type.eql? 'json'
+      File.open(path, 'w+') {|file| file.write("{}")}
+    else
+      FileUtils.touch(path)
+    end
+  end
+
 end

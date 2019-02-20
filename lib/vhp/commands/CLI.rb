@@ -5,6 +5,7 @@ require_relative '../version'
 require_relative '../find/finder'
 require_relative '../report/report_gen'
 require_relative '../commits/load_commits'
+require_relative '../commits/vuln_files'
 
 module ShepherdTools
   class CLI
@@ -41,7 +42,7 @@ module ShepherdTools
 
         p.command(:find) do |c|
           c.syntax 'find subcommand <options>'
-          c.description 'Finds information about CVEs'
+          c.description 'Finds information'
 
           c.command(:curated) do |s|
             s.syntax 'find curated <options>'
@@ -62,6 +63,19 @@ module ShepherdTools
               ShepherdTools::Finder.new(options).find_curated(false)
             end
           end
+          c.command(:vulnfiles) do |s|
+            s.syntax 'find vulnfileds <options>'
+            s.description 'Finds all file with vulnerabilities'
+            s.option 'cves', '--cves Dir', 'Sets the CVE directory'
+            s.option 'repo', '--repo DIR', 'Sets the repository directory'
+            s.option 'period', '--period PERIOD', 'Sets the time period'
+            s.option 'output', '--output DIR', 'Sets the dir where output will be saved'
+
+            s.action do |args, options|
+              ShepherdTools::VulnerableFileExtractor.new(options).extract
+            end
+          end
+
         end
         p.command(:loadcommits) do |c|
           c.syntax 'loadcommits subcommand <options>'
