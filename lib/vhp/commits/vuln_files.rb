@@ -67,7 +67,7 @@ module ShepherdTools
         if repo.eql? ''
           abort('Please run shepherd tools in a vulnerability repo')
         end
-        output = "commits/public-vulns-#{repo}-#{period}.csv"
+        output = "commits/public_vulns-#{repo}-#{period}.csv"
       end
       output
     end
