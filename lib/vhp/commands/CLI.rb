@@ -63,9 +63,9 @@ module ShepherdTools
               ShepherdTools::Finder.new(options).find_curated(false)
             end
           end
-          c.command(:vulnfiles) do |s|
-            s.syntax 'find vulnfileds <options>'
-            s.description 'Finds all file with vulnerabilities'
+          c.command(:publicvulns) do |s|
+            s.syntax 'find publicvulns <options>'
+            s.description 'Finds all files with vulnerabilities'
             s.option 'cves', '--cves Dir', 'Sets the CVE directory'
             s.option 'repo', '--repo DIR', 'Sets the repository directory'
             s.option 'period', '--period PERIOD', 'Sets the time period'
