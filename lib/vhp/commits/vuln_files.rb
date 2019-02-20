@@ -43,7 +43,7 @@ module ShepherdTools
 
     def start_date
       start_date = Date.new(1991, 8, 5)
-      if @options[:period].eql? '6_months'
+      if @options[:period].eql? '6_month'
         start_date = Date.today << 6
       end
       start_date.strftime "%Y.%m.%d"
@@ -75,7 +75,11 @@ module ShepherdTools
     def handle_period(options)
       period = 'all_time'
       if options.key? 'period'
-        period = options['period']
+        if options['period'].eql? '6_months'
+          period = '6_month'
+        else
+          period = options['period']
+        end
       end
       period
     end
