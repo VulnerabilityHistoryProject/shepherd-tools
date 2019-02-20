@@ -17,7 +17,6 @@ module ShepherdTools
         end
       rescue #catch file not found exception
       end
-      puts 'here'
       return files.flatten.uniq
     end
 

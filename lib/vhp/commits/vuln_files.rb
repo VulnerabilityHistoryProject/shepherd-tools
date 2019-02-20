@@ -11,7 +11,7 @@ module ShepherdTools
       @options[:repo] = ShepherdTools.handle_repo(input_options)
       @options[:period] = handle_period(input_options)
       @options[:output] = handle_output(input_options, @options[:period])
-      ShepherdTools.check_file_path('CSV', @options[:output])
+      ShepherdTools.check_file_path(@options[:output], 'csv')
     end
 
     def extract
@@ -19,8 +19,10 @@ module ShepherdTools
       tmpFixes = ListCVEData.new(@options[:cves]).get_fixes
       fixes = []
       if @options[:period].eql? 'all_time'
+        puts 'Period: all time'
         fixes = tmpFixes
       else
+        puts 'Period: 6 months'
         Dir.chdir(@options[:repo]) do
           tmpFixes.each do |fix|
             gitLogCommand = "git log --before=#{end_date} --after=#{start_date} "+'--pretty=format:"%H" ' + fix + ' -1'
@@ -32,7 +34,6 @@ module ShepherdTools
         end
       end
       result = GitLog.new(@options[:repo]).get_files_from_shas(fixes)
-      puts result
       puts "Writing output file #{@options[:output]}"
       CSV.open(@options[:output], 'w+') do |csv|
         csv << [ 'filepath' ]
@@ -42,8 +43,8 @@ module ShepherdTools
 
     def start_date
       start_date = Date.new(1991, 8, 5)
-      if @period.eql? '6_months'
-        start_date = end_date << 6
+      if @options[:period].eql? '6_months'
+        start_date = Date.today << 6
       end
       start_date.strftime "%Y.%m.%d"
     end
@@ -72,14 +73,12 @@ module ShepherdTools
     end
 
     def handle_period(options)
-      periods = ['6_month', 'all_time']
       period = 'all_time'
-      if (options.key? period) && (periods.include? options['period'])
+      if options.key? 'period'
         period = options['period']
       end
       period
     end
-
 
   end
 end
