@@ -1,35 +1,59 @@
 require_relative '../utils/helper'
-require_relative 'migration_algs.rb'
 
 module ShepherdTools
   class Migration
-    # Insert multiple lines into all yml files in a directory
-    def insert_text(regex, insert_file, dir, command, validate, filetype, regex_end)
+    def initialize
+      @invalid_ymls = []
+    end
+
+    def insert_text(regex, insert_file, dir, validate, filetype)
 
       puts 'DIR: ' + dir
 
       dir = dir + '/*' + filetype
-      regex = /#{regex}/
-      regex_end = /#{regex_end}/
-      if(insert_file=='')
-        text = ''
-      else
-        text = ShepherdTools.read_file(insert_file)
+      insert_text = ''
+      unless insert_file==''
+        insert_text = ShepherdTools.read_file(insert_file)
       end
-      puts command
-      puts regex_end.to_s
-      if(command.casecmp('after') && regex_end.to_s.empty?)
-        alg = MigrationAlg.new(regex, text, dir, validate, regex_end, InsertTextAfter.new)
-      elsif(command.casecmp('before') && regex_end.to_s.empty?)
-        alg = MigrationAlg.new(regex, text, dir, validate, regex_end, InsertTextBefore.new)
-      elsif(command.casecmp('replace') && regex_end.to_s.empty?)
-        alg = MigrationAlg.new(regex, text, dir, validate, regex_end, ReplaceText.new)
-      elsif(command.casecmp('replace') && !regex_end.to_s.empty?)
-        alg = MigrationAlg.new(regex, text, dir, validate, regex_end, ReplaceTextBlock.new)
-      else
-        abort('Not a valid subcommand')
+      puts "Regex: #{regex.to_s}"
+      puts 'inserting the following text:'
+      puts insert_text
+
+      Dir.glob(dir) do |file|
+        status = '-'
+        text = ShepherdTools.read_file(file)
+        new_text = text.gsub(regex, insert_text)
+        unless text.eql? new_text
+          if validate && !validate_yml(new_text, file)
+            status = 'F'
+          else
+            status = 'M'
+          end
+          save_yml(file, new_text)
+        end
+        print status
       end
-      alg.run
+
+      if validate
+        puts "\nInvalid YAMLS:"
+        @invalid_ymls.each {|e| puts e}
+      end
+
+    end
+
+    def validate_yml(txt, file_path)
+      passed = true
+      begin
+        Psych.parse(txt, file_path)
+      rescue Psych::SyntaxError => e
+        @invalid_ymls.push("#{e.message}")
+        passed = false
+      end
+      passed
+    end
+
+    def save_yml(file, text)
+      File.open(file, 'w+') {|f| f.write(text)}
     end
   end
 end

@@ -5,14 +5,12 @@ require_relative '../utils/helper.rb'
 
 module ShepherdTools
   class MigrateTemplate
-    def initialize(regex, insert_file, dir, command, validate, filetype, regex_end)
+    def initialize(regex, insert_file, dir, validate, filetype)
       @regex = regex
       @insert_file = insert_file
-      @command = command
       @validate = validate
-      @dir = dir
+      @dir = dira
       @filetype = filetype
-      @regex_end = regex_end
     end
 
     def get_binding
@@ -22,30 +20,18 @@ module ShepherdTools
 
   class MigrateGenerator
     def gen(args, options)
-      regex = args[0].gsub('\d', '\\d')
+      regex = args[0]
       insert_file = find_file(args)
       dir = find_dir(options)
-      command = validate_command(args)
       validate = !(options.key? 'voff')
       filetype = filetype(options)
-      regex_end = regex_end(options)
       file_name = Time.now.strftime('migrate_%Y_%m_%d_%H_%M')
-      file_text = script_text(regex, insert_file, dir, command, validate, filetype, regex_end)
+      file_text = script_text(regex, insert_file, dir, validate, filetype)
       save_script(file_name, file_text)
 
       if(options.key? 'run')
         system('ruby migrations/' + file_name + '.rb')
       end
-    end
-
-    def regex_end(options)
-      if(options.key? 'regex_end')
-        regex = options['regex_end']
-        regex = regex.gsub('\d', '\\d')
-      else
-        regex = ""
-      end
-      regex
     end
 
     def filetype(options)
@@ -62,26 +48,16 @@ module ShepherdTools
       if(File.file?(args[1]))
         insert_file = args[1]
       else
-        abort('Invalid second argument. Please use a file name')
+        raise 'Error: Invalid second argument. Please use a file name'
       end
       insert_file
-    end
-
-    def validate_command(args)
-      commands = ['after', 'before', 'replace']
-      if(commands.include? args[2].downcase)
-        command = args[2]
-      else
-        abort('Invalid subcommand')
-      end
-      command
     end
 
     def find_dir(options)
       if(options.key? 'dir')
         dir = options['dir']
         unless(File.directory? dir)
-          abort('Not a valid directory')
+          raise 'Error: Not a valid directory'
         end
       else
         dir = ShepherdTools.find_CVE_dir
@@ -89,9 +65,9 @@ module ShepherdTools
       dir
     end
 
-    def script_text(regex, insert_file, dir, command, validate, filetype, regex_end)
+    def script_text(regex, insert_file, dir, validate, filetype)
       template = ShepherdTools.read_file(File.join(File.dirname(__FILE__), 'migrate_template.rb.erb'))
-      migrateTemplate = MigrateTemplate.new(regex, insert_file, dir, command, validate, filetype, regex_end)
+      migrateTemplate = MigrateTemplate.new(regex, insert_file, dir, validate, filetype)
       render = ERB.new(template)
       render.result(migrateTemplate.get_binding)
     end
