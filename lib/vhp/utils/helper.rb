@@ -17,7 +17,7 @@ module ShepherdTools
     cve_path = ''
     subdirs.each do |dir|
       if(/cves\/$/.match(dir)!=nil)
-        cve_path = dir
+        cve_path = dir.chomp('/')
         break
       end
     end
