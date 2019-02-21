@@ -15,10 +15,14 @@ module ShepherdTools
       unless insert_file==''
         insert_text = ShepherdTools.read_file(insert_file)
       end
-      puts "Regex: #{regex.to_s}"
-      puts 'inserting the following text:'
-      puts insert_text
 
+      puts "Regex: #{regex.inspect}"
+      puts 'Inserting the following text:'
+      puts "\n\n**********************************************"
+      puts insert_text
+      puts "**********************************************\n\n"
+
+      puts "Migrating:"
       Dir.glob(dir) do |file|
         status = '-'
         text = ShepherdTools.read_file(file)
@@ -35,7 +39,7 @@ module ShepherdTools
       end
 
       if validate
-        puts "\nInvalid YAMLS:"
+        puts "\n\nInvalid YAMLS:"
         @invalid_ymls.each {|e| puts e}
       end
 
