@@ -9,7 +9,7 @@ module ShepherdTools
       @regex = regex
       @insert_file = insert_file
       @validate = validate
-      @dir = dira
+      @dir = dir
       @filetype = filetype
     end
 
