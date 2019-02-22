@@ -84,6 +84,8 @@ module ShepherdTools
             s.option 'cves', '--cves Dir', 'Sets the CVE directory'
             s.option 'repo', '--repo DIR', 'Sets the repository directory'
             s.option 'period', '--period PERIOD', 'Sets the time period'
+            s.option 'start', '--start DATE', 'Sets the starting date'
+            s.option 'end', '--end DATE', 'Sets the end date'
             s.option 'output', '--output DIR', 'Sets the dir where output will be saved'
 
             s.action do |args, options|
