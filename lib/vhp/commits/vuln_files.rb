@@ -12,8 +12,8 @@ module ShepherdTools
       period = calculate_period(input_options)
       @options[:start] = period[0]
       @options[:end] = period[1]
-      period_name = handle_name(input_options, @options[:start], @options[:end])
-      @options[:output] = handle_output(input_options, period_name, @options[:start], @options[:end])
+      period_name = handle_period_name(input_options, @options[:start], @options[:end])
+      @options[:output] = handle_output(input_options, period_name, @options[:repo], @options[:start], @options[:end])
       ShepherdTools.check_file_path(@options[:output], 'csv')
     end
 
@@ -57,26 +57,17 @@ module ShepherdTools
       Date.today.strftime "%Y.%m.%d"
     end
 
-    def handle_output(options, period_name, start_date, end_date)
-      substring = '-vulnerabilities'
-      repo = ''
+    def handle_output(options, period_name, repo, start_date, end_date)
       output = 'commits'
       if options.key? 'output'
         output = options['output']
       end
-      Pathname(Dir.pwd).each_filename do |folder|
-        if folder.include? substring
-          repo = folder.chomp(substring)
-        end
-      end
-      if repo.eql? ''
-        raise 'Please run shepherd tools in a -vulnerabilities repo'
-      end
-      output = "#{output}/public_vulns-#{repo}-#{period_name}.csv"
+      repo_name = repo.split(File::SEPARATOR).last
+      output = "#{output}/public_vulns-#{repo_name}-#{period_name}.csv"
       output
     end
 
-    def handle_name(options, start_date, end_date)
+    def handle_period_name(options, start_date, end_date)
       period_name = "unamed_period"
       if options.key? 'period_name'
         period_name = options['period_name']
