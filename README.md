@@ -65,7 +65,7 @@ vhp validate --cves ../mydir/cves
 #### List
 The list command follows the following format:
 ```sh
-vhp list subcommand <options
+vhp list subcommand <options>
 ```
 
 ###### Subcommands
@@ -91,13 +91,16 @@ vhp find subcommand <options>
 ```
 
 ###### Subcommands
-* publicvulns: Find all vulnerable fines from the gitlog
+* publicvulns: Find all vulnerable files from the gitlog
 
 ###### Options
 * \-\-repo DIR: Sets the repository directory. Default: current working directory
 * \-\-cves DIR: Sets the CVE directory. Default: cves
-* \-\-period PERIOD: Sets the time period for the test. Either "6_month" or "all_time"
+* \-\-period PERIOD: Sets a default time period for the test. Either "6_month" or "all_time"
+* \-\-start DATE: Sets the start date of the period. Cannot be used with \-\-period
+* \-\-end DATE: Sets the end date of the period. Cannot be used with \-\-period
 * \-\-output DIR: Sets the directory where the CSV will be saved.
+* \-\-period_name NAME: Sets the name of the period. E.g. "12_months", "2_years"
 
 ###### Examples
 ```sh

@@ -9,10 +9,11 @@ module ShepherdTools
       @options = {}
       @options[:cves] = ShepherdTools.handle_cves(input_options)
       @options[:repo] = ShepherdTools.handle_repo(input_options)
-      period = calculate_period(options)
+      period = calculate_period(input_options)
       @options[:start] = period[0]
       @options[:end] = period[1]
-      @options[:output] = handle_output(input_options, @options[:period])
+      period_name = handle_name(input_options, @options[:start], @options[:end])
+      @options[:output] = handle_output(input_options, period_name, @options[:start], @options[:end])
       ShepherdTools.check_file_path(@options[:output], 'csv')
     end
 
@@ -56,23 +57,35 @@ module ShepherdTools
       Date.today.strftime "%Y.%m.%d"
     end
 
-    def handle_output(options, period)
+    def handle_output(options, period_name, start_date, end_date)
       substring = '-vulnerabilities'
       repo = ''
+      output = 'commits'
       if options.key? 'output'
         output = options['output']
-      else
-        Pathname(Dir.pwd).each_filename do |folder|
-          if folder.include? substring
-            repo = folder.chomp(substring)
-          end
-        end
-        if repo.eql? ''
-          raise 'Please run shepherd tools in a vulnerability repo'
-        end
-        output = "commits/public_vulns-#{repo}-#{period}.csv"
       end
+      Pathname(Dir.pwd).each_filename do |folder|
+        if folder.include? substring
+          repo = folder.chomp(substring)
+        end
+      end
+      if repo.eql? ''
+        raise 'Please run shepherd tools in a -vulnerabilities repo'
+      end
+      output = "#{output}/public_vulns-#{repo}-#{period_name}.csv"
       output
+    end
+
+    def handle_name(options, start_date, end_date)
+      period_name = "unamed_period"
+      if options.key? 'period_name'
+        period_name = options['period_name']
+      elsif start_date.nil? && end_date.nil?
+        period_name = 'all_time'
+      elsif options.key? 'period'
+        period_name = options['period']
+      end
+      period_name
     end
 
     def calculate_period(options)
@@ -87,11 +100,11 @@ module ShepherdTools
         period[0]=start_date('all_time')
         period[1]=today_date
         if options.key? 'start'
-          validate_date(options('start'))
+          validate_date(options['start'])
           period[0]=options['start']
         end
         if options.key? 'end'
-          validate_date(options('end'))
+          validate_date(options['end'])
           period[1]=options['end']
         end
       end
@@ -99,8 +112,10 @@ module ShepherdTools
     end
 
     def validate_date(date)
-      if (/^\d{4}-\d{1,2}-\d{1,2}$/ =~ date).nil?
-        raise "#{date} is an invalid date format. Please use YYYY-MM-DD"
+      begin
+        Date.strptime(date, "%Y.%m.%d")
+      rescue ArgumentError
+        raise "#{date} is an invalid date format. Please use YYYY.MM.DD"
       end
     end
 
@@ -110,9 +125,10 @@ module ShepherdTools
         raise 'Invalid command. You can not give a start date with a period.'
       elsif (options.key? 'end') && (options.key? 'period')
         raise 'Invalid command. You can not give a end date with a period.'
-      elsif (options.key? 'period') && !(valid.includes? options['period'])
+      elsif (options.key? 'period') && !(valid.include? options['period'])
         raise "Invalid command. Not a valid period: #{options['period']}"
       end
     end
+
   end
 end

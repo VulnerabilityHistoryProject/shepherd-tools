@@ -87,6 +87,7 @@ module ShepherdTools
             s.option 'start', '--start DATE', 'Sets the starting date'
             s.option 'end', '--end DATE', 'Sets the end date'
             s.option 'output', '--output DIR', 'Sets the dir where output will be saved'
+            s.option 'period_name', '--period_name NAME', 'Sets the name of the time period'
 
             s.action do |args, options|
               ShepherdTools::VulnerableFileExtractor.new(options).extract
