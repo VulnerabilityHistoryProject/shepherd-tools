@@ -37,6 +37,7 @@ module ShepherdTools
           end
         end
       end
+      puts @Options[:repo]
       result = GitLog.new(@options[:repo]).get_files_from_shas(fixes)
       puts "Writing output file #{@options[:output]}"
       CSV.open(@options[:output], 'w+') do |csv|
@@ -50,11 +51,11 @@ module ShepherdTools
       if period.eql? '6_month'
         start_date = Date.today << 6
       end
-      start_date.strftime "%Y.%m.%d"
+      start_date.strftime "%Y-%m-%d"
     end
 
     def today_date
-      Date.today.strftime "%Y.%m.%d"
+      Date.today.strftime "%Y-%m-%d"
     end
 
     def handle_output(options, period_name, repo, start_date, end_date)
@@ -62,8 +63,10 @@ module ShepherdTools
       if options.key? 'output'
         output = options['output']
       end
-      repo_name = repo.split(File::SEPARATOR).last
-      output = "#{output}/public_vulns-#{repo_name}-#{period_name}.csv"
+      if File.directory? output
+        repo_name = repo.split(File::SEPARATOR).last
+        output = "#{output}/public_vulns-#{repo_name}-#{period_name}.csv"
+      end
       output
     end
 
@@ -104,7 +107,7 @@ module ShepherdTools
 
     def validate_date(date)
       begin
-        Date.strptime(date, "%Y.%m.%d")
+        Date.strptime(date, "%Y-%m-%d")
       rescue ArgumentError
         raise "#{date} is an invalid date format. Please use YYYY.MM.DD"
       end
