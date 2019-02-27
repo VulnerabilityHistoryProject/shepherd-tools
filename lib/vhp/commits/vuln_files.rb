@@ -37,7 +37,6 @@ module ShepherdTools
           end
         end
       end
-      puts @Options[:repo]
       result = GitLog.new(@options[:repo]).get_files_from_shas(fixes)
       puts "Writing output file #{@options[:output]}"
       CSV.open(@options[:output], 'w+') do |csv|
