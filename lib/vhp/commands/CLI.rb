@@ -44,7 +44,7 @@ module ShepherdTools
           c.syntax 'ready subcommand'
           c.description 'Ready commands'
           c.option 'cves', '--cves DIR', 'Sets the CVE directory'
-          c.option 'unready' '--unready' 'Find unready CVE YAMLs'
+          c.option 'unready', '--unready', 'Find unready CVE YAMLs'
 
           c.action do |args, options|
             ShepherdTools::CurateReady.new(options).print_readiness
