@@ -7,6 +7,7 @@ require_relative '../cve_info/list_fixes'
 require_relative '../report/report_gen'
 require_relative '../commits/load_commits'
 require_relative '../commits/vuln_files'
+require_relative '../ready/curate_ready'
 
 module ShepherdTools
   class CLI
@@ -36,6 +37,17 @@ module ShepherdTools
 
           c.action do |args, options|
             ShepherdTools::Validator.new(options).validate_ymls
+          end
+        end
+
+        p.command(:ready) do |c|
+          c.syntax 'ready subcommand'
+          c.description 'Ready commands'
+          c.option 'cves', '--cves DIR', 'Sets the CVE directory'
+          c.option 'unready' '--unready' 'Find unready CVE YAMLs'
+
+          c.action do |args, options|
+            ShepherdTools::CurateReady.new(options).print_readiness
           end
         end
 
