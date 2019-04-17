@@ -49,6 +49,7 @@ module ShepherdTools
             c.description 'Ready curated'
             s.option 'cves', '--cves DIR', 'Sets the CVE directory'
             s.option 'unready', '--unready', 'Find unready CVE YAMLs'
+            s.option 'csv', '--csv DIR', 'Output to a csv file in chosen directory.'
 
             s.action do |args, options|
               ShepherdTools::CurateReady.new(options).print_readiness
