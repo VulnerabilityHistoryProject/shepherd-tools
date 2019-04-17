@@ -62,6 +62,19 @@ vhp validate --cves ../mydir/cves
 ```
 
 
+#### Ready
+The ready command follows the following format:
+```sh
+vhp ready subcommand <options>
+```
+
+###### Subcommands
+* curated: Finds all YAMLs ready to be curated
+
+###### Options
+* \-\-cves DIR: Sets the CVE directory. Default: cves
+* \-\-unready: Find unready YAMLs to be curated
+
 #### List
 The list command follows the following format:
 ```sh
