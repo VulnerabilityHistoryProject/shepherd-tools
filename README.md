@@ -54,6 +54,7 @@ vhp validate <options>
 
 ###### Options
 * \-\-cves DIR: Sets the CVE directory. Default: cves
+* \-\-csv DIR: Output to a csv file. Default Dir: csvs
 
 ###### Examples
 ```sh
@@ -88,6 +89,7 @@ vhp list subcommand <options>
 
 ###### Options
 * \-\-cves DIR: Sets the CVE directory. Default: cves
+* \-\-csv DIR: Output to a csv file. Default Dir: csvs
 
 ###### Examples
 ```sh

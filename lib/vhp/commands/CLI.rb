@@ -65,6 +65,7 @@ module ShepherdTools
             s.syntax 'list curated <options>'
             s.description 'Lists all curated CVEs'
             s.option 'cves', '--cves DIR', 'Sets the CVE directory'
+            s.option 'csv', '--csv DIR', 'Output to a csv file in chosen directory.'
 
             s.action do |args, options|
               ShepherdTools::ListCuration.new(options).find_curated
@@ -75,6 +76,7 @@ module ShepherdTools
             s.syntax 'list uncurated <options>'
             s.description 'Lists all uncurated CVEs'
             s.option 'cves', '--cves DIR', 'Sets the CVE directory'
+            s.option 'csv', '--csv DIR', 'Output to a csv file in chosen directory.'
 
             s.action do |args, options|
               ShepherdTools::ListCuration.new(options).find_curated(false)

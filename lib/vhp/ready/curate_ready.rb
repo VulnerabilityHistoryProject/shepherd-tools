@@ -1,4 +1,3 @@
-require 'fileutils'
 require_relative '../utils/helper'
 
 module ShepherdTools
@@ -11,25 +10,8 @@ module ShepherdTools
       end
       @csv_path = nil
       if options.key? 'csv'
-        @csv_path = handle_csv(options['csv'])
+        @csv_path = ShepherdTools.handle_csv(options['csv'])
       end
-    end
-
-    def handle_csv(path)
-      if path.nil?
-        path = 'csvs'
-      else
-        path_ar = path.split(/[\,\/]/)
-        os_path = nil
-        for dir in path_ar
-          os_path = File.join(path, dir)
-        end
-        os_path = File.join(path, 'csvs')
-      end
-      unless File.directory?(os_path)
-        FileUtils.mkdir_p(os_path)
-      end
-      return os_path
     end
 
     def print_readiness

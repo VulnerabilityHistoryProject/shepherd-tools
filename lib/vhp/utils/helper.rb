@@ -1,3 +1,4 @@
+require 'fileutils'
 module ShepherdTools
   def self.read_file(file_path)
     if File.file?(file_path)
@@ -5,6 +6,23 @@ module ShepherdTools
     else
       return nil
     end
+  end
+
+  def self.handle_csv(path)
+    if path.nil?
+      path = 'csvs'
+    else
+      path_ar = path.split(/[\,\/]/)
+      os_path = nil
+      for dir in path_ar
+        os_path = File.join(path, dir)
+      end
+      os_path = File.join(path, 'csvs')
+    end
+    unless File.directory?(os_path)
+      FileUtils.mkdir_p(os_path)
+    end
+    return os_path
   end
 
   def self.find_CVE_dir
