@@ -23,6 +23,6 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'git', '1.5.0'
   s.add_runtime_dependency 'parallel', '1.13.0'
   s.add_runtime_dependency 'activesupport', '5.2.2'
-  s.add_runtime_dependency 'bundler', '1.17.3'
+  s.add_runtime_dependency 'httparty', '0.17.0'
 
 end
