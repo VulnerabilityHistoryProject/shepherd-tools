@@ -8,6 +8,7 @@ require_relative '../report/report_gen'
 require_relative '../commits/load_commits'
 require_relative '../commits/vuln_files'
 require_relative '../ready/curate_ready'
+require_relative '../cvss/update_cvss.rb'
 
 module ShepherdTools
   class CLI
@@ -129,6 +130,16 @@ module ShepherdTools
             s.action do |args, options|
               ShepherdTools::CommitLoader.new(options).add_mentioned_commits
             end
+          end
+        end
+
+        p.command(:cvss)  do |c|
+          c.syntax 'cvss'
+          c.description 'Updates all CVEs to conatin CVSS'
+          c.option 'cves', '--cves DIR', 'Sets the CVE directory'
+
+          c.action do |args, options|
+            ShepherdTools::UpdateCVSS.new(options).update_cvss
           end
         end
 =begin
