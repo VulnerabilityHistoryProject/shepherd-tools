@@ -1,6 +1,6 @@
 # SHEPHERD TOOLS
 
-### How to Install
+## How to Install
 1. git clone this repo
 2. run the following command:
 
@@ -8,14 +8,14 @@
 rake install:gem
 ```
 
-### Commands
+## Commands
 After installing Shepherd Tools, you can use commands that follow the following formats:
 ```sh
 vhp command [args] <options>
 vhp command <options>
 vhp command subcommand <options>
 ```
-#### Migration
+## Migration
 Migration has three arguments and five option and follows the following format:
 ```sh
 vhp migrate regexp insert_text_file <options>
@@ -46,7 +46,7 @@ vhp migrate "CVE: CVE-\d{4}-\d+" insert_file.txt --run
 ```
 
 
-#### Validation
+## Validation
 Validation of YAMLs follows the following format:
 ```sh
 vhp validate <options>
@@ -63,7 +63,7 @@ vhp validate --cves ../mydir/cves
 ```
 
 
-#### Ready
+## Ready
 The ready command follows the following format:
 ```sh
 vhp ready subcommand <options>
@@ -99,7 +99,7 @@ vhp list fixes
 ```
 
 
-#### Find
+## Find
 The find command follows the following format:
 ```sh
 vhp find subcommand <options>
@@ -126,7 +126,7 @@ vhp find publicvulns --repo tomcat
 ```
 
 
-#### Load commits
+## Load commits
 Loading the git log JSON with commit data follows the following format
 ```sh
 vhp loadcommits subcommand <options>
@@ -147,7 +147,7 @@ vhp loadcommits mentioned --json ../../data/commits/gitlog.json --skip_existing
 ```
 
 
-#### Report - CURRENTLY NOT WORKING
+## Weeklies - CURRENTLY NOT WORKING
 Generating reports follows the following format
 ```sh
 vhp report timeperiod <options>
