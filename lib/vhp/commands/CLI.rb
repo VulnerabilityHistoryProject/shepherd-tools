@@ -4,6 +4,7 @@ require_relative '../validate/validator'
 require_relative '../version'
 require_relative '../cve_info/list_curation'
 require_relative '../cve_info/list_fixes'
+require_relative '../cve_info/list_vccs'
 require_relative '../report/report_gen'
 require_relative '../commits/load_commits'
 require_relative '../commits/vuln_files'
@@ -91,6 +92,36 @@ module ShepherdTools
 
             s.action do |args, options|
               ShepherdTools::ListFixes.new_CLI(options).print_fixes
+            end
+          end
+
+          c.command(:nofixes) do |s|
+            s.syntax 'list nofixes <options>'
+            s.description 'Lists all CVEs that do not have any fix commits'
+            s.option 'cves', '--cves DIR', 'Sets the CVE directory'
+
+            s.action do |args, options|
+              ShepherdTools::ListFixes.new_CLI(options).print_missing_fixes
+            end
+          end
+
+          c.command(:vccs) do |s|
+            s.syntax 'list vccs <options>'
+            s.description 'Lists all VCCs for CVEs'
+            s.option 'cves', '--cves DIR', 'Sets the CVE directory'
+
+            s.action do |args, options|
+              ShepherdTools::ListVCCs.new_CLI(options).print_vccs
+            end
+          end
+
+          c.command(:novccs) do |s|
+            s.syntax 'list novccs <options>'
+            s.description 'Lists all CVEs that do not have any VCCs'
+            s.option 'cves', '--cves DIR', 'Sets the CVE directory'
+
+            s.action do |args, options|
+              ShepherdTools::ListVCCs.new_CLI(options).print_missing_vccs
             end
           end
         end
