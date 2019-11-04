@@ -174,53 +174,6 @@ module ShepherdTools
           end
         end
 
-        p.command(:help) do |c|
-          c.syntax 'help <options>'
-          c.description 'list all the commands with their descriptions'
-
-          c.action do
-            puts 'For more information on a specific command, type vhp help command-name'
-            puts 'vhp migrate regexp insert_text_file <options>       Migrates files.'
-            puts 'vhp validate <options>                              Validates CVE YAMLs.'
-            puts 'vhp ready subcommand <options>                      Ready commands.'
-            puts 'vhp list subcommand <options>                       Lists information in terminal.'
-            puts 'vhp find subcommand <options>                       Finds information.'
-            puts 'vhp loadcommits subcommand <options>                Finds all mentioned commits in CVE YAMLs and loads'
-            puts '                                                    them into the git log.'
-            puts 'vhp report timeperiod <options>                     Generates Report.'
-          end
-          c.command(:migrate) do |s|
-            s.action do
-              puts 'Migrates files'
-              puts ''
-              puts 'Migration has three arguments and five option and follows the following format:'
-              puts 'vhp migrate regexp insert_text_file <options>'
-              puts ''
-              puts '  regexp                                              The regex for a common line in the files'
-              puts '  insert_text_file                                    To insert text into a directory files, you will'
-              puts '                                                      need to create a file with the text you wish to'
-              puts '                                                      insert. This ARG is the path to this file.'
-              puts '  --voff                                              Validation of migrated Yamls is on by default.'
-              puts '                                                      Use this option if not migrating ymls or it'
-              puts '                                                      annoys you.'
-              puts '  --run                                               The script generated will be automatically run.'
-              puts '  --dir DIR                                           This option will set the migration directory.'
-              puts '                                                      Default: cves dir'
-              puts '  --type TYPE                                         Specifies filename extension. Default: .yml'
-              puts ''
-              puts 'Examples:'
-              puts ''
-              puts 'Initial generation of script:'
-              puts 'vhp migrate "CVE: CVE-\d{4}-\d+" insert_file.txt'
-              puts ''
-              puts 'You can run your generated script like this:'
-              puts 'ruby migration/migrate_2019_02_04_12_41.rb'
-              puts ''
-              puts 'Alternatively, you can generate and run in one command:'
-              puts 'vhp migrate "CVE: CVE-\d{4}-\d+" insert_file.txt --run'
-            end
-          end
-        end
 =begin
         p.command(:report) do |c|
           c.syntax 'report timeperiod'
