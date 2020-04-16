@@ -5,7 +5,7 @@ require 'parallel'
 require 'active_support/core_ext/hash'
 require_relative 'weekly_report'
 require_relative '../utils/git'
-module SheperdTools
+module ShepherdTools
   class ReportGenerator
     def gen_weekly(input_options)
       options = {}
@@ -36,8 +36,6 @@ module SheperdTools
         end
         weekly_report.add(yml[:CVE], offenders)
       end
-
-
     end
 
     def save_dir(options)

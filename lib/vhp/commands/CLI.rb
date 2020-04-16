@@ -336,7 +336,6 @@ module ShepherdTools
           end
         end
 
-
         p.command(:report) do |c|
           c.syntax 'report timeperiod'
           c.description 'Generates a report'
@@ -350,7 +349,7 @@ module ShepherdTools
             #s.option 'skip_existing', '--skip_existing', 'Skips '
 
             s.action do |args, options|
-              Report::ReportGenerator.new.gen_weekly(options)
+              ShepherdTools::ReportGenerator.new.gen_weekly(options)
             end
           end
         end
