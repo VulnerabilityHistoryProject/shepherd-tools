@@ -16,7 +16,7 @@ module ShepherdTools
     def run
       Mercenary.program(:vhp) do |p|
         p.version ShepherdTools::VERSION
-        p.description description = 'Tools for the vulnerability history project'
+        p.description 'Tools for the vulnerability history project'
         p.syntax 'vhp <subcommand> [options]'
 
         p.command(:migrate) do |c|
@@ -173,7 +173,7 @@ module ShepherdTools
             ShepherdTools::UpdateCVSS.new(options).update_cvss
           end
         end
-        
+
         p.command(:help) do |c|
           c.syntax 'help <options>'
           c.description 'list all the commands with their descriptions'
@@ -353,7 +353,6 @@ module ShepherdTools
             end
           end
         end
-=end
       end
     end
   end
