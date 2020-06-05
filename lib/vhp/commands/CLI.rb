@@ -173,7 +173,7 @@ module ShepherdTools
             ShepherdTools::UpdateCVSS.new(options).update_cvss
           end
         end
-
+        
         p.command(:help) do |c|
           c.syntax 'help <options>'
           c.description 'list all the commands with their descriptions'
@@ -336,8 +336,6 @@ module ShepherdTools
           end
         end
 
-
-=begin
         p.command(:report) do |c|
           c.syntax 'report timeperiod'
           c.description 'Generates a report'
