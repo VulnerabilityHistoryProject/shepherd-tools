@@ -173,8 +173,169 @@ module ShepherdTools
             ShepherdTools::UpdateCVSS.new(options).update_cvss
           end
         end
+        
+        p.command(:help) do |c|
+          c.syntax 'help <options>'
+          c.description 'list all the commands with their descriptions'
 
-=begin
+          c.action do
+            puts 'For more information on a specific command, type vhp help command-name'
+            puts 'vhp migrate regexp insert_text_file <options>       Migrates files.'
+            puts 'vhp validate <options>                              Validates CVE YAMLs.'
+            puts 'vhp ready subcommand <options>                      Ready commands.'
+            puts 'vhp list subcommand <options>                       Lists information in terminal.'
+            puts 'vhp find subcommand <options>                       Finds information.'
+            puts 'vhp loadcommits subcommand <options>                Finds all mentioned commits in CVE YAMLs and'
+            puts '                                                    loads them into the git log.'
+            puts 'vhp report timeperiod <options>                     Generates Report.'
+          end
+          c.command(:migrate) do |s|
+            s.action do
+              puts 'Migrates files'
+              puts ''
+              puts 'Migration has three arguments and five option and follows the following format:'
+              puts 'vhp migrate regexp insert_text_file <options>'
+              puts '  regexp                                            The regex for a common line in the files'
+              puts '  insert_text_file                                  To insert text into a directory files, you will'
+              puts '                                                    need to create a file with the text you wish to'
+              puts '                                                    insert. This ARG is the path to this file.'
+              puts '<options>'
+              puts '  --voff                                            Validation of migrated YAMLs is on by default.'
+              puts '                                                    Use this option if not migrating ymls or it'
+              puts '                                                    annoys you.'
+              puts '  --run                                             The script generated will be automatically run.'
+              puts '  --dir DIR                                         This option will set the migration directory.'
+              puts '                                                    Default: cves dir'
+              puts '  --type TYPE                                       Specifies filename extension. Default: .yml'
+              puts ''
+              puts 'Examples:'
+              puts 'Initial generation of script:'
+              puts '  vhp migrate "CVE: CVE-\d{4}-\d+" insert_file.txt'
+              puts 'You can run your generated script like this:'
+              puts '  ruby migration/migrate_2019_02_04_12_41.rb'
+              puts 'Alternatively, you can generate and run in one command:'
+              puts '  vhp migrate "CVE: CVE-\d{4}-\d+" insert_file.txt --run'
+            end
+          end
+          c.command(:validate) do |s|
+            s.action do
+              puts 'Validates CVE YAMLs'
+              puts ''
+              puts 'Validation of YAMLs follows the following format:'
+              puts 'vhp validate <options>'
+              puts '<options>'
+              puts '  --cves DIR                                        Sets the CVE directory. Default: cves'
+              puts '  --csv DIR                                         Output to a csv file. Default Dir: csvs'
+              puts ''
+              puts 'Examples:'
+              puts '  vhp validate'
+              puts '  vhp validate --cves ../mydir/cves'
+            end
+          end
+          c.command(:ready) do |s|
+            s.action do
+              puts 'Ready commands'
+              puts ''
+              puts 'The ready command follows the following format:'
+              puts 'vhp ready subcommand <options>'
+              puts 'subcommand'
+              puts '  curated                                           Finds all YAMLs ready to be curated'
+              puts '<options>'
+              puts '  --cves DIR                                        Sets the CVE directory. Default: cves'
+              puts '  --unready                                         Find unready YAMLs to be curated'
+            end
+          end
+          c.command(:list) do |s|
+            s.action do
+              puts 'Lists information in terminal'
+              puts ''
+              puts 'The list command follows the following format:'
+              puts 'vhp list subcommand <options>'
+              puts 'subcommand'
+              puts '  curated                                           Lists all curated cves'
+              puts '  uncurated                                         Lists all uncurated cves'
+              puts '  fixes                                             Lists all fix shas'
+              puts '<options>'
+              puts '  --cves DIR                                        Sets the CVE directory. Default: cves'
+              puts '  --csv DIR                                         Output to a csv file. Default Dir: csvs'
+              puts ''
+              puts 'Examples:'
+              puts '  vhp list curated'
+              puts '  vhp list uncurated --cves ../cves'
+              puts '  vhp list fixes'
+            end
+          end
+          c.command(:find) do |s|
+            s.action do
+              puts 'Finds information'
+              puts ''
+              puts 'The find command follows the following format:'
+              puts 'vhp find subcommand <options>'
+              puts 'subcommand'
+              puts '  publicvulns                                       Find all vulnerable files from the gitlog'
+              puts '<options>'
+              puts '  --repo DIR                                        Sets the repository directory. Default: current'
+              puts '                                                    working directory'
+              puts '  --cves DIR                                        Sets the CVE directory. Default: cves'
+              puts '  --period PERIOD                                   Sets a default time period for the test. Either'
+              puts '                                                    "6_month" or "all_time"'
+              puts '  --start DATE                                      Sets the start date of the period. Cannot be'
+              puts '                                                    used with --period'
+              puts '  --end DATE                                        Sets the end date of the period. Cannot be used'
+              puts '                                                    with --period'
+              puts '  --output DIR                                      Sets the directory where the CSV will be saved.'
+              puts '  --period_name NAME                                Sets the name of the period. E.g. "12_months",'
+              puts '                                                    "2_years"'
+              puts ''
+              puts 'Examples:'
+              puts '  vhp find curated'
+              puts '  vhp find uncurated --dir ../mydir'
+              puts '  vhp find publicvulns --repo struts --period 6_month'
+              puts '  vhp find publicvulns --repo tomcat'
+            end
+          end
+          c.command(:loadcommits) do |s|
+            s.action do
+              puts 'Finds all mentioned commits in CVE YAMLs and loads them into the git log'
+              puts ''
+              puts 'Loading the git log JSON with commit data follows the following format:'
+              puts 'vhp loadcommits subcommand <options>'
+              puts 'subcommand'
+              puts '  mentioned                                         All commits mentioned in a CVE YAML'
+              puts '<options>'
+              puts '  --json JSON                                       Sets the gitlog_json location. Default:'
+              puts '                                                    commits/gitlog.json'
+              puts '  --repo DIR                                        Sets the repository directory. Default: current'
+              puts '                                                    working directory'
+              puts '  --cves DIR                                        Sets the CVE directory. Default: cves'
+              puts '  --skip_existing                                   Skips shas that are already in the JSON'
+              puts ''
+              puts 'Examples:'
+              puts '  vhp loadcommits mentioned --repo struts'
+              puts '  vhp loadcommits mentioned --json ../../data/commits/gitlog.json --skip_existing'
+            end
+          end
+          c.command(:report) do |s|
+            s.action do
+              puts 'Generating reports follows the following format'
+              puts 'vhp report timeperiod <options>'
+              puts 'timeperiod'
+              puts '  weekly                                            Time period of one week'
+              puts '<options>'
+              puts '  --save DIR                                        By default, reports are saved in commits/weeklies.'
+              puts '                                                    Manually set the directory with this option.'
+              puts '  --repo DIR                                        By default, the working directory is assumed to'
+              puts '                                                    be the repo directory. Manually set the directory'
+              puts '                                                    with this option.'
+              puts '  --cve DIR                                         By default, the cve directory is assumed to be'
+              puts '                                                    "/cves". Manually set the directory with this'
+              puts '                                                    option.'
+              puts 'Examples:'
+              puts '  vhp report weekly --save reports, --repo ../src'
+            end
+          end
+        end
+
         p.command(:report) do |c|
           c.syntax 'report timeperiod'
           c.description 'Generates a report'
