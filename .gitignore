@@ -1,5 +1,5 @@
 *.gem
 lib/cves/
-gemFile.lock
+Gemfile.lock
 test_file.txt
 .idea/
