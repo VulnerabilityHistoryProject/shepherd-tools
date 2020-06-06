@@ -3,7 +3,7 @@ require 'fileutils'
 require 'pathname'
 require_relative '../utils/helper.rb'
 
-module ShepherdTools
+module VHP
   class MigrateTemplate
     def initialize(regex, insert_file, dir, validate, filetype)
       @regex = regex
@@ -60,13 +60,13 @@ module ShepherdTools
           raise 'Error: Not a valid directory'
         end
       else
-        dir = ShepherdTools.find_CVE_dir
+        dir = VHP.find_CVE_dir
       end
       dir
     end
 
     def script_text(regex, insert_file, dir, validate, filetype)
-      template = ShepherdTools.read_file(File.join(File.dirname(__FILE__), 'migrate_template.rb.erb'))
+      template = VHP.read_file(File.join(File.dirname(__FILE__), 'migrate_template.rb.erb'))
       migrateTemplate = MigrateTemplate.new(regex, insert_file, dir, validate, filetype)
       render = ERB.new(template)
       render.result(migrateTemplate.get_binding)

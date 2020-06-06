@@ -1,5 +1,2 @@
 source 'https://rubygems.org'
-gem 'git'
-gem 'parallel'
-gem 'activesupport'
-gem 'bundler'
+gemspec

@@ -6,7 +6,7 @@ require_relative 'lib/vhp/version'
 
 Gem::Specification.new do |s|
   s.name        = "vhp"
-  s.version     = ShepherdTools::VERSION
+  s.version     = VHP::VERSION
   s.license     = 'MIT'
   s.date        = "2019-02-05"
   s.summary     = "Tools for VHP"
@@ -24,5 +24,6 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'parallel', '1.13.0'
   s.add_runtime_dependency 'activesupport', '5.2.2'
   s.add_runtime_dependency 'httparty', '0.17.0'
+  s.add_runtime_dependency 'require_all', '3.0.0'
 
 end

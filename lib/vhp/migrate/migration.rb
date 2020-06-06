@@ -1,6 +1,6 @@
 require_relative '../utils/helper'
 
-module ShepherdTools
+module VHP
   class Migration
     def initialize
       @invalid_ymls = []
@@ -13,7 +13,7 @@ module ShepherdTools
       dir = dir + '/*' + filetype
       insert_text = ''
       unless insert_file==''
-        insert_text = ShepherdTools.read_file(insert_file)
+        insert_text = VHP.read_file(insert_file)
       end
 
       puts "Regex: #{regex.inspect}"
@@ -25,7 +25,7 @@ module ShepherdTools
       puts "Migrating:"
       Dir.glob(dir) do |file|
         status = '-'
-        text = ShepherdTools.read_file(file)
+        text = VHP.read_file(file)
         new_text = text.gsub(regex, insert_text)
         unless text.eql? new_text
           if validate && !validate_yml(new_text, file)

@@ -1,15 +1,15 @@
 require 'yaml'
 require_relative '../utils/helper'
-module ShepherdTools
+module VHP
   class Validator
     def initialize(options)
-      @dir = ShepherdTools.handle_cves(options)
+      @dir = VHP.handle_cves(options)
     end
 
     def validate_ymls
       dir = @dir+ '/*.yml'
       Dir.glob(dir) do |file_path|
-        file_txt = ShepherdTools.read_file(file_path)
+        file_txt = VHP.read_file(file_path)
         begin
           Psych.parse(file_txt, file_path)
           puts '.'

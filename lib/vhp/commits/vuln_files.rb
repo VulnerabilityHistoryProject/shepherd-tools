@@ -3,18 +3,18 @@ require 'date'
 require_relative '../cve_info/list_fixes'
 require_relative '../utils/git'
 
-module ShepherdTools
+module VHP
   class VulnerableFileExtractor
     def initialize(input_options)
       @options = {}
-      @options[:cves] = ShepherdTools.handle_cves(input_options)
-      @options[:repo] = ShepherdTools.handle_repo(input_options)
+      @options[:cves] = VHP.handle_cves(input_options)
+      @options[:repo] = VHP.handle_repo(input_options)
       period = calculate_period(input_options)
       @options[:start] = period[0]
       @options[:end] = period[1]
       period_name = handle_period_name(input_options, @options[:start], @options[:end])
       @options[:output] = handle_output(input_options, period_name, @options[:repo], @options[:start], @options[:end])
-      ShepherdTools.check_file_path(@options[:output], 'csv')
+      VHP.check_file_path(@options[:output], 'csv')
     end
 
     def extract

@@ -1,10 +1,10 @@
 require_relative '../utils/helper.rb'
 require 'httparty'
 
-module ShepherdTools
+module VHP
   class UpdateCVSS
     def initialize(options)
-      @dir = ShepherdTools.handle_cves(options)
+      @dir = VHP.handle_cves(options)
     end
 
     def update_cvss
@@ -36,6 +36,6 @@ module ShepherdTools
         end
       end
     end
-    
+
   end
 end

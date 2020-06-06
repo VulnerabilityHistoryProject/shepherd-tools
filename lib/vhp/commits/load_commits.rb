@@ -5,14 +5,14 @@ require 'fileutils'
 require_relative '../utils/git'
 require_relative '../utils/helper'
 
-module ShepherdTools
+module VHP
   class CommitLoader
     def initialize(input_options)
       @options = {}
       @options[:gitlog_json] = gitlog_json(input_options)
-      ShepherdTools.check_file_path(@options[:gitlog_json], 'json')
-      @options[:repo] = ShepherdTools.handle_repo(input_options)
-      @options[:cves] = ShepherdTools.handle_cves(input_options)
+      VHP.check_file_path(@options[:gitlog_json], 'json')
+      @options[:repo] = VHP.handle_repo(input_options)
+      @options[:cves] = VHP.handle_cves(input_options)
       @options[:skip_existing] = skip_existing(input_options)
     end
 

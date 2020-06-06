@@ -1,11 +1,11 @@
-module ShepherdTools
+module VHP
   class ListVCCs
     def initialize(cve_ymls = 'cves')
       @cve_ymls = Dir["#{cve_ymls}/*.yml"]
     end
 
     def self.new_CLI(options)
-      self.new(ShepherdTools.handle_cves(options))
+      self.new(VHP.handle_cves(options))
     end
 
     def print_vccs

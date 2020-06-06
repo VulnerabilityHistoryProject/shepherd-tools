@@ -1,23 +1,17 @@
 require 'mercenary'
-require_relative '../migrate/migrate_gen'
-require_relative '../validate/validator'
-require_relative '../version'
-require_relative '../cve_info/list_curation'
-require_relative '../cve_info/list_fixes'
-require_relative '../cve_info/list_vccs'
-require_relative '../report/report_gen'
-require_relative '../commits/load_commits'
-require_relative '../commits/vuln_files'
-require_relative '../ready/curate_ready'
-require_relative '../cvss/update_cvss.rb'
+require 'require_all'
+require_rel '..'
 
-module ShepherdTools
+module VHP
   class CLI
     def run
       Mercenary.program(:vhp) do |p|
-        p.version ShepherdTools::VERSION
-        p.description 'Tools for the vulnerability history project'
+        p.version VHP::VERSION
+        p.description 'Tools for managing vulnerability history project data'
         p.syntax 'vhp <subcommand> [options]'
+        p.action do # vhp by itself prints the help
+          puts p
+        end
 
         p.command(:migrate) do |c|
           c.syntax 'migrate <ARGS> [options]'
@@ -28,7 +22,7 @@ module ShepherdTools
           c.option 'filetype', '--type TYPE', 'The extension of the files to be migrated'
 
           c.action do |args, options|
-            ShepherdTools::MigrateGenerator.new.gen(args, options)
+            VHP::MigrateGenerator.new.gen(args, options)
           end
         end
 
@@ -38,7 +32,7 @@ module ShepherdTools
           c.option 'cves', '--cves DIR', 'Sets the CVE directory'
 
           c.action do |args, options|
-            ShepherdTools::Validator.new(options).validate_ymls
+            VHP::Validator.new(options).validate_ymls
           end
         end
 
@@ -54,7 +48,7 @@ module ShepherdTools
             s.option 'csv', '--csv DIR', 'Output to a csv file in chosen directory.'
 
             s.action do |args, options|
-              ShepherdTools::CurateReady.new(options).print_readiness
+              VHP::CurateReady.new(options).print_readiness
             end
           end
         end
@@ -70,7 +64,7 @@ module ShepherdTools
             s.option 'csv', '--csv DIR', 'Output to a csv file in chosen directory.'
 
             s.action do |args, options|
-              ShepherdTools::ListCuration.new(options).find_curated
+              VHP::ListCuration.new(options).find_curated
             end
           end
 
@@ -81,7 +75,7 @@ module ShepherdTools
             s.option 'csv', '--csv DIR', 'Output to a csv file in chosen directory.'
 
             s.action do |args, options|
-              ShepherdTools::ListCuration.new(options).find_curated(false)
+              VHP::ListCuration.new(options).find_curated(false)
             end
           end
 
@@ -91,7 +85,7 @@ module ShepherdTools
             s.option 'cves', '--cves DIR', 'Sets the CVE directory'
 
             s.action do |args, options|
-              ShepherdTools::ListFixes.new_CLI(options).print_fixes
+              VHP::ListFixes.new_CLI(options).print_fixes
             end
           end
 
@@ -101,7 +95,7 @@ module ShepherdTools
             s.option 'cves', '--cves DIR', 'Sets the CVE directory'
 
             s.action do |args, options|
-              ShepherdTools::ListFixes.new_CLI(options).print_missing_fixes
+              VHP::ListFixes.new_CLI(options).print_missing_fixes
             end
           end
 
@@ -111,7 +105,7 @@ module ShepherdTools
             s.option 'cves', '--cves DIR', 'Sets the CVE directory'
 
             s.action do |args, options|
-              ShepherdTools::ListVCCs.new_CLI(options).print_vccs
+              VHP::ListVCCs.new_CLI(options).print_vccs
             end
           end
 
@@ -121,7 +115,7 @@ module ShepherdTools
             s.option 'cves', '--cves DIR', 'Sets the CVE directory'
 
             s.action do |args, options|
-              ShepherdTools::ListVCCs.new_CLI(options).print_missing_vccs
+              VHP::ListVCCs.new_CLI(options).print_missing_vccs
             end
           end
         end
@@ -142,7 +136,7 @@ module ShepherdTools
             s.option 'period_name', '--period_name NAME', 'Sets the name of the time period'
 
             s.action do |args, options|
-              ShepherdTools::VulnerableFileExtractor.new(options).extract
+              VHP::VulnerableFileExtractor.new(options).extract
             end
           end
         end
@@ -159,7 +153,7 @@ module ShepherdTools
             s.option 'skip_existing', '--skip_existing', 'Skips shas that already exist in the gitlog.json'
 
             s.action do |args, options|
-              ShepherdTools::CommitLoader.new(options).add_mentioned_commits
+              VHP::CommitLoader.new(options).add_mentioned_commits
             end
           end
         end
@@ -170,17 +164,35 @@ module ShepherdTools
           c.option 'cves', '--cves DIR', 'Sets the CVE directory'
 
           c.action do |args, options|
-            ShepherdTools::UpdateCVSS.new(options).update_cvss
+            VHP::UpdateCVSS.new(options).update_cvss
           end
         end
 
+
+        p.command(:report) do |c|
+          c.syntax 'report timeperiod'
+          c.description 'Generates a report'
+
+          c.command(:weekly) do |s|
+            s.syntax 'report weekly <options>'
+            s.description 'Generates a commit report by week'
+            s.option 'save', '--save DIR', 'Sets the directory where the reports are saved'
+            s.option 'repo', '--repo DIR', 'Sets the repo directory'
+            s.option 'cves', '--cve Dir', 'Sets the cve directory'
+            #s.option 'skip_existing', '--skip_existing', 'Skips '
+
+            s.action do |args, options|
+              Report::ReportGenerator.new.gen_weekly(options)
+            end
+          end
+        end
         p.command(:help) do |c|
           c.syntax 'help <options>'
           c.description 'list all the commands with their descriptions'
 
           c.action do
             puts 'For more information on a specific command, type vhp help command-name'
-            puts 'vhp migrate regexp insert_text_file <options>       Migrates files.'
+            puts 'vhp migrate regexp insert_text_file <options>       Migrates YML files.'
             puts 'vhp validate <options>                              Validates CVE YAMLs.'
             puts 'vhp ready subcommand <options>                      Ready commands.'
             puts 'vhp list subcommand <options>                       Lists information in terminal.'
@@ -191,7 +203,7 @@ module ShepherdTools
           end
           c.command(:migrate) do |s|
             s.action do
-              puts 'Migrates files'
+              puts 'Migrates YML files'
               puts ''
               puts 'Migration has three arguments and five option and follows the following format:'
               puts 'vhp migrate regexp insert_text_file <options>'
@@ -332,24 +344,6 @@ module ShepherdTools
               puts '                                                    option.'
               puts 'Examples:'
               puts '  vhp report weekly --save reports, --repo ../src'
-            end
-          end
-        end
-
-        p.command(:report) do |c|
-          c.syntax 'report timeperiod'
-          c.description 'Generates a report'
-
-          c.command(:weekly) do |s|
-            s.syntax 'report weekly <options>'
-            s.description 'Generates a commit report by week'
-            s.option 'save', '--save DIR', 'Sets the directory where the reports are saved'
-            s.option 'repo', '--repo DIR', 'Sets the repo directory'
-            s.option 'cves', '--cve Dir', 'Sets the cve directory'
-            #s.option 'skip_existing', '--skip_existing', 'Skips '
-
-            s.action do |args, options|
-              Report::ReportGenerator.new.gen_weekly(options)
             end
           end
         end

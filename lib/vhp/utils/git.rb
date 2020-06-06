@@ -1,7 +1,7 @@
 require 'git'
 require 'json'
 
-module ShepherdTools
+module VHP
   class GitLog
     def initialize(repo)
       @git = Git.open(repo)

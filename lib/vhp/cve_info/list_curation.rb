@@ -1,12 +1,12 @@
 require 'yaml'
 require_relative '../utils/helper'
-module ShepherdTools
+module VHP
   class ListCuration
     def initialize(options)
-      @dir = ShepherdTools.handle_cves(options)
+      @dir = VHP.handle_cves(options)
       @csv_path = nil
       if options.key? 'csv'
-        @csv_path = ShepherdTools.handle_csv(options['csv'])
+        @csv_path = VHP.handle_csv(options['csv'])
       end
     end
 
@@ -22,7 +22,7 @@ module ShepherdTools
           csv = File.open(path, "w+")
         end
         Dir.glob(dir) do |file|
-          open_file = ShepherdTools.read_file(file)
+          open_file = VHP.read_file(file)
           yml = YAML.load(open_file)
           if yml['curated'] == curated
             if curated

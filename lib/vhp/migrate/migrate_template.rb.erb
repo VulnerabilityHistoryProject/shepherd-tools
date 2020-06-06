@@ -1,8 +1,8 @@
 require 'vhp'
 
-include ShepherdTools
+include VHP
 def migrate
-  ShepherdTools::Migration.new.insert_text(/<%= @regex %>/, "<%= @insert_file %>", "<%= @dir %>",<%= @validate %>, "<%= @filetype %>")
+  VHP::Migration.new.insert_text(/<%= @regex %>/, "<%= @insert_file %>", "<%= @dir %>",<%= @validate %>, "<%= @filetype %>")
 end
 
 migrate

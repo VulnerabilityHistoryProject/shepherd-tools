@@ -1,4 +1,4 @@
 #!/usr/bin/env ruby
 require 'vhp'
 
-ShepherdTools::CLI.new.run
+VHP::CLI.new.run

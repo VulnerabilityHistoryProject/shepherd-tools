@@ -1,16 +1,16 @@
 require_relative '../utils/helper'
 
-module ShepherdTools
+module VHP
   class CurateReady
     def initialize(options)
-      @dir = ShepherdTools.handle_cves(options)
+      @dir = VHP.handle_cves(options)
       @print_ready = true
       if options.key? 'unready'
         @print_ready = false
       end
       @csv_path = nil
       if options.key? 'csv'
-        @csv_path = ShepherdTools.handle_csv(options['csv'])
+        @csv_path = VHP.handle_csv(options['csv'])
       end
     end
 

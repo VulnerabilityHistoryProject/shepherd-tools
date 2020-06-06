@@ -1,7 +1,6 @@
-require_relative "vhp/commands/CLI"
-require_relative "vhp/version"
-require_relative "vhp/migrate/migrate_gen"
-require_relative "vhp/migrate/migration"
-module ShepherdTools
+require 'require_all'
+require_rel "vhp"
+
+module VHP
 
 end
