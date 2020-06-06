@@ -1,0 +1,14 @@
+name: Foo
+fullname: Foo Project
+subdomain: foo
+bg_color: '#3186c3'
+project_url: https://vulnerabilityhistory.org
+description: |
+  Our example Foo project for unit testing Shepherd Tools
+git_commit_url_prefix: https://github.com/VulnerabilityHistoryProject/shepherd-tools/commit/
+github_search_url_prefix: https://github.com/VulnerabilityHistoryProject/shepherd-tools/search?utf8=✓&q=
+github_edit_cve_url_prefix: https://github.com/VulnerabilityHistoryProject/shepherd-tools/edit/dev/foo-vulnerabilities/cves/
+vulnerabilities_description: |
+  Description for our example Foo project for unit testing Shepherd Tools
+developers_description: |
+  Developer description for our example Foo project for unit testing Shepherd Tools

@@ -1,4 +1,4 @@
 #!/usr/bin/env ruby
 require 'vhp'
-
+VHP::InVHPRepo.check_in_vhp_repo
 VHP::CLI.new.run
