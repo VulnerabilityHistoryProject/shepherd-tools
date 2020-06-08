@@ -1,9 +1,12 @@
 require 'mercenary'
-require 'require_all'
+require_relative '../string_refinements'
 
 module VHP
   class CLI
+    using StringRefinements
+
     def run
+
       Mercenary.program(:vhp) do |p|
         p.version VHP::VERSION
         p.description 'Tools for managing vulnerability history project data'
@@ -15,7 +18,9 @@ module VHP
         p.command(:migrate) do |c|
           c.syntax 'migrate [options]'
           c.description 'Generate a skeleton migration file in ./migrations.'
-          c.option 'name', '-n your_migration_name', '--name your_migration_name', 'Specify a name for your file. Optional.'
+          c.option 'name', '-n your_migration_name',
+                   '--name your_migration_name',
+                   'Specify a name for your file. Optional.'
           c.alias(:migration)
           c.action do |args, options|
             options['name'] ||= 'migration'
@@ -23,33 +28,23 @@ module VHP
           end
         end
 
-        p.command(:ready) do |c|
-          c.syntax 'ready subcommand'
-          c.description 'Ready commands'
+        p.command(:list) do |c|
+          c.syntax 'list <subcommand> <options>'
+          c.description 'Lists information in terminal'
 
-          c.command(:curated) do |s|
-            c.syntax 'ready curated'
-            c.description 'Ready curated'
-            s.option 'cves', '--cves DIR', 'Sets the CVE directory'
-            s.option 'unready', '--unready', 'Find unready CVE YAMLs'
-            s.option 'csv', '--csv DIR', 'Output to a csv file in chosen directory.'
-
+          c.command(:ready) do |s|
+            s.syntax 'list ready <options>'
+            s.description 'Lists all CVEs not curated to level of skeleton'
+            s.option 'csv', '--csv FILE', 'Output to a csv file'
             s.action do |args, options|
               VHP::CurateReady.new(options).print_readiness
             end
           end
-        end
-
-        p.command(:list) do |c|
-          c.syntax 'list subcommand <options>'
-          c.description 'Lists information in terminal'
 
           c.command(:curated) do |s|
             s.syntax 'list curated <options>'
             s.description 'Lists all curated CVEs'
-            s.option 'cves', '--cves DIR', 'Sets the CVE directory'
-            s.option 'csv', '--csv DIR', 'Output to a csv file in chosen directory.'
-
+            s.option 'csv', '--csv FILE', 'Output to a csv file'
             s.action do |args, options|
               VHP::ListCuration.new(options).find_curated
             end
@@ -58,9 +53,7 @@ module VHP
           c.command(:uncurated) do |s|
             s.syntax 'list uncurated <options>'
             s.description 'Lists all uncurated CVEs'
-            s.option 'cves', '--cves DIR', 'Sets the CVE directory'
-            s.option 'csv', '--csv DIR', 'Output to a csv file in chosen directory.'
-
+            s.option 'csv', '--csv FILE', 'Output to a csv file'
             s.action do |args, options|
               VHP::ListCuration.new(options).find_curated(false)
             end
@@ -68,49 +61,41 @@ module VHP
 
           c.command(:fixes) do |s|
             s.syntax 'list fixes <options>'
-            s.description 'Lists all fixes for CVEs'
-            s.option 'cves', '--cves DIR', 'Sets the CVE directory'
-
+            s.description 'Lists all fix commits for CVEs'
+            s.option 'cves', '--cves FILE', 'Sets the CVE directory'
             s.action do |args, options|
               VHP::ListFixes.new_CLI(options).print_fixes
             end
           end
 
           c.command(:nofixes) do |s|
-            s.syntax 'list nofixes <options>'
+            s.syntax 'list nofixes'
             s.description 'Lists all CVEs that do not have any fix commits'
-            s.option 'cves', '--cves DIR', 'Sets the CVE directory'
-
             s.action do |args, options|
               VHP::ListFixes.new_CLI(options).print_missing_fixes
             end
           end
 
           c.command(:vccs) do |s|
-            s.syntax 'list vccs <options>'
+            s.syntax 'list vccs'
             s.description 'Lists all VCCs for CVEs'
-            s.option 'cves', '--cves DIR', 'Sets the CVE directory'
-
             s.action do |args, options|
               VHP::ListVCCs.new_CLI(options).print_vccs
             end
           end
 
           c.command(:novccs) do |s|
-            s.syntax 'list novccs <options>'
+            s.syntax 'list novccs'
             s.description 'Lists all CVEs that do not have any VCCs'
-            s.option 'cves', '--cves DIR', 'Sets the CVE directory'
-
             s.action do |args, options|
               VHP::ListVCCs.new_CLI(options).print_missing_vccs
             end
           end
-        end
+        end # list
 
         p.command(:find) do |c|
           c.syntax 'find subcommand <options>'
           c.description 'Finds information'
-
           c.command(:publicvulns) do |s|
             s.syntax 'find publicvulns <options>'
             s.description 'Finds all files with vulnerabilities'
@@ -121,7 +106,6 @@ module VHP
             s.option 'end', '--end DATE', 'Sets the end date'
             s.option 'output', '--output DIR', 'Sets the dir where output will be saved'
             s.option 'period_name', '--period_name NAME', 'Sets the name of the time period'
-
             s.action do |args, options|
               VHP::VulnerableFileExtractor.new(options).extract
             end
@@ -129,19 +113,12 @@ module VHP
         end
 
         p.command(:loadcommits) do |c|
-          c.syntax 'loadcommits subcommand <options>'
-          c.description 'Finds all mentioned commits in CVE YAMLs and loads them into the git log'
-
-          c.command(:mentioned) do |s|
-            s.syntax 'loadcommits mentioned'
-            s.option 'gitlog_json', '--json JSON', 'Sets the location of gitlog.json'
-            s.option 'repo', '--repo DIR', 'Sets the repository directory'
-            s.option 'cves', '--cves DIR', 'Sets the CVE directory'
-            s.option 'skip_existing', '--skip_existing', 'Skips shas that already exist in the gitlog.json'
-
-            s.action do |args, options|
-              VHP::CommitLoader.new(options).add_mentioned_commits
-            end
+          c.syntax 'loadcommits <options>'
+          c.description 'Save mentioned commits in CVE ymls to commits/gitlog.json'
+          c.option 'repo', '--repo DIR', 'Sets the repository directory'
+          c.option 'clean', '--clean', 'Skips shas that already exist in the gitlog.json'
+          c.action do |args, options|
+            VHP::CommitLoader.new(options).add_mentioned_commits
           end
         end
 
@@ -149,181 +126,200 @@ module VHP
           c.syntax 'cvss'
           c.description 'Updates all CVEs to conatin CVSS'
           c.option 'cves', '--cves DIR', 'Sets the CVE directory'
-
           c.action do |args, options|
             VHP::UpdateCVSS.new(options).update_cvss
           end
         end
 
-
-        p.command(:report) do |c|
-          c.syntax 'report timeperiod'
-          c.description 'Generates a report'
-
-          c.command(:weekly) do |s|
-            s.syntax 'report weekly <options>'
-            s.description 'Generates a commit report by week'
-            s.option 'save', '--save DIR', 'Sets the directory where the reports are saved'
-            s.option 'repo', '--repo DIR', 'Sets the repo directory'
-            s.option 'cves', '--cve Dir', 'Sets the cve directory'
-            #s.option 'skip_existing', '--skip_existing', 'Skips '
-
-            s.action do |args, options|
-              Report::ReportGenerator.new.gen_weekly(options)
-            end
+        p.command(:weeklies) do |c|
+          c.syntax 'weeklies <options>'
+          c.description 'Collects weekly reports. See `vhp help weeklies`.'
+          c.option 'repo', '--repo DIR', 'Sets the repo directory'
+          c.option 'clean', "--clean", "Don't skip CVEs already saved. SLOW!"
+          c.action do |args, options|
+            Report::ReportGenerator.new.gen_weekly(options)
           end
         end
+
         p.command(:help) do |c|
           c.syntax 'help <options>'
-          c.description 'list all the commands with their descriptions'
-
+          c.description 'Provide details on all subcommands'
           c.action do
-            puts <<-EOS
-For more information on a specific command, try `vhp help command-name`
+            puts <<-EOS.strip_heredoc
 
-  vhp migrate                           Generate migration file for CVE ymls
-  vhp validate <options>                Validates CVE YAMLs.
-  vhp ready                             List CVEs that are ready to curate.
-  vhp list subcommand <options>         List various CVEs, e.g. fixed, vcc
-  vhp find subcommand <options>         Finds information.
-  vhp loadcommits subcommand <options>  Gets Git info for all mentioned commits
-                                        in CVE YAMLs, puts in gitlog.json
-  vhp report timeperiod <options>       Generates Report.
+            DESCRIPTION
+
+              Documentation for every command.
+
+            SYNTAX
+
+              vhp help
+              vhp help vh<command>
+
+            COMMANDS
+
+              migrate                        Generate migration file for CVE ymls
+              list <subcommand> <options>    List various CVEs, e.g. fixed, vcc
+              find <subcommand> <options>    Finds information.
+              weeklies <options>             Generates weeklies reports.
+              loadcommits <options>          Gets Git info for all mentioned
+                                             commits in CVE YAMLs, puts in
+                                             gitlog.json
+
+            EXAMPLES
+
+              vhp help list
+              vhp help weeklies
             EOS
           end
+
           c.command(:migrate) do |s|
+            s.alias 'migration'
             s.action do
-              puts 'Migrates YML files'
-              puts ''
-              puts 'Migration has three arguments and five option and follows the following format:'
-              puts 'vhp migrate regexp insert_text_file <options>'
-              puts '  regexp                                            The regex for a common line in the files'
-              puts '  insert_text_file                                  To insert text into a directory files, you will'
-              puts '                                                    need to create a file with the text you wish to'
-              puts '                                                    insert. This ARG is the path to this file.'
-              puts '<options>'
-              puts '  --voff                                            Validation of migrated YAMLs is on by default.'
-              puts '                                                    Use this option if not migrating ymls or it'
-              puts '                                                    annoys you.'
-              puts '  --run                                             The script generated will be automatically run.'
-              puts '  --dir DIR                                         This option will set the migration directory.'
-              puts '                                                    Default: cves dir'
-              puts '  --type TYPE                                       Specifies filename extension. Default: .yml'
-              puts ''
-              puts 'Examples:'
-              puts 'Initial generation of script:'
-              puts '  vhp migrate "CVE: CVE-\d{4}-\d+" insert_file.txt'
-              puts 'You can run your generated script like this:'
-              puts '  ruby migration/migrate_2019_02_04_12_41.rb'
-              puts 'Alternatively, you can generate and run in one command:'
-              puts '  vhp migrate "CVE: CVE-\d{4}-\d+" insert_file.txt --run'
+              puts <<~EOS
+
+                DESCRIPTION
+
+                  Generates a skeleton migration file in migrations/ dir.
+                  Named after the current datetime and your own name.
+                  Alias: migration
+
+                OPTIONS
+
+                  --name  Your name to go in the file. No spaces please.
+
+                EXAMPLES
+
+                  vhp migrate foo_bar
+                  vhp migration foo_bar
+
+              EOS
             end
           end
 
-          c.command(:ready) do |s|
-            s.action do
-              puts 'Ready commands'
-              puts ''
-              puts 'The ready command follows the following format:'
-              puts 'vhp ready subcommand <options>'
-              puts 'subcommand'
-              puts '  curated                                           Finds all YAMLs ready to be curated'
-              puts '<options>'
-              puts '  --cves DIR                                        Sets the CVE directory. Default: cves'
-              puts '  --unready                                         Find unready YAMLs to be curated'
-            end
-          end
           c.command(:list) do |s|
             s.action do
-              puts 'Lists information in terminal'
-              puts ''
-              puts 'The list command follows the following format:'
-              puts 'vhp list subcommand <options>'
-              puts 'subcommand'
-              puts '  curated                                           Lists all curated cves'
-              puts '  uncurated                                         Lists all uncurated cves'
-              puts '  fixes                                             Lists all fix shas'
-              puts '<options>'
-              puts '  --cves DIR                                        Sets the CVE directory. Default: cves'
-              puts '  --csv DIR                                         Output to a csv file. Default Dir: csvs'
-              puts ''
-              puts 'Examples:'
-              puts '  vhp list curated'
-              puts '  vhp list uncurated --cves ../cves'
-              puts '  vhp list fixes'
+              puts <<-EOS.strip_heredoc
+
+              DESCRIPTION
+
+                Make a list of CVEs or other data based on common queries.
+
+              SYNTAX
+
+                vhp list <subcommand> <options>
+
+              SUBCOMMANDS
+
+                ready             Lists all CVEs not curated to skeleton level
+                curated           List all curated cves
+                uncurated         List all uncurated cves
+                fixes             List all fix shas
+
+              OPTIONS
+
+                --csv FILE        Output to a csv file
+
+              EXAMPLES
+
+                vhp list ready
+                vhp list ready --csv ready_cves.csv
+                vhp list fixes
+              EOS
             end
           end
+
           c.command(:find) do |s|
             s.action do
-              puts 'Finds information'
-              puts ''
-              puts 'The find command follows the following format:'
-              puts 'vhp find subcommand <options>'
-              puts 'subcommand'
-              puts '  publicvulns                                       Find all vulnerable files from the gitlog'
-              puts '<options>'
-              puts '  --repo DIR                                        Sets the repository directory. Default: current'
-              puts '                                                    working directory'
-              puts '  --cves DIR                                        Sets the CVE directory. Default: cves'
-              puts '  --period PERIOD                                   Sets a default time period for the test. Either'
-              puts '                                                    "6_month" or "all_time"'
-              puts '  --start DATE                                      Sets the start date of the period. Cannot be'
-              puts '                                                    used with --period'
-              puts '  --end DATE                                        Sets the end date of the period. Cannot be used'
-              puts '                                                    with --period'
-              puts '  --output DIR                                      Sets the directory where the CSV will be saved.'
-              puts '  --period_name NAME                                Sets the name of the period. E.g. "12_months",'
-              puts '                                                    "2_years"'
-              puts ''
-              puts 'Examples:'
-              puts '  vhp find curated'
-              puts '  vhp find uncurated --dir ../mydir'
-              puts '  vhp find publicvulns --repo struts --period 6_month'
-              puts '  vhp find publicvulns --repo tomcat'
+              puts <<-EOS.strip_heredoc
+
+              DESCRIPTION
+
+                Finds information
+
+              SYNTAX
+
+              vhp find subcommand <options>
+              subcommand
+                publicvulns          Find all vulnerable files from the gitlog
+              <options>
+                --repo DIR           Sets the repository directory. Default: current
+                                     working directory
+                --cves DIR           Sets the CVE directory. Default: cves
+                --period PERIOD      Sets a default time period for the test. Either
+                                     "6_month" or "all_time"
+                --start DATE         Sets the start date of the period. Cannot be
+                                     used with --period
+                --end DATE           Sets the end date of the period. Cannot be used
+                                     with --period
+                --output DIR         Sets the directory where the CSV will be saved.
+                --period_name NAME   Sets the name of the period. E.g. "12_months",
+                                     "2_years"
+
+              Examples:
+                vhp find curated
+                vhp find uncurated --dir ../mydir
+                vhp find publicvulns --repo struts --period 6_month
+                vhp find publicvulns --repo tomcat
+              EOS
             end
           end
+
           c.command(:loadcommits) do |s|
             s.action do
-              puts 'Finds all mentioned commits in CVE YAMLs and loads them into the git log'
-              puts ''
-              puts 'Loading the git log JSON with commit data follows the following format:'
-              puts 'vhp loadcommits subcommand <options>'
-              puts 'subcommand'
-              puts '  mentioned                                         All commits mentioned in a CVE YAML'
-              puts '<options>'
-              puts '  --json JSON                                       Sets the gitlog_json location. Default:'
-              puts '                                                    commits/gitlog.json'
-              puts '  --repo DIR                                        Sets the repository directory. Default: current'
-              puts '                                                    working directory'
-              puts '  --cves DIR                                        Sets the CVE directory. Default: cves'
-              puts '  --skip_existing                                   Skips shas that are already in the JSON'
-              puts ''
-              puts 'Examples:'
-              puts '  vhp loadcommits mentioned --repo struts'
-              puts '  vhp loadcommits mentioned --json ../../data/commits/gitlog.json --skip_existing'
+              puts <<-EOS.strip_heredoc
+
+              DESCRIPTION
+
+                Finds all mentioned commits in CVE YAMLs saves them to the
+                commit database in commits/gitlog.json.
+
+              SYNTAX
+
+                vhp loadcommits <options>
+
+              OPTIONS
+
+                --repo DIR     The repository to get from the gitlog.
+                               Default: ./tmp/src/
+                --clean        Don't skip shas already saved. SLOW!
+
+              EXAMPLES
+                vhp loadcommits mentioned --repo ../struts-src
+              EOS
             end
           end
-          c.command(:report) do |s|
+
+          c.command(:weeklies) do |s|
             s.action do
-              puts 'Generating reports follows the following format'
-              puts 'vhp report timeperiod <options>'
-              puts 'timeperiod'
-              puts '  weekly                                            Time period of one week'
-              puts '<options>'
-              puts '  --save DIR                                        By default, reports are saved in commits/weeklies.'
-              puts '                                                    Manually set the directory with this option.'
-              puts '  --repo DIR                                        By default, the working directory is assumed to'
-              puts '                                                    be the repo directory. Manually set the directory'
-              puts '                                                    with this option.'
-              puts '  --cve DIR                                         By default, the cve directory is assumed to be'
-              puts '                                                    "/cves". Manually set the directory with this'
-              puts '                                                    option.'
-              puts 'Examples:'
-              puts '  vhp report weekly --save reports, --repo ../src'
+              puts <<-EOS.strip_heredoc
+
+              DESCRIPTION
+
+                Collect various metrics for every active week on the timeline
+                of a vulnerability.
+
+                Saves to commits/weeklies/CVE-*.json
+
+              SYNTAX
+
+                vhp weeklies
+
+              OPTIONS
+
+                --repo DIR     The repository to get from the gitlog.
+                               Default: ./tmp/src/
+                --clean        Don't skip CVEs already saved. SLOW!
+
+              EXAMPLES
+
+                vhp report weeklies --repo ../src
+              EOS
             end
           end
+
         end
-      end
-    end
-  end
-end
+      end # Mercenary.program
+    end # run
+  end # class
+end # module
