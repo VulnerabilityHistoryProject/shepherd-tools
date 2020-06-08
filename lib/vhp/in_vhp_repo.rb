@@ -4,9 +4,9 @@ module VHP::InVHPRepo
   module_function def check_in_vhp_repo
     in_repo = true
     in_repo &&= File.exist? 'project.yml'
-    in_repo &&= Dir.exist? 'commits'
+    in_repo &&= File.exist? 'commits/gitlog.json'
     in_repo &&= Dir.exist? 'cves'
-    in_repo &&= Dir.exist? 'skeletons'
+    in_repo &&= File.exist? 'skeletons/cve.yml'
     unless in_repo
       warn <<~EOS
         WARNING! Looks like you are not in a VHP *-vulnerabilities repo.

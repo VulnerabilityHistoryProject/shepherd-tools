@@ -23,16 +23,6 @@ module VHP
           end
         end
 
-        p.command(:validate) do |c|
-          c.syntax 'validate <options>'
-          c.description 'Validates CVE YAMLs'
-          c.option 'cves', '--cves DIR', 'Sets the CVE directory'
-
-          c.action do |args, options|
-            VHP::Validator.new(options).validate_ymls
-          end
-        end
-
         p.command(:ready) do |c|
           c.syntax 'ready subcommand'
           c.description 'Ready commands'
@@ -188,15 +178,18 @@ module VHP
           c.description 'list all the commands with their descriptions'
 
           c.action do
-            puts 'For more information on a specific command, type vhp help command-name'
-            puts 'vhp migrate regexp insert_text_file <options>       Migrates YML files.'
-            puts 'vhp validate <options>                              Validates CVE YAMLs.'
-            puts 'vhp ready subcommand <options>                      Ready commands.'
-            puts 'vhp list subcommand <options>                       Lists information in terminal.'
-            puts 'vhp find subcommand <options>                       Finds information.'
-            puts 'vhp loadcommits subcommand <options>                Finds all mentioned commits in CVE YAMLs and'
-            puts '                                                    loads them into the git log.'
-            puts 'vhp report timeperiod <options>                     Generates Report.'
+            puts <<-EOS
+For more information on a specific command, try `vhp help command-name`
+
+  vhp migrate                           Generate migration file for CVE ymls
+  vhp validate <options>                Validates CVE YAMLs.
+  vhp ready                             List CVEs that are ready to curate.
+  vhp list subcommand <options>         List various CVEs, e.g. fixed, vcc
+  vhp find subcommand <options>         Finds information.
+  vhp loadcommits subcommand <options>  Gets Git info for all mentioned commits
+                                        in CVE YAMLs, puts in gitlog.json
+  vhp report timeperiod <options>       Generates Report.
+            EOS
           end
           c.command(:migrate) do |s|
             s.action do
@@ -226,21 +219,7 @@ module VHP
               puts '  vhp migrate "CVE: CVE-\d{4}-\d+" insert_file.txt --run'
             end
           end
-          c.command(:validate) do |s|
-            s.action do
-              puts 'Validates CVE YAMLs'
-              puts ''
-              puts 'Validation of YAMLs follows the following format:'
-              puts 'vhp validate <options>'
-              puts '<options>'
-              puts '  --cves DIR                                        Sets the CVE directory. Default: cves'
-              puts '  --csv DIR                                         Output to a csv file. Default Dir: csvs'
-              puts ''
-              puts 'Examples:'
-              puts '  vhp validate'
-              puts '  vhp validate --cves ../mydir/cves'
-            end
-          end
+
           c.command(:ready) do |s|
             s.action do
               puts 'Ready commands'
