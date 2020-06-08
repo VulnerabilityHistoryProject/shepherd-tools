@@ -1,8 +1,0 @@
-require 'vhp'
-
-include VHP
-def migrate
-  VHP::Migration.new.insert_text(/<%= @regex %>/, "<%= @insert_file %>", "<%= @dir %>",<%= @validate %>, "<%= @filetype %>")
-end
-
-migrate

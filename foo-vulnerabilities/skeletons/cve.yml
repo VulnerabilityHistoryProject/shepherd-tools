@@ -1,4 +1,4 @@
-CVE: CVE-1984-0519
+CVE:
 yaml_instructions:
 curated_instructions: |
   If you are manually editing this file, then you are "curating" it. Set the

@@ -13,15 +13,13 @@ module VHP
         end
 
         p.command(:migrate) do |c|
-          c.syntax 'migrate <ARGS> [options]'
-          c.description 'Migrates files'
-          c.option 'voff', '--voff', 'Turns off validation as you migrate'
-          c.option 'run', '--run', 'Runs the migration script you generated'
-          c.option 'dir', '--dir DIR', 'Sets the dir for the files to be migrated'
-          c.option 'filetype', '--type TYPE', 'The extension of the files to be migrated'
-
+          c.syntax 'migrate [options]'
+          c.description 'Generate a skeleton migration file in ./migrations.'
+          c.option 'name', '-n your_migration_name', '--name your_migration_name', 'Specify a name for your file. Optional.'
+          c.alias(:migration)
           c.action do |args, options|
-            VHP::MigrateGenerator.new.gen(args, options)
+            options['name'] ||= 'migration'
+            VHP::MigrationGenerator.new.run(options['name'])
           end
         end
 
