@@ -1,4 +1,4 @@
-![Unit tests](https://github.com/VulnerabilityHistoryProject/shepherd-tools/workflows/Unit%20tests/badge.svg)
+[![Unit tests](https://github.com/VulnerabilityHistoryProject/shepherd-tools/workflows/Unit%20tests/badge.svg)](https://github.com/VulnerabilityHistoryProject/shepherd-tools/actions)
 # VHP SHEPHERD TOOLS
 
 ## How to Install
