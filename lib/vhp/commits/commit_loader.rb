@@ -7,13 +7,11 @@ require_relative '../utils/helper'
 
 module VHP
   class CommitLoader
-    def initialize(input_options)
-      @options = {}
-      @options[:gitlog_json] = gitlog_json(input_options)
-      VHP.check_file_path(@options[:gitlog_json], 'json')
-      @options[:repo] = VHP.handle_repo(input_options)
-      @options[:cves] = VHP.handle_cves(input_options)
-      @options[:skip_existing] = skip_existing(input_options)
+    include Paths
+
+    def initialize(cli_options)
+      @clean = cli_options[:clean].key?
+      @repo = project_source_repo(cli_options['repo'])
     end
 
     def add_mentioned_commits
@@ -62,22 +60,6 @@ module VHP
 
       puts "The following commits could not be found:"
       pp failed
-    end
-
-    def gitlog_json(options)
-      dir = 'commits/gitlog.json'
-      if options.key? 'git_log.json'
-        dir = options['git_log.json']
-      end
-      dir
-    end
-
-    def skip_existing(options)
-      skip_existing = false
-      if options.key? 'skip_existing'
-        skip_existing = true
-      end
-      skip_existing
     end
   end
 end
