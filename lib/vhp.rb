@@ -1,5 +1,5 @@
 require 'require_all'
-require_rel "vhp"
+require_rel 'vhp'
 
 module VHP
 

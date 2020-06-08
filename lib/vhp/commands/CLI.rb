@@ -1,6 +1,5 @@
 require 'mercenary'
 require 'require_all'
-require_rel '..'
 
 module VHP
   class CLI

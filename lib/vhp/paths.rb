@@ -1,4 +1,4 @@
 # Intended to be included so you can get paths easily
-module VHP
-  
+module VHP::Paths
+
 end

@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.date        = "2019-02-05"
   s.summary     = "Tools for VHP"
   s.description = "Tools for the vulnerability history project"
-  s.authors     = ["Matt Thyng"]
+  s.authors     = ["Andy Meneely", "Matt Thyng"]
   s.files       = Dir.glob("{bin,lib}/**/*") + ["README.md"]
   s.homepage    = "https://github.com/VulnerabilityHistoryProject/shepherd-tools"
 
@@ -22,7 +22,6 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'mercenary', '0.3.6'
   s.add_runtime_dependency 'git', '1.5.0'
   s.add_runtime_dependency 'parallel', '1.13.0'
-  s.add_runtime_dependency 'activesupport', '5.2.2'
   s.add_runtime_dependency 'httparty', '0.17.0'
   s.add_runtime_dependency 'require_all', '3.0.0'
 

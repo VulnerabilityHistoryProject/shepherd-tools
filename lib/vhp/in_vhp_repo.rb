@@ -13,5 +13,6 @@ module VHP::InVHPRepo
         For `vhp` to work properly, you need to be at the root of the repo.
       EOS
     end
+    return in_repo
   end
 end
