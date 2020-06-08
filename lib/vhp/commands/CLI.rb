@@ -115,8 +115,8 @@ module VHP
         p.command(:loadcommits) do |c|
           c.syntax 'loadcommits <options>'
           c.description 'Save mentioned commits in CVE ymls to commits/gitlog.json'
-          c.option 'repo', '--repo DIR', 'Sets the repository directory'
-          c.option 'clean', '--clean', 'Skips shas that already exist in the gitlog.json'
+          c.option :repo, '--repo DIR', 'Sets the repository directory'
+          c.option :clean, '--clean', 'Skips shas that already exist in the gitlog.json'
           c.action do |args, options|
             VHP::CommitLoader.new(options).add_mentioned_commits
           end
