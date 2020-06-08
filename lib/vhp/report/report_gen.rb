@@ -2,7 +2,6 @@ require 'git'
 require 'json'
 require 'logger'
 require 'parallel'
-require 'active_support/core_ext/hash'
 require_relative 'weekly_report'
 require_relative '../utils/git'
 module VHP
@@ -23,6 +22,7 @@ module VHP
       ymls = Dir[yml_path].to_a
       prog_string = 'Generating Weeklies'
       Parallel.each(ymls, in_processes: 8, progress: prog_string) do |file|
+        warn 'WARNING!! We ripped out activesupport and need to do our own deep_symobolize keys'
         yml = YAML.load(File.open(file)).deep_symbolize_keys
         fix_commits = yml[:fixes].inject([]) do |memo, fix|
           unless fix[:commit].blank?
