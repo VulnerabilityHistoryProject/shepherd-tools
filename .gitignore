@@ -1,3 +1,4 @@
+pkg/
 *.gem
 lib/cves/
 Gemfile.lock

@@ -1,15 +1,10 @@
 require 'rspec/core/rake_task'
+require 'bundler'
 
 desc 'Defaults to running tests and then installing'
 task :default => [:test, :install]
 
-desc 'Install the gem locally'
-
-task :install do
-  system('gem build vhp.gemspec')
-  system('gem install vhp')
-end
-
+Bundler::GemHelper.install_tasks
 
 desc 'Run unit tests'
 RSpec::Core::RakeTask.new(:spec)
