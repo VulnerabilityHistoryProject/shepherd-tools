@@ -12,6 +12,10 @@ module VHP
       @gitlog = JSON.parse(File.read(gitlog_json))
     end
 
+    def gitlog_size
+      @gitlog.size
+    end
+
     # Lookup and save a commit
     # clean? Means don't skip existing
     def save(sha, clean = false)
@@ -20,15 +24,12 @@ module VHP
       @gitlog[sha] = {} # Even if it existed before, let's reset
       commit = @git.object(sha)
       diff = @git.diff(commit, commit.parent)
-      @gitlog[sha][:commit]     = sha
       @gitlog[sha][:author]     = commit.author.name
       @gitlog[sha][:email]      = commit.author.email
       @gitlog[sha][:date]       = commit.author.date
       @gitlog[sha][:message]    = commit.message[0..1000]
       @gitlog[sha][:insertions] = diff.insertions
       @gitlog[sha][:deletions]  = diff.deletions
-      @gitlog[sha][:churn]      = @gitlog[sha][:insertions].to_i +
-                                  @gitlog[sha][:deletions].to_i
       @gitlog[sha][:filepaths]  = diff.stats[:files]
       return @gitlog[sha]
     end
@@ -45,7 +46,6 @@ module VHP
 
       @gitlog[sha] = {} # Even if it existed before, let's reset
       commit = @git.object(sha)
-      @gitlog[sha][:commit]   = sha
       @gitlog[sha][:author]   = commit.author.name
       @gitlog[sha][:email]    = commit.author.email
       @gitlog[sha][:date]     = commit.author.date

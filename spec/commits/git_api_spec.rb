@@ -15,7 +15,6 @@ describe VHP::GitAPI do
       api = VHP::GitAPI.new(this_repo)
       sha = '566d07cb1b0a0d0922199abebf87abf08d13638f' # testdata-check-commit
       expect(api.save(sha, true)).to eq({
-        commit: sha,
         author: 'Andy Meneely',
         email: 'andy@se.rit.edu',
         date: Time.parse('2020-06-06 16:28:13.000000000 -0400'),
@@ -39,7 +38,6 @@ describe VHP::GitAPI do
       api = VHP::GitAPI.new(this_repo)
       sha = '970606200911b3782e9fe5950f4b93ba2b812293' # testdata-rename
       expect(api.save(sha, true)).to eq({
-        :commit=>"970606200911b3782e9fe5950f4b93ba2b812293",
         :author=>"Andy Meneely",
         :email=>"andy@se.rit.edu",
         :date=>Time.parse('2020-06-08 00:26:42 -0400'),
@@ -69,7 +67,6 @@ describe VHP::GitAPI do
       api = VHP::GitAPI.new(this_repo)
       sha = '8fc950b705e24fd6adc238511f3ac882a9b12b20' # testdata-megacommit
       expect(api.save_mega(sha, "curator note!", true)).to eq({
-        :commit=>"8fc950b705e24fd6adc238511f3ac882a9b12b20",
         :author=>"mdt8740",
         :email=>"mattthyng@gmail.com",
         :date=>Time.parse('2019-02-08 10:54:57 -0500'),
