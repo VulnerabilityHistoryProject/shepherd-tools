@@ -3,7 +3,7 @@ require 'json'
 require 'logger'
 require 'parallel'
 require_relative 'weekly_report'
-require_relative '../utils/git'
+require_relative '../commits/git_api'
 module VHP
   class ReportGenerator
     def gen_weekly(input_options)
