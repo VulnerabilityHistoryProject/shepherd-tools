@@ -19,8 +19,8 @@ describe VHP::CommitLoader do
       expect(VHP::GitAPI).to receive(:new).and_return(git_api)
       expect(git_api).to receive(:save).with(/081af3640e/, true)
       expect(git_api).to receive(:save).with(/138c9ba0cc/, true)
-      expect(git_api).to receive(:save_mega).with(/8fc950b705/, /.*/, true)
       expect(git_api).to receive(:save_to_json)
+      expect(git_api).to receive(:gitlog_size).and_return(0)
       subject.add_mentioned_commits
     end
 

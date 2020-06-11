@@ -13,13 +13,14 @@ describe VHP::GitAPI do
   context :save do
     it 'saves a simple SHA' do
       api = VHP::GitAPI.new(this_repo)
-      sha = '566d07cb1b0a0d0922199abebf87abf08d13638f' # testdata-check-commit
+
+      sha = 'testdata-check-commit' # this needs to be a tag for GitHub actions
       expect(api.save(sha, true)).to eq({
         author: 'Andy Meneely',
         email: 'andy@se.rit.edu',
         date: Time.parse('2020-06-06 16:28:13.000000000 -0400'),
         message: "we now warn if we're not in a VHP repo!!",
-        churn: 279, insertions: 2, deletions: 277,
+        insertions: 2, deletions: 277,
         filepaths: {
           "Rakefile" => { deletions: 14, insertions: 1 },
           "bin/vhp" => { deletions: 1, insertions: 1 },
@@ -44,7 +45,6 @@ describe VHP::GitAPI do
         :message=>"redid the migration process\n\nCloses #8",
         :insertions=>214,
         :deletions=>410,
-        :churn=>624,
         :filepaths=> {
           "foo-vulnerabilities/cves/CVE-1984-0519.yml" => {:insertions=>49, :deletions=>32},
           "foo-vulnerabilities/migrations/2020_06_08_00_14_35_foo_bar.rb" => {:insertions => 0, :deletions => 72},
