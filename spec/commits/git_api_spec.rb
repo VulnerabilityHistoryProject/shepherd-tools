@@ -4,9 +4,9 @@ describe VHP::GitAPI do
 
   around(:each) do |example|
     Dir.chdir(foo_dir) do
-      silently do
+      # silently do
         example.run
-      end
+      # end
     end
   end
 
@@ -74,4 +74,43 @@ describe VHP::GitAPI do
         :filepaths=>{}})
     end
   end
+
+  context :get_files_in_commit do
+    it 'gets a list of files from a simple commit' do
+      api = VHP::GitAPI.new(this_repo)
+      expect(api.get_files_in_commit('testdata-driveby')).to eq([
+        'lib/vhp/report/weekly_report.rb'
+      ])
+    end
+
+    it 'lists boths files on a rename' do
+      api = VHP::GitAPI.new(this_repo)
+      expect(api.get_files_in_commit('testdata-rename-simple')).to eq([
+        'spec/helper.rb',
+        'spec/helper_renamed.rb',
+      ])
+    end
+  end
+
+  context :get_files_from_shas do
+    it 'gets a list of files from a few commits' do
+      api = VHP::GitAPI.new(this_repo)
+      commits = ['testdata-driveby', 'testdata-rename-simple']
+      expect(api.get_files_from_shas(commits)).to eq([
+        "lib/vhp/report/weekly_report.rb",
+        "spec/helper.rb",
+        "spec/helper_renamed.rb"
+      ])
+    end
+
+    it 'uniqs properly' do
+      api = VHP::GitAPI.new(this_repo)
+      commits = ['testdata-driveby', 'testdata-driveby']
+      expect(api.get_files_from_shas(commits)).to eq([
+        "lib/vhp/report/weekly_report.rb"
+      ])
+    end
+  end
+
+
 end

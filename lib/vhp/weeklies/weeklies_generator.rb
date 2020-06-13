@@ -24,7 +24,7 @@ module VHP
         fix_shas = extract_fix_commits(cve_yml)
         offenders = []
         begin
-          offenders = git_utils.get_files_from_hash(fix_shas)
+          offenders = @git_api.get_files_from_shas(fix_shas)
         rescue
           puts "ERROR #{file}: could not get files for #{fix_shas}"
         end

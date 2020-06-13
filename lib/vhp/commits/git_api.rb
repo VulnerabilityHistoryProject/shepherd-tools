@@ -1,14 +1,17 @@
 require 'git'
 require 'json'
+require_relative '../parallelism'
 require_relative '../paths'
 
 module VHP
   class GitAPI
     include Paths
+    include Parallelism
     using StringRefinements
 
     def initialize(repo_path)
       @git = Git.open(repo_path)
+      @repo = repo_path
       @gitlog = JSON.parse(File.read(gitlog_json))
     end
 
@@ -66,14 +69,21 @@ module VHP
     def get_files_from_shas(commit_shas)
       files = []
       commit_shas.each do |sha|
-        commit = @git.object(sha)
-        diff = @git.diff(commit, commit.parent)
-        unless diff.stats[:files].nil?
-          files << diff.stats[:files].keys
-        end
-      rescue #catch file not found exception
+        files += get_files_in_commit(sha)
       end
       return files.flatten.uniq
+    end
+
+    def get_files_in_commit(sha)
+      cmd = "git -C #{@repo} diff-tree --no-commit-id --name-only -r #{sha}"
+      files = ""
+      begin
+        files = `#{cmd}`
+      rescue => e
+        warn "ERROR running #{cmd}: Message: #{e.message}"
+        return []
+      end
+      return files.split("\n").to_a
     end
 
     private
