@@ -15,4 +15,41 @@ describe VHP::YMLHelper do
     end
   end
 
+  context :extract_shas_from_commitlist do
+
+    it 'loads typical commits' do
+      h = {
+        fixes: [
+          { commit: 'abc', note: 'not seen'},
+          { commit: 'def', note: 'not seen'},
+        ]
+      }
+      expect(extract_shas_from_commitlist(h, :fixes)).to eq(['abc', 'def'])
+    end
+
+    it 'loads typical commits ignoring blanks' do
+      h = {
+        fixes: [
+          { commit: 'abc', note: 'not seen'},
+          { commit: '', note: 'not seen'},
+          { commit: nil, note: 'not seen'},
+          { commit: '    ', note: 'not seen'},
+        ]
+      }
+      expect(extract_shas_from_commitlist(h, :fixes)).to eq(['abc'])
+    end
+
+    it 'works fine on an empty array' do
+      h = { fixes: [] }
+      expect(extract_shas_from_commitlist(h, :fixes)).to eq([])
+    end
+
+    it 'warns and continues on with malformed' do
+      h = { fixes: nil }
+      expect(self).to receive(:warn).with(/ERROR extracting YML/)
+      expect(extract_shas_from_commitlist(h, :fixes)).to eq([])
+    end
+
+  end
+
 end

@@ -1,15 +1,35 @@
-require 'json'
+require_relative '../paths'
+require_relative '../yml_helper'
+require_relative '../parallelism'
 
 module VHP
-  class WeeklyReport
+  class WeekliesGenerator
+    include Paths
+    include YMLHelper
+    include Parallelism
     @@SECONDS_IN_WEEK = 604800
     @@START_DATE = Time.new(1991, 8, 5) # Monday before the birth of WWW
 
-    def initialize(options)
-      @git = Git.open(options[:repo])
-      @repo_dir = options[:repo]
-      @skip_existing = options[:skip_existing]
-      @weekly_dir = options[:weeklies]
+    attr_reader :clean
+
+    def initialize(cli_options)
+      @clean = cli_options.key? :clean
+      @git_repo = project_source_repo(cli_options[:repo])
+      @git_api = GitAPI.new(@git_repo)
+    end
+
+    def run
+      parallel_maybe(cve_ymls, 'Generating Weeklies') do |file|
+        cve_yml = load_yml_the_vhp_way(file)
+        fix_shas = extract_fix_commits(cve_yml)
+        offenders = []
+        begin
+          offenders = git_utils.get_files_from_hash(fix_shas)
+        rescue
+          puts "ERROR #{file}: could not get files for #{fix_shas}"
+        end
+        add(cve_yml[:CVE], offenders)
+      end
     end
 
     def week_num(timestamp)
@@ -18,10 +38,6 @@ module VHP
 
     def nth_week(i)
       @@START_DATE + (i * @@SECONDS_IN_WEEK).to_i
-    end
-
-    def weekly_file(cve)
-      "#{@weekly_dir}/#{cve.upcase}-weekly.json"
     end
 
     def write(cve, calendar)
@@ -118,5 +134,7 @@ module VHP
       end
       write(cve, calendar)
     end
+
   end
+
 end

@@ -24,5 +24,14 @@ module VHP
     def cve_ymls
       Dir["./cves/**/*.yml"]
     end
+
+    def weekly_dir
+      File.expand_path './commits/weeklies'
+    end
+
+    def weekly_file(cve)
+      "#{weekly_dir}/#{cve.upcase}-weekly.json"
+    end
+
   end
 end

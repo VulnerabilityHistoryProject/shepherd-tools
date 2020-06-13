@@ -24,5 +24,6 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'parallel', '1.13.0'
   s.add_runtime_dependency 'httparty', '0.17.0'
   s.add_runtime_dependency 'require_all', '3.0.0'
+  s.add_runtime_dependency 'os', '1.1.0'
 
 end

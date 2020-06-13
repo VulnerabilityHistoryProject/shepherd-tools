@@ -134,10 +134,10 @@ module VHP
         p.command(:weeklies) do |c|
           c.syntax 'weeklies <options>'
           c.description 'Collects weekly reports. See `vhp help weeklies`.'
-          c.option 'repo', '--repo DIR', 'Sets the repo directory'
-          c.option 'clean', "--clean", "Don't skip CVEs already saved. SLOW!"
+          c.option :repo, '--repo DIR', 'Sets the repo directory'
+          c.option :clean, "--clean", "Don't skip CVEs already saved. SLOW!"
           c.action do |args, options|
-            Report::ReportGenerator.new.gen_weekly(options)
+            WeekliesGenerator.new(options).run
           end
         end
 
