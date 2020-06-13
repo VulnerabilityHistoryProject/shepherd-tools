@@ -112,5 +112,7 @@ describe VHP::GitAPI do
     end
   end
 
+  context :get_drive_by_authors do
 
+  end
 end
