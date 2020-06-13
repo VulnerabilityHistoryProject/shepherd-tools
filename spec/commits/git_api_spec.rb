@@ -114,5 +114,10 @@ describe VHP::GitAPI do
 
   context :get_drive_by_authors do
 
+    it 'gets our one driveby committer Mr. Driveby' do
+      api = VHP::GitAPI.new(this_repo)
+      expect(api.get_drive_by_authors()).to include('driveby@example.com')
+    end
+
   end
 end

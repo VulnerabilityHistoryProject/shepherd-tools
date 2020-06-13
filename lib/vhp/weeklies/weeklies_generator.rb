@@ -104,10 +104,7 @@ module VHP
       calendar = {} # Always start fresh - don't read in the old one
       devs = []
 
-      authors = `git -C #{@repo_dir} log --pretty="%ae"`.split("\n")
-      counts = Hash.new(0)
-      authors.each { |a| counts[a] += 1 }
-      drive_by_authors = counts.select { |a, count| count == 1 }.keys
+      drive_by_authors = @git_api.get_drive_by_author()
 
       commits = `git -C #{@repo_dir} log --author-date-order --reverse --pretty="%H" -- #{offenders.join(' ')}`.split("\n")
       commits.each do |sha|

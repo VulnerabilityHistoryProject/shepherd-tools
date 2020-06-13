@@ -1,4 +1,5 @@
 require 'rspec'
+require 'byebug'
 require_relative '../lib/vhp'
 
 def foo_dir

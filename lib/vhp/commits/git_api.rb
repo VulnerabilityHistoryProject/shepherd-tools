@@ -66,6 +66,7 @@ module VHP
       return @gitlog[sha]
     end
 
+    # Find all of the files impacted by the shas, calling get_files_in_commit
     def get_files_from_shas(commit_shas)
       files = []
       commit_shas.each do |sha|
@@ -74,6 +75,9 @@ module VHP
       return files.flatten.uniq
     end
 
+    # Get the files that are in a commit
+    # This is WAY faster than computing a diff because it's just a hash compare
+    # not a gigantic string compare for each file
     def get_files_in_commit(sha)
       cmd = "git -C #{@repo} diff-tree --no-commit-id --name-only -r #{sha}"
       files = ""
@@ -84,6 +88,16 @@ module VHP
         return []
       end
       return files.split("\n").to_a
+    end
+
+    # A drive-by author is one who has only made one commit to the repo, ever
+    def get_drive_by_authors
+      git_revlist = `git -C #{@repo} rev-list --all --pretty="%ae"`
+      authors = git_revlist.split(/commit .+\n/).reject {|a| a.empty? }
+      authors = authors.map { |a| a.downcase.strip }
+      counts = Hash.new(0)
+      authors.each { |a| counts[a] += 1 }
+      counts.select { |a, count| count == 1 }.keys
     end
 
     private

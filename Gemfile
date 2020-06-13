@@ -4,3 +4,4 @@ gemspec
 gem 'rake'
 gem 'rspec'
 gem 'bundler'
+gem 'byebug'
