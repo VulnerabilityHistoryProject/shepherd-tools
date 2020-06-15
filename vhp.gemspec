@@ -25,5 +25,6 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'httparty', '0.17.0'
   s.add_runtime_dependency 'require_all', '3.0.0'
   s.add_runtime_dependency 'os', '1.1.0'
+  s.add_runtime_dependency 'ruby-progressbar', '1.10.1'
 
 end
