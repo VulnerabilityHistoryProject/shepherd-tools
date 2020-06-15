@@ -138,6 +138,7 @@ module VHP
           c.option :clean, "--clean", "Don't skip CVEs already saved. SLOW!"
           c.action do |args, options|
             WeekliesGenerator.new(options).run
+            puts "Done!"
           end
         end
 

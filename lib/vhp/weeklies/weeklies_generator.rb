@@ -19,9 +19,9 @@ module VHP
     end
 
     def run
-      parallel_maybe(cve_ymls, 'Generating Weeklies') do |file|
+      parallel_maybe(cve_ymls, progress: 'Generating Weeklies') do |file|
         cve_yml = load_yml_the_vhp_way(file)
-        fix_shas = extract_fix_commits(cve_yml)
+        fix_shas = extract_shas_from_commitlist(cve_yml, :fixes)
         offenders = []
         begin
           offenders = @git_api.get_files_from_shas(fix_shas)
@@ -42,28 +42,26 @@ module VHP
 
     def write(cve, calendar)
       File.open(weekly_file(cve), 'w+') do |f|
-        # f.write JSON.pretty_generate(calendar)
-        f.write JSON.generate(calendar)
+        f.write JSON.fast_generate(calendar)
       end
     end
 
     def init_weekly(n)
-    {
-      week: n,
-      date: nth_week(n),
-      commits: 0,
-      insertions: 0,
-      deletions: 0,
-      reverts: 0,
-      rolls: 0,
-      refactors: 0,
-      test_files: 0,
-      files: [],
-      developers: [],
-      new_developers: [],
-      drive_bys: [],
-      ownership_change: false,
-    }
+      {
+        date: nth_week(n),
+        commits: 0,
+        insertions: 0,
+        deletions: 0,
+        reverts: 0,
+        rolls: 0,
+        refactors: 0,
+        test_files: 0,
+        files: [],
+        developers: [],
+        new_developers: [],
+        drive_bys: [],
+        ownership_change: false,
+      }
     end
 
     # Append something to an array, then uniq the array
@@ -100,16 +98,14 @@ module VHP
     end
 
     def add(cve, offenders)
-      return if offenders.blank?
+      return if offenders.empty?
       calendar = {} # Always start fresh - don't read in the old one
       devs = []
-
-      drive_by_authors = @git_api.get_drive_by_author()
-
-      commits = `git -C #{@repo_dir} log --author-date-order --reverse --pretty="%H" -- #{offenders.join(' ')}`.split("\n")
+      drive_by_authors = @git_api.get_drive_by_authors()
+      commits = `git -C #{@git_repo} log --author-date-order --reverse --pretty="%H" -- #{offenders.join(' ')}`.split("\n")
       commits.each do |sha|
-        commit = @git.object(sha)
-        diff = @git.diff(commit, commit.parent)
+        commit = @git_api.git.object(sha)
+        diff = @git_api.git.diff(commit, commit.parent)
         commit_files = diff.stats[:files].keys
         email = commit.author.email
         week_n = week_num(commit.author.date)

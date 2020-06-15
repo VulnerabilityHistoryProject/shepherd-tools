@@ -3,7 +3,7 @@ module VHP
     # Load YML the way we expect: symbolized names,
     # even if they specified symbols or not
     def load_yml_the_vhp_way(f)
-      YAML.load(File.open(f), symbolize_names: true)
+      YAML.load(File.read(f), symbolize_names: true)
     end
 
     # Expected: a cve_yml hash, key of commits

@@ -17,8 +17,8 @@ describe VHP::CommitLoader do
     it 'properly loads gitlog.json with some mentioned commits' do
       git_api = double(VHP::GitAPI)
       expect(VHP::GitAPI).to receive(:new).and_return(git_api)
-      expect(git_api).to receive(:save).with(/081af3640e/, true)
-      expect(git_api).to receive(:save).with(/138c9ba0cc/, true)
+      expect(git_api).to receive(:save).with(/3711df67d3/, true)
+      expect(git_api).to receive(:save).with(/4a980d0887/, true)
       expect(git_api).to receive(:save_to_json)
       expect(git_api).to receive(:gitlog_size).and_return(0)
       subject.add_mentioned_commits

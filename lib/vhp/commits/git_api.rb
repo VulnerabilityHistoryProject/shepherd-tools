@@ -9,6 +9,8 @@ module VHP
     include Parallelism
     using StringRefinements
 
+    attr_reader :git
+
     def initialize(repo_path)
       @git = Git.open(repo_path)
       @repo = repo_path

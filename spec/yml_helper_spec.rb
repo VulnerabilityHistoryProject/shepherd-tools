@@ -11,7 +11,7 @@ describe VHP::YMLHelper do
 
     it 'converts recursively' do
       h = load_yml_the_vhp_way(cve_1984_0519_file)
-      expect(h[:fixes][0][:note]).to eq("Tagged as testdata-driveby")
+      expect(h[:fixes][0][:note]).to eq("Tagged as testdata-cve1984-fix")
     end
   end
 
