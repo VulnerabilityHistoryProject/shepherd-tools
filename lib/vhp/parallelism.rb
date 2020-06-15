@@ -11,7 +11,7 @@ module VHP
         warn "WARNING: OS is Windows, so this won't run in parallel. Run in Linux for better performance."
         iterable.each { |i| yield(i) }
       else
-        Parallel.each(iterable, in_processes: 8, progress: 'Progress') do |i|
+        Parallel.each(iterable, in_threads: 8, progress: 'Progress') do |i|
           yield(i)
         end
       end
