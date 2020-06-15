@@ -8,7 +8,7 @@ module VHP
     include YMLHelper
     include Parallelism
     @@SECONDS_IN_WEEK = 604800
-    @@START_DATE = Time.new(1991, 8, 5) # Monday before the birth of WWW
+    @@START_DATE = Time.new(1991, 8, 5).utc # Monday before the birth of WWW
 
     attr_reader :clean
 
@@ -37,7 +37,7 @@ module VHP
     end
 
     def nth_week(i)
-      @@START_DATE + (i * @@SECONDS_IN_WEEK).to_i
+      (@@START_DATE + (i * @@SECONDS_IN_WEEK).to_i).utc
     end
 
     def write(cve, calendar)
@@ -115,7 +115,7 @@ module VHP
         diff = @git_api.git.diff(commit.parent, commit)
         commit_files = diff.stats[:files].keys
         email = commit.author.email
-        week_n = week_num(commit.author.date)
+        week_n = week_num(commit.author.date.utc)
         calendar[week_n] ||= init_weekly(week_n)
         weekly = calendar[week_n]
         weekly[:commits]    += 1

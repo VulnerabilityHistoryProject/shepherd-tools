@@ -31,7 +31,7 @@ module VHP
       diff = @git.diff(commit, commit.parent)
       @gitlog[sha][:author]     = commit.author.name
       @gitlog[sha][:email]      = commit.author.email
-      @gitlog[sha][:date]       = commit.author.date
+      @gitlog[sha][:date]       = commit.author.date.utc
       @gitlog[sha][:message]    = commit.message[0..1000]
       @gitlog[sha][:insertions] = diff.insertions
       @gitlog[sha][:deletions]  = diff.deletions
@@ -53,7 +53,7 @@ module VHP
       commit = @git.object(sha)
       @gitlog[sha][:author]   = commit.author.name
       @gitlog[sha][:email]    = commit.author.email
-      @gitlog[sha][:date]     = commit.author.date
+      @gitlog[sha][:date]     = commit.author.date.utc
       @gitlog[sha][:filepaths]  = {}
       message = <<-EOS.strip_heredoc
         CURATOR NOTE

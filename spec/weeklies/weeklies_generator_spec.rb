@@ -5,7 +5,7 @@ describe VHP::WeekliesGenerator do
   let(:expected) do
     {
       1505=> {
-        :date=>Time.parse('2020-06-08 00:00:00 -0400'),
+        :date=>Time.parse('2020-06-08 00:00:00 -0400').utc,
         :commits=>3,
         :insertions=>2,
         :deletions=>2,
