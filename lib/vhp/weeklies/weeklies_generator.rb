@@ -52,6 +52,9 @@ module VHP
         commits: 0,
         insertions: 0,
         deletions: 0,
+        files_added: 0,
+        files_deleted: 0,
+        files_renamed: 0,
         reverts: 0,
         rolls: 0,
         refactors: 0,
@@ -97,6 +100,10 @@ module VHP
       end
     end
 
+    def num_name_status(diff, regex)
+      diff.name_status.values.select {|s| s.match? regex}.size
+    end
+
     def add(cve, offenders)
       return if offenders.empty?
       calendar = {} # Always start fresh - don't read in the old one
@@ -105,7 +112,7 @@ module VHP
       commits = `git -C #{@git_repo} log --author-date-order --reverse --pretty="%H" -- #{offenders.join(' ')}`.split("\n")
       commits.each do |sha|
         commit = @git_api.git.object(sha)
-        diff = @git_api.git.diff(commit, commit.parent)
+        diff = @git_api.git.diff(commit.parent, commit)
         commit_files = diff.stats[:files].keys
         email = commit.author.email
         week_n = week_num(commit.author.date)
@@ -114,6 +121,9 @@ module VHP
         weekly[:commits]    += 1
         weekly[:insertions] += diff.insertions
         weekly[:deletions]  += diff.deletions
+        weekly[:files_added]   += num_name_status(diff, /A/)
+        weekly[:files_deleted] += num_name_status(diff, /D/)
+        weekly[:files_renamed]  += num_name_status(diff, /R/)
         weekly[:reverts]    += revert?(commit.message) ? 1 : 0
         weekly[:rolls]      += roll?(commit.message) ? 1 : 0
         weekly[:refactors]  += refactor?(commit.message) ? 1 : 0
