@@ -19,6 +19,11 @@ module VHP
     end
 
     def run
+      puts <<~EOS
+        Progress key
+          v    vulnerability json written
+          .    commit looked up 
+      EOS
       parallel_maybe(cve_ymls, progress: 'Generating Weeklies') do |file|
         cve_yml = load_yml_the_vhp_way(file)
         fix_shas = extract_shas_from_commitlist(cve_yml, :fixes)
@@ -117,12 +122,13 @@ module VHP
         return
       end
       commits.each do |sha|
-        errored = falsey
+        errored = false
         begin
           commit = @git_api.git.object(sha)
           diff = @git_api.git.diff(commit.parent, commit)
-          errord = true
+          print '.'
         rescue => e
+          errord = true
           warn "ERROR getting Git commit for CVE #{cve}. Skipping this commit."
           warn "ERROR git error message for above problem. #{e.message}"
         end
