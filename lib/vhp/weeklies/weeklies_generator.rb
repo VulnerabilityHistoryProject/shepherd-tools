@@ -7,6 +7,7 @@ module VHP
     include Paths
     include YMLHelper
     include Parallelism
+
     @@SECONDS_IN_WEEK = 604800
     @@START_DATE = Time.new(1991, 8, 5).utc # Monday before the birth of WWW
 
@@ -16,13 +17,14 @@ module VHP
       @clean = cli_options.key? :clean
       @git_repo = project_source_repo(cli_options[:repo])
       @git_api = GitAPI.new(@git_repo)
+      @code_ext = load_yml_the_vhp_way(project_yml)[:source_code_extensions]
     end
 
     def run
       puts <<~EOS
         Progress key
           v    vulnerability json written
-          .    commit looked up 
+          .    commit looked up
       EOS
       parallel_maybe(cve_ymls, progress: 'Generating Weeklies') do |file|
         cve_yml = load_yml_the_vhp_way(file)
@@ -33,7 +35,9 @@ module VHP
         rescue
           puts "ERROR #{file}: could not get files for #{fix_shas}"
         end
+        offenders = offenders.select {|o| is_code?(o) } # only source code pls
         add(cve_yml[:CVE], offenders)
+        print 'v'
       end
     end
 
@@ -43,6 +47,13 @@ module VHP
 
     def nth_week(i)
       (@@START_DATE + (i * @@SECONDS_IN_WEEK).to_i).utc
+    end
+
+    def is_code?(filepath)
+      @code_ext.each do |ext|
+        return true if filepath.end_with? ext
+      end
+      return false
     end
 
     def write(cve, calendar)

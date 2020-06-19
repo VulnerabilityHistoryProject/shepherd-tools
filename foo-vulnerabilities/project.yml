@@ -12,3 +12,13 @@ vulnerabilities_description: |
   Description for our example Foo project for unit testing Shepherd Tools
 developers_description: |
   Developer description for our example Foo project for unit testing Shepherd Tools
+source_code_extensions:
+  - makefile
+  - Makefile
+  - .c
+  - .css
+  - .h
+  - .js
+  - .rb
+  - .py
+  - .yml

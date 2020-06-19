@@ -17,6 +17,10 @@ module VHP
       File.expand_path './commits/gitlog.json'
     end
 
+    def project_yml
+      File.expand_path './project.yml'
+    end
+
     def project_source_repo(user_supplied)
       begin
         p = user_supplied.to_s.empty? ? './tmp/src' : user_supplied

@@ -30,3 +30,12 @@ vhp loadcommits mentioned --json ../../data/commits/gitlog.json --skip_existing
 
 * TODO: Document how to use archeogit
 * TODO: Document how to use various scripts/
+
+# Using on RIT Research Cluster
+
+You'll need to load the following:
+
+```
+$ spack load ruby
+$ spack load git@2.25
+```

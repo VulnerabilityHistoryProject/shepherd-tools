@@ -42,4 +42,13 @@ describe VHP::WeekliesGenerator do
       VHP::WeekliesGenerator.new({ clean: true, repo: this_repo }).run
     end
   end
+
+  context :is_code? do
+    it 'works on typical source code files' do
+      gen = VHP::WeekliesGenerator.new({ clean: true, repo: this_repo })
+      expect(gen.is_code?('foo.c')).to be true
+      expect(gen.is_code?('foo.bar')).to be false
+      expect(gen.is_code?('myMakefile')).to be true
+    end
+  end
 end
