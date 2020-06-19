@@ -109,31 +109,46 @@ module VHP
       calendar = {} # Always start fresh - don't read in the old one
       devs = []
       drive_by_authors = @git_api.get_drive_by_authors()
-      commits = `git -C #{@git_repo} log --author-date-order --reverse --pretty="%H" -- #{offenders.join(' ')}`.split("\n")
+      begin
+        commits = `git -C #{@git_repo} log --author-date-order --reverse --pretty="%H" -- #{offenders.join(' ')}`.split("\n")
+      rescue => e
+        warn "ERROR with git listing commits for CVE #{cve}. Quitting this CVE."
+        warn "ERROR git error message for above problem: #{e.message}"
+        return
+      end
       commits.each do |sha|
-        commit = @git_api.git.object(sha)
-        diff = @git_api.git.diff(commit.parent, commit)
-        commit_files = diff.stats[:files].keys
-        email = commit.author.email
-        week_n = week_num(commit.author.date.utc)
-        calendar[week_n] ||= init_weekly(week_n)
-        weekly = calendar[week_n]
-        weekly[:commits]    += 1
-        weekly[:insertions] += diff.insertions
-        weekly[:deletions]  += diff.deletions
-        weekly[:files_added]   += num_name_status(diff, /A/)
-        weekly[:files_deleted] += num_name_status(diff, /D/)
-        weekly[:files_renamed]  += num_name_status(diff, /R/)
-        weekly[:reverts]    += revert?(commit.message) ? 1 : 0
-        weekly[:rolls]      += roll?(commit.message) ? 1 : 0
-        weekly[:refactors]  += refactor?(commit.message) ? 1 : 0
-        weekly[:test_files] += any_owners_files?(commit_files) ? 1 : 0
-        weekly[:ownership_change] ||= any_owners_files?(commit_files)
-        append_uniq!(weekly, :files, commit_files & offenders)
-        append_uniq!(weekly, :developers, email)
-        append_uniq!(weekly, :new_developers, [email] - devs)
-        append_uniq!(weekly, :drive_bys, email) if drive_by_authors.include?(email)
-        devs = (devs << email).flatten.uniq
+        errored = falsey
+        begin
+          commit = @git_api.git.object(sha)
+          diff = @git_api.git.diff(commit.parent, commit)
+          errord = true
+        rescue => e
+          warn "ERROR getting Git commit for CVE #{cve}. Skipping this commit."
+          warn "ERROR git error message for above problem. #{e.message}"
+        end
+        unless errored
+          commit_files = diff.stats[:files].keys
+          email = commit.author.email
+          week_n = week_num(commit.author.date.utc)
+          calendar[week_n] ||= init_weekly(week_n)
+          weekly = calendar[week_n]
+          weekly[:commits]    += 1
+          weekly[:insertions] += diff.insertions
+          weekly[:deletions]  += diff.deletions
+          weekly[:files_added]   += num_name_status(diff, /A/)
+          weekly[:files_deleted] += num_name_status(diff, /D/)
+          weekly[:files_renamed]  += num_name_status(diff, /R/)
+          weekly[:reverts]    += revert?(commit.message) ? 1 : 0
+          weekly[:rolls]      += roll?(commit.message) ? 1 : 0
+          weekly[:refactors]  += refactor?(commit.message) ? 1 : 0
+          weekly[:test_files] += any_owners_files?(commit_files) ? 1 : 0
+          weekly[:ownership_change] ||= any_owners_files?(commit_files)
+          append_uniq!(weekly, :files, commit_files & offenders)
+          append_uniq!(weekly, :developers, email)
+          append_uniq!(weekly, :new_developers, [email] - devs)
+          append_uniq!(weekly, :drive_bys, email) if drive_by_authors.include?(email)
+          devs = (devs << email).flatten.uniq
+        end
       end
       write(cve, calendar)
     end

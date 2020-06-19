@@ -18,7 +18,12 @@ module VHP
     end
 
     def project_source_repo(user_supplied)
-      File.expand_path(user_supplied.to_s.empty? ? './tmp/src' : user_supplied)
+      begin
+        p = user_supplied.to_s.empty? ? './tmp/src' : user_supplied
+        return File.expand_path p
+      rescue => e
+        warn "Project source repo expected at: #{p}. #{e.message}"
+      end
     end
 
     def cve_ymls
