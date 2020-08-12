@@ -131,6 +131,14 @@ module VHP
           end
         end
 
+        p.command(:nofixes)  do |c|
+          c.syntax 'cvss'
+          c.description 'Lists all CVEs that have no fix commits listed.'
+          c.action do |args, options|
+            VHP::ListNoFixes.new.run
+          end
+        end
+
         p.command(:weeklies) do |c|
           c.syntax 'weeklies <options>'
           c.description 'Collects weekly reports. See `vhp help weeklies`.'
