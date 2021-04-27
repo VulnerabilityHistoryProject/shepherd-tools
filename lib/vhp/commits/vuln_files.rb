@@ -37,8 +37,7 @@ module VHP
           end
         end
       end
-      # FIXME Update to new GitAPI
-      # result = GitLog.new(@options[:repo]).get_files_from_shas(fixes)
+      result = GitAPI.new(@options[:repo]).get_files_from_shas(fixes)
       puts "Writing output file #{@options[:output]}"
       CSV.open(@options[:output], 'w+') do |csv|
         csv << [ 'filepath' ]
