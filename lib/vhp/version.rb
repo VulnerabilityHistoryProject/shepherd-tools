@@ -1,3 +1,3 @@
 module VHP
-  VERSION = '0.5.0a'
+  VERSION = '0.5.0'
 end
