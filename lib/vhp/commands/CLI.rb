@@ -122,12 +122,11 @@ module VHP
           end
         end
 
-        p.command(:cvss)  do |c|
-          c.syntax 'cvss'
-          c.description 'Updates all CVEs to conatin CVSS'
-          c.option 'cves', '--cves DIR', 'Sets the CVE directory'
+        p.command(:nvd)  do |c|
+          c.syntax 'nvd'
+          c.description 'Updates all CVEs to get CVSS, announced data from NVD.'
           c.action do |args, options|
-            VHP::UpdateCVSS.new(options).update_cvss
+            VHP::NVDLoader.new(options).run
           end
         end
 
