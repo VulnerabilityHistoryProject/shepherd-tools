@@ -5,6 +5,8 @@ require 'yaml'
 
 def order_of_keys
   # This is just an example - edit to your liking.
+  # To get the latest from your skeleton, run this in your console:
+  # puts YAML.load(File.open('skeletons/cve.yml',).read).keys.join("\n")
   %w(
     CVE
     yaml_instructions
