@@ -51,5 +51,3 @@ module VHP
 
   end
 end
-
-VHP::NVDLoader.new({}).run
