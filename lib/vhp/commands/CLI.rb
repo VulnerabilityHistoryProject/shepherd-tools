@@ -126,7 +126,7 @@ module VHP
           c.syntax 'nvd'
           c.description 'Updates all CVEs to get CVSS, announced data from NVD.'
           c.action do |args, options|
-            VHP::NVDLoader.new(options).run
+            VHP::NVDLoader.new.run
           end
         end
 
