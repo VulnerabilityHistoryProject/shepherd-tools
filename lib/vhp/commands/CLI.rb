@@ -149,6 +149,20 @@ module VHP
           end
         end
 
+        p.command(:corpus) do |c|
+          c.syntax 'corpus [fixes]'
+          c.description 'Generate a corpus of data for a specific type of project.'
+          c.command(:fixes) do |f|
+            f.description 'Generate a collection of source code files of before-and-after fixes to vulnerabilities'
+            f.option :repo, '--repo DIR', 'Sets the repository directory'
+            f.option :clean, '--clean', 'Rebuild directory completely'
+            f.alias :fix
+            f.action do |args, options|
+              VHP::FixCorpus.new(options).run
+            end
+          end
+        end
+
         p.command(:help) do |c|
           c.syntax 'help <options>'
           c.description 'Provide details on all subcommands'
