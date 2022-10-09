@@ -163,6 +163,15 @@ module VHP
           end
         end
 
+        p.command(:fixcrawl) do |c|
+          c.syntax 'fixcrawl [CVE]'
+          c.description 'Web crawl URLs CVE information in NVD to find potential git commits as fixes'
+          c.option :repo, '--repo DIR', 'Sets the repository directory'
+          c.action do |args, options|
+            VHP::FixCrawl.new(args, options).run
+          end
+        end
+
         p.command(:help) do |c|
           c.syntax 'help <options>'
           c.description 'Provide details on all subcommands'
