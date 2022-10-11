@@ -172,6 +172,16 @@ module VHP
           end
         end
 
+        p.command(:new) do |c|
+          c.syntax 'new PROJECT_SLUG CVE'
+          c.description 'Create a new CVE file, optionally looking up NVD info'
+          c.option :skip_nvd, '--skip-nvd', "Don't look up information from the NVD"
+          c.option :force, '--force', "Overwrite the file if it exists"
+          c.action do |args, options|
+            VHP::NewCVE.new(args, options).run
+          end
+        end
+
         p.command(:help) do |c|
           c.syntax 'help <options>'
           c.description 'Provide details on all subcommands'
