@@ -66,7 +66,7 @@ module VHP
 		def attempt_fixes(yml, r)
 			refs = r.dig("vulnerabilities",0, "cve","references")
 			fix_regex = /git.*(?<sha>[0-9a-z]{40})/
-			refs.each do |ref|
+			refs&.each do |ref|
 				url = ref["url"]
 				if fix_regex.match?(url)
 					sha = fix_regex.match(url)[:sha]
