@@ -4,14 +4,13 @@ module VHP::InVHPRepo
   module_function def check_in_vhp_repo
     missing_files = []
 
-    check_missing! missing_files, 'project.yml'
-    check_missing! missing_files, 'commits/gitlog.json'
+    check_missing! missing_files, 'projects'
     check_missing! missing_files, 'cves'
-    check_missing! missing_files, 'skeletons/cve.yml'
+    check_missing! missing_files, 'skeletons'
 
     unless missing_files.empty?
       warn <<~EOS
-        WARNING! Looks like you are not in a VHP *-vulnerabilities repo.
+        WARNING! Looks like you are not in the VHP vulnerabilities or the repo.
         For `vhp` to work properly, you need to be at the root of the repo.
         Missing files: #{missing_files}
       EOS

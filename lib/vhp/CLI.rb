@@ -1,5 +1,5 @@
 require 'mercenary'
-require_relative '../string_refinements'
+require_relative 'string_refinements'
 
 module VHP
   class CLI
@@ -114,7 +114,8 @@ module VHP
 
         p.command(:loadcommits) do |c|
           c.syntax 'loadcommits <options>'
-          c.description 'Save mentioned commits in CVE ymls to commits/gitlog.json'
+          c.description 'Save mentioned commits in CVE ymls to vhp-mining/commits/gitlog.json'
+          c.option :repo, '--mining DIR', 'Sets the VHP mining repo'
           c.option :repo, '--repo DIR', 'Sets the repository directory'
           c.option :clean, '--clean', 'Skips shas that already exist in the gitlog.json'
           c.action do |args, options|

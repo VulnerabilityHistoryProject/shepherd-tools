@@ -21,6 +21,10 @@ module VHP
       File.expand_path './project.yml'
     end
 
+    def projects
+      Dir["./cves/*"].map {|d| d.match(%r{cves/(?<project>\w+)})[:project]
+    end
+
     def project_source_repo(user_supplied)
       begin
         p = user_supplied.to_s.empty? ? './tmp/src' : user_supplied
@@ -30,8 +34,12 @@ module VHP
       end
     end
 
-    def cve_ymls
-      Dir["./cves/**/*.yml"]
+    def project_from_file(f)
+      f.match(%r{cves/(?<project>\w+)/.*.yml})[:project]
+    end
+
+    def cve_ymls(project="**")
+      Dir["./cves/#{project}/*.yml"]
     end
 
     def weekly_dir
