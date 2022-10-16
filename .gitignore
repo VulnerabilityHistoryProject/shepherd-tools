@@ -5,3 +5,4 @@ Gemfile.lock
 test_file.txt
 .idea/
 .byebug_history
+.DS_Store
