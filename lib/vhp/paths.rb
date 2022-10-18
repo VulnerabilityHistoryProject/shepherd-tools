@@ -13,8 +13,8 @@ module VHP
       File.expand_path "#{__dir__}/migrate/migration_template.rb.txt"
     end
 
-    def gitlog_json
-      File.expand_path './commits/gitlog.json'
+    def gitlog_json(mining_path, project)
+      File.expand_path "#{mining_path}/gitlogs/#{project}.json"
     end
 
     def project_yml
@@ -22,7 +22,7 @@ module VHP
     end
 
     def projects
-      Dir["./cves/*"].map {|d| d.match(%r{cves/(?<project>\w+)})[:project]
+      Dir["./cves/*"].map {|d| d.match(%r{cves/(?<project>\w+)})[:project] }
     end
 
     def project_source_repo(user_supplied)

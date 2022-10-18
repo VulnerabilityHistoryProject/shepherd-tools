@@ -6,7 +6,6 @@ module VHP
     using StringRefinements
 
     def run
-
       Mercenary.program(:vhp) do |p|
         p.version VHP::VERSION
         p.description 'Tools for managing vulnerability history project data'
@@ -115,9 +114,10 @@ module VHP
         p.command(:loadcommits) do |c|
           c.syntax 'loadcommits <options>'
           c.description 'Save mentioned commits in CVE ymls to vhp-mining/commits/gitlog.json'
-          c.option :repo, '--mining DIR', 'Sets the VHP mining repo'
-          c.option :repo, '--repo DIR', 'Sets the repository directory'
-          c.option :clean, '--clean', 'Skips shas that already exist in the gitlog.json'
+          c.option :mining,  '--mining DIR', 'Sets the VHP mining repo'
+          c.option :repo,    '--repo DIR', 'Sets the repository directory'
+          c.option :project, '--project PROJECT', 'Shortname (subdomain) of the project to lookup'
+          c.option :clean,   '--clean', 'Skips shas that already exist in the gitlog json'
           c.action do |args, options|
             VHP::CommitLoader.new(options).add_mentioned_commits
           end

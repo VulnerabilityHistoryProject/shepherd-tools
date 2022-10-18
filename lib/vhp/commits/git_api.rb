@@ -11,10 +11,11 @@ module VHP
 
     attr_reader :git
 
-    def initialize(repo_path)
+    def initialize(mining_path, repo_path, project)
       @git = Git.open(repo_path)
       @repo = repo_path
-      @gitlog = JSON.parse(File.read(gitlog_json))
+      @gitlog_json_file = gitlog_json(mining_path, project)
+      @gitlog = JSON.parse(File.read(@gitlog_json_file))
     end
 
     def gitlog_size
@@ -40,7 +41,7 @@ module VHP
     end
 
     def save_to_json
-      File.open(gitlog_json, 'w') do |file|
+      File.open(@gitlog_json_file, 'w') do |file|
         file.write(@gitlog.to_json)
       end
     end
@@ -59,10 +60,8 @@ module VHP
         CURATOR NOTE
           This is a very large commit.
           The curators of VHP have decided not to show all of the file information for brevity.
-          Specifically, the curators stated:
-            curator note!
 
-        ORIGINAL MESSAGE: #{commit.message[0..2000]}
+        ORIGINAL MESSAGE: #{commit.message[0..1000]}
       EOS
       @gitlog[sha][:message]  = message
       return @gitlog[sha]
@@ -102,6 +101,16 @@ module VHP
       counts.select { |a, count| count == 1 }.keys
     end
 
+    def warn_megas
+      megas = @gitlog.select do |_sha, log|
+        log.key?(:filepaths) && log[:filepaths].size > 100
+      end
+      unless megas.empty?
+        puts "WARN: Potential megas: "
+        puts megas.map {|sha, log| "#{sha} #{log[:filepaths].size}" }
+      end
+    end
+
     private
 
     # What if the commit already exists in gitlog.json?
@@ -109,7 +118,7 @@ module VHP
     def skip_existing?(sha, clean)
       if @gitlog.key? sha
         unless clean
-          puts "#{sha} already exists in gitlog.json, skipping"
+          print "\n#{sha} already exists in gitlog.json, skipping"
           return true
         end
         puts "INFO: commit #{sha} already exists in gitlog.json. Will be overwritten."
