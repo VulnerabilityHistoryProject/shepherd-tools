@@ -7,13 +7,25 @@ module VHP
     include Paths
     include YMLHelper
 
+    def initialize(opts)
+      if opts[:apikey].nil?
+        puts "WARN: No API key specified, so the NVD will likely throttle us. "
+      else
+        @http_opts = {
+          headers: {
+            apiKey: File.read(opts[:apikey]).strip
+          }
+        }
+      end
+    end
+
     def run
       base_url = "https://services.nvd.nist.gov/rest/json/cve/1.0/"
       errors = []
       cve_ymls.each do |filename|
         begin
           cve = File.basename(filename, '.yml')
-          r = HTTParty.get(base_url + cve).parsed_response
+          r = HTTParty.get(base_url + cve, @http_opts).parsed_response
           sleep 0.25
           cvss = r.dig("result",
                       "CVE_Items",

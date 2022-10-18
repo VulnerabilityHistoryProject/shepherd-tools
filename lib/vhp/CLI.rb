@@ -126,8 +126,9 @@ module VHP
         p.command(:nvd)  do |c|
           c.syntax 'nvd'
           c.description 'Updates all CVEs to get CVSS, announced data from NVD.'
-          c.action do |args, options|
-            VHP::NVDLoader.new.run
+          c.option :apikey,  '--apikey FILE', 'File to the NVD API key, for faster loading'
+          c.action do |_args, options|
+            VHP::NVDLoader.new(options).run
           end
         end
 
