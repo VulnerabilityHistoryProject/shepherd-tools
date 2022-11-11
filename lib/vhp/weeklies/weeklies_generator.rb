@@ -15,9 +15,15 @@ module VHP
 
     def initialize(cli_options)
       @clean = cli_options.key? :clean
+      @mining = cli_options[:mining] || './tmp/vhp-mining'
+      raise "VHP Mining repo not found include #{@mining}" unless File.exist? @mining
+      @project = cli_options[:project].to_s.strip
+      raise 'Need to specify --project' if @project.to_s.empty?
       @git_repo = project_source_repo(cli_options[:repo])
-      @git_api = GitAPI.new(@git_repo)
-      @code_ext = load_yml_the_vhp_way(project_yml)[:source_code_extensions]
+      @git_api = GitAPI.new(@mining, @git_repo, @project)
+      @project_yml = load_yml_the_vhp_way(project_yml_file(@project))
+      @code_ext = @project_yml[:source_code_extensions] || []
+      @exclude_filepaths = @project_yml[:exclude_filepaths] || []
     end
 
     def run
@@ -26,7 +32,8 @@ module VHP
           v    vulnerability json written
           .    commit looked up
       EOS
-      parallel_maybe(cve_ymls, progress: 'Generating Weeklies') do |file|
+      ymls = cve_ymls(@project)
+      parallel_maybe(ymls, progress: 'Generating Weeklies') do |file|
         cve_yml = load_yml_the_vhp_way(file)
         fix_shas = extract_shas_from_commitlist(cve_yml, :fixes)
         offenders = []
@@ -50,6 +57,9 @@ module VHP
     end
 
     def is_code?(filepath)
+      return false if @exclude_filepaths.any? do |ex|
+        filepath.include? ex
+      end
       @code_ext.each do |ext|
         return true if filepath.end_with? ext
       end
@@ -137,13 +147,6 @@ module VHP
         begin
           commit = @git_api.git.object(sha)
           diff = @git_api.git.diff(commit.parent, commit)
-          print '.'
-        rescue => e
-          errord = true
-          warn "ERROR getting Git commit for CVE #{cve}. Skipping this commit."
-          warn "ERROR git error message for above problem. #{e.message}"
-        end
-        unless errored
           commit_files = diff.stats[:files].keys
           email = commit.author.email
           week_n = week_num(commit.author.date.utc)
@@ -165,6 +168,11 @@ module VHP
           append_uniq!(weekly, :new_developers, [email] - devs)
           append_uniq!(weekly, :drive_bys, email) if drive_by_authors.include?(email)
           devs = (devs << email).flatten.uniq
+          print '.'
+        rescue => e
+          errored = true
+          warn "ERROR getting Git commit for CVE #{cve}. Skipping this commit."
+          warn "ERROR git error message for above problem. #{e.message}"
         end
       end
       write(cve, calendar)

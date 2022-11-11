@@ -143,8 +143,10 @@ module VHP
         p.command(:weeklies) do |c|
           c.syntax 'weeklies <options>'
           c.description 'Collects weekly reports. See `vhp help weeklies`.'
-          c.option :repo, '--repo DIR', 'Sets the repo directory'
-          c.option :clean, "--clean", "Don't skip CVEs already saved. SLOW!"
+          c.option :repo,    '--repo DIR', 'Sets the repo directory'
+          c.option :mining,  '--mining DIR', 'Sets the VHP mining repo'
+          c.option :project, '--project PROJECT', 'Shortname (subdomain) of the project to lookup'
+          c.option :clean,   '--clean', "Don't skip CVEs already saved. SLOW!"
           c.action do |args, options|
             WeekliesGenerator.new(options).run
             puts "Done!"
@@ -188,7 +190,7 @@ module VHP
           c.syntax 'help <options>'
           c.description 'Provide details on all subcommands'
           c.action do
-            puts <<-EOS.strip_heredoc
+            puts <<~EOS
 
             DESCRIPTION
 
@@ -197,10 +199,12 @@ module VHP
             SYNTAX
 
               vhp help
-              vhp help vh<command>
+              vhp help <command>
 
             COMMANDS
 
+              new                            Create a new CVE yml, NVD lookup
+              corpus                         Generate corpus of fix patches
               migrate                        Generate migration file for CVE ymls
               list <subcommand> <options>    List various CVEs, e.g. fixed, vcc
               find <subcommand> <options>    Finds information.
@@ -208,6 +212,9 @@ module VHP
               loadcommits <options>          Gets Git info for all mentioned
                                              commits in CVE YAMLs, puts in
                                              gitlog.json
+              nofixes                        List CVEs without fixe commits
+              fixcrawl                       Crawl NVD urls for fix commits
+              nvd                            Load CVSS, dates from NVD
 
             EXAMPLES
 

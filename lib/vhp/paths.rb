@@ -17,8 +17,8 @@ module VHP
       File.expand_path "#{mining_path}/gitlogs/#{project}.json"
     end
 
-    def project_yml
-      File.expand_path './project.yml'
+    def project_yml_file(p)
+      File.expand_path "./projects/#{p}.yml"
     end
 
     def projects
@@ -42,12 +42,8 @@ module VHP
       Dir["./cves/#{project}/*.yml"]
     end
 
-    def weekly_dir
-      File.expand_path './commits/weeklies'
-    end
-
     def weekly_file(cve)
-      "#{weekly_dir}/#{cve.upcase}-weekly.json"
+      "#{@mining}/weeklies/#{@project}/#{cve.upcase}-weekly.json"
     end
 
   end
