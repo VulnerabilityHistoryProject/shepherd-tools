@@ -29,7 +29,7 @@ module VHP
 
       @gitlog[sha] = {} # Even if it existed before, let's reset
       commit = @git.object(sha)
-      diff = @git.diff(commit, commit.parent)
+      diff = @git.diff(commit.parent, commit)
       @gitlog[sha][:author]     = commit.author.name
       @gitlog[sha][:email]      = commit.author.email
       @gitlog[sha][:date]       = commit.author.date.utc
