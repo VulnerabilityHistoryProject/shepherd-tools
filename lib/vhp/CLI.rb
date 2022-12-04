@@ -176,6 +176,15 @@ module VHP
           end
         end
 
+        p.command(:update) do |c|
+          c.syntax 'update [project]'
+          c.description 'Check for an retrieve new CVEs for the given project'
+          c.option :check_only, '--check-only', 'Lists new CVEs without loading them'
+          c.action do |args, options|
+            VHP::Update.new(args, options).run
+          end
+        end
+
         p.command(:new) do |c|
           c.syntax 'new PROJECT_SLUG CVE'
           c.description 'Create a new CVE file, optionally looking up NVD info'
@@ -369,6 +378,7 @@ module VHP
           end
 
         end
+
       end # Mercenary.program
     end # run
   end # class
