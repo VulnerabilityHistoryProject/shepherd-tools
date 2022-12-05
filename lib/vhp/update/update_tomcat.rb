@@ -103,8 +103,7 @@ module VHP
 				end
 			end
 			puts "Total: #{cves.size} CVEs"
-			cves.reject! {|key, value| cur_cves.include?(key) }
-			puts "New CVEs: #{cves.size}"
+			cves.reject! {|cve, _value| cur_cves.include?(cve) }
 			return cves
 		end
 

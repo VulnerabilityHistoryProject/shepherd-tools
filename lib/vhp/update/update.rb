@@ -21,18 +21,26 @@ module VHP
 			if @dry_run
 				new_cves.keys.each { |key| puts key }
 			else
-				create_cves(new_cves) unless @check_only
+				create_cves(new_cves)
 			end
 
 		end
 
 		# new_cves is a hash of CVE ID to a list of fix commits
 		def create_cves(new_cves)
-			errors = []
-			puts new_cves
-
-			errors.each do |err|
-				puts "[\e[31mERROR\e[0m] #{err}"
+			errors = {}
+			new_cves.each do |cve, fixes|
+				print "Saving #{cve}..."
+				begin
+					NewCVE.new(@project, cve, !@dry_run).run
+					puts "✅"
+				rescue => e
+					errors[cve] = e.message
+					puts "...skipping #{cve}"
+				end
+			end
+			errors.each do |cve, err|
+				puts "[\e[31mERROR\e[0m] on #{cve}: #{err}"
 			end
 			puts "\e[31mERROR\e[0ms: #{errors.size}" if errors.size > 0
 
