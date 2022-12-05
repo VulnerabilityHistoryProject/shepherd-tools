@@ -179,7 +179,9 @@ module VHP
         p.command(:update) do |c|
           c.syntax 'update [project]'
           c.description 'Check for an retrieve new CVEs for the given project'
-          c.option :check_only, '--check-only', 'Lists new CVEs without loading them'
+          c.option :dry_run, '--dry-run', 'Lists new CVEs without loading
+          them'
+          c.option :skip_nvd, '--skip-nvd', "Don't look up information from the NVD"
           c.action do |args, options|
             VHP::Update.new(args, options).run
           end
@@ -191,7 +193,10 @@ module VHP
           c.option :skip_nvd, '--skip-nvd', "Don't look up information from the NVD"
           c.option :force, '--force', "Overwrite the file if it exists"
           c.action do |args, options|
-            VHP::NewCVE.new(args, options).run
+            project = args[0].strip.downcase
+            cve = args[1].strip
+            skip_nvd = opts[:skip_nvd]
+            VHP::NewCVE.new(project, cve, skip_nvd).run
           end
         end
 

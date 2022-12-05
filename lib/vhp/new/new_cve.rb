@@ -6,10 +6,10 @@ module VHP
 		include YMLHelper
 		include Paths
 
-		def initialize(args, opts)
-			@project = args[0].strip.downcase
-			@cve = args[1].strip
-			@skip_nvd = opts[:skip_nvd]
+		def initialize(project, cve, skip_nvd)
+			@project = project
+			@cve = cve
+			@skip_nvd = skip_nvd
 		end
 
 		def run
@@ -24,8 +24,6 @@ module VHP
 				yml = attempt_dates(yml, r)
 				yml = attempt_fixes(yml, r)
 				yml = attempt_cwe(yml, r)
-				# binding.irb
-				# published = r.dig("result", "CVE_Items", 0, "publishedDate")
 			end
 
 			outfile = "cves/#{@project}/#{@cve}.yml"
