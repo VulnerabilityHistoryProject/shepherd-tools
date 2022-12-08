@@ -21,6 +21,8 @@ module VHP
 			if @dry_run
 				new_cves.keys.each { |key| puts key }
 			else
+				puts "Found these!"
+				puts new_cves.map {|k,v| "#{k}: #{v}"}.join("\n")
 				create_cves(new_cves)
 			end
 
@@ -30,10 +32,8 @@ module VHP
 		def create_cves(new_cves)
 			errors = {}
 			new_cves.each do |cve, fixes|
-				print "Saving #{cve}..."
 				begin
-					NewCVE.new(@project, cve, !@dry_run).run
-					puts "✅"
+					NewCVE.new(@project, cve, @dry_run, fixes).run
 				rescue => e
 					errors[cve] = e.message
 					puts "...skipping #{cve}"
@@ -42,7 +42,7 @@ module VHP
 			errors.each do |cve, err|
 				puts "[\e[31mERROR\e[0m] on #{cve}: #{err}"
 			end
-			puts "\e[31mERROR\e[0ms: #{errors.size}" if errors.size > 0
+			puts "\e[31mERROR\e[0ms: #{errors.size}" if errors.any?
 
 		end
 	end

@@ -192,6 +192,7 @@ module VHP
           c.description 'Create a new CVE file, optionally looking up NVD info'
           c.option :skip_nvd, '--skip-nvd', "Don't look up information from the NVD"
           c.option :force, '--force', "Overwrite the file if it exists"
+          # c.option :apikey,  '--apikey FILE', 'File to the NVD API key, for faster loading'
           c.action do |args, options|
             project = args[0].strip.downcase
             cve = args[1].strip
