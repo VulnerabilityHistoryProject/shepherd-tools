@@ -15,7 +15,7 @@ def this_repo
 end
 
 def cve_1984_0519_file
-  "#{foo_dir}/cves/CVE-1984-0519.yml"
+  "#{foo_dir}/cves/foo/CVE-1984-0519.yml"
 end
 
 def silently

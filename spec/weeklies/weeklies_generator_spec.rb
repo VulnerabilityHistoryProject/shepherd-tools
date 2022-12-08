@@ -39,13 +39,23 @@ describe VHP::WeekliesGenerator do
       expect(File).to receive(:open).and_yield(file)
       expect(file).to receive(:write)
       expect(JSON).to receive(:fast_generate).with(expected)
-      VHP::WeekliesGenerator.new({ clean: true, repo: this_repo }).run
+      VHP::WeekliesGenerator.new({
+        project: 'foo',
+        mining: mining_dir,
+        repo: this_repo,
+        clean: true,
+      }).run
     end
   end
 
   context :is_code? do
     it 'works on typical source code files' do
-      gen = VHP::WeekliesGenerator.new({ clean: true, repo: this_repo })
+      gen = VHP::WeekliesGenerator.new({
+        project: 'foo',
+        mining: mining_dir,
+        repo: this_repo,
+        clean: true,
+      })
       expect(gen.is_code?('foo.c')).to be true
       expect(gen.is_code?('foo.bar')).to be false
       expect(gen.is_code?('myMakefile')).to be true

@@ -3,7 +3,7 @@ require_relative 'helper'
 describe VHP::InVHPRepo do
   it 'fails and warns on our root repo' do
     Dir.chdir(__dir__) do
-      expect(subject).to receive(:warn).with(/not in a VHP/)
+      expect(subject).to receive(:warn).with(/not in the VHP/)
       expect(VHP::InVHPRepo.check_in_vhp_repo).to be false
     end
   end
