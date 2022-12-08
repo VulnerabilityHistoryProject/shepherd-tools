@@ -6,10 +6,12 @@ module VHP
 		include YMLHelper
 		include Paths
 
-		def initialize(args, opts)
-			@project = args[0].strip.downcase
-			@cve = args[1].strip
-			@skip_nvd = opts[:skip_nvd]
+		def initialize(project, cve, skip_nvd, apikey = nil, fixes = [])
+			@project = project
+			@cve = cve
+			@skip_nvd = skip_nvd
+			@fixes = fixes
+			@apikey = apikey
 		end
 
 		def run
@@ -18,19 +20,25 @@ module VHP
 			yml[:CVE] = @cve
 			unless @skip_nvd
 				puts "Looking up NVD data..."
-				url = "https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=#{@cve}"
-				r = HTTParty.get(url)
+				r = pull_from_nvd
 				yml = attempt_cvss(yml, r)
 				yml = attempt_dates(yml, r)
 				yml = attempt_fixes(yml, r)
 				yml = attempt_cwe(yml, r)
-				# binding.irb
-				# published = r.dig("result", "CVE_Items", 0, "publishedDate")
 			end
+			yml = add_given_fixes(yml)
 
 			outfile = "cves/#{@project}/#{@cve}.yml"
 			write_yml_the_vhp_way(yml, outfile)
 			puts "✅ Done! Written #{outfile}."
+		end
+
+		def pull_from_nvd()
+			url = "https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=#{@cve}"
+			# http_opts = {}
+			# http_ops[:headers] = { apiKey: @apikey } if @apikey
+			r = HTTParty.get(url)
+			return r
 		end
 
 		def attempt_cvss(yml, r)
@@ -74,7 +82,7 @@ module VHP
 						commit: sha,
 						note: <<~EOS
 							Taken from NVD references list with Git commit. If you are
-							curating, replace this comment with 'Manually confirmed'
+							curating, please fact-check that this commit fixes the vulnerability and replace this comment with 'Manually confirmed'
 						EOS
 					}
 					puts "✅ Fix #{sha} found"
@@ -90,14 +98,31 @@ module VHP
 				weak_str = weak.to_s
 				if cwe_regex.match?(weak_str)
 					yml[:CWE] ||= []
-					yml[:CWE] << cwe_regex.match(weak_str)[:cwe]
+					yml[:CWE] << cwe_regex.match(weak_str)[:cwe].to_i
 					yml[:CWE_note] = <<~EOS
 						CWE as registered in the NVD. If you are curating, check that this
 						is correct and replace this comment with "Manually confirmed".
 					EOS
+					yml[:CWE].uniq!
 					puts "✅ CWE added"
 				end
 			end
+			return yml
+		end
+
+		def add_given_fixes(yml)
+			@fixes.each do |fix|
+				unless yml[:fixes].any? { |yml_fix| yml_fix == fix } # already saved
+					yml[:fixes] << {
+						commit: fix,
+						note: <<~EOS
+							Automatically collected. If you are
+							curating, please fact-check that this commit fixes the vulnerability and replace this comment with 'Manually confirmed'
+						EOS
+					}
+				end
+			end
+			puts "✅ Added in #{@fixes.size} fixes" if @fixes.any?
 			return yml
 		end
 
