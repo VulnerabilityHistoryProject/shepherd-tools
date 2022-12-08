@@ -20,6 +20,7 @@ Gem::Specification.new do |s|
   s.require_path = "lib"
 
   s.add_runtime_dependency 'mercenary', '0.3.6'
+  s.add_runtime_dependency 'mechanize', '~> 2.8.0'
   s.add_runtime_dependency 'git', '1.12.0'
   s.add_runtime_dependency 'parallel', '1.13.0'
   s.add_runtime_dependency 'httparty', '0.17.0'
