@@ -3,7 +3,11 @@ require 'byebug'
 require_relative '../lib/vhp'
 
 def foo_dir
-  return File.expand_path("#{__dir__}/../foo-vulnerabilities")
+  return File.expand_path("#{__dir__}/../testdata/vulnerabilities")
+end
+
+def mining_dir
+  return File.expand_path("#{__dir__}/../testdata/vhp-mining")
 end
 
 def this_repo

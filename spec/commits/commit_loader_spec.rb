@@ -2,7 +2,12 @@ require_relative '../helper'
 
 describe VHP::CommitLoader do
 
-  subject { VHP::CommitLoader.new({:clean => 'clean', :repo => this_repo })}
+  subject { VHP::CommitLoader.new({
+    clean: 'clean',
+    repo: this_repo,
+    project: 'foo',
+    mining: mining_dir,
+  })}
 
   around(:each) do |example|
     Dir.chdir(foo_dir) do
@@ -19,6 +24,7 @@ describe VHP::CommitLoader do
       expect(VHP::GitAPI).to receive(:new).and_return(git_api)
       expect(git_api).to receive(:save).with(/3711df67d3/, true)
       expect(git_api).to receive(:save).with(/4a980d0887/, true)
+      expect(git_api).to receive(:warn_megas)
       expect(git_api).to receive(:save_to_json)
       expect(git_api).to receive(:gitlog_size).and_return(0)
       subject.add_mentioned_commits
