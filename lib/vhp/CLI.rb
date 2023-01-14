@@ -357,29 +357,31 @@ module VHP
 
           c.command(:weeklies) do |s|
             s.action do
-              puts <<-EOS.strip_heredoc
+              puts <<~EOS
 
-              DESCRIPTION
+DESCRIPTION
 
-                Collect various metrics for every active week on the timeline
-                of a vulnerability.
+  Collect various metrics for every active week on the timeline
+  of a vulnerability.
 
-                Saves to commits/weeklies/CVE-*.json
+  Saves to commits/weeklies/CVE-*.json
 
-              SYNTAX
+SYNTAX
 
-                vhp weeklies
+  vhp weeklies
 
-              OPTIONS
+OPTIONS
 
-                --repo DIR     The repository to get from the gitlog.
-                               Default: ./tmp/src/
-                --clean        Don't skip CVEs already saved. SLOW!
+  --repo DIR        The source repository to get from the gitlog.
+  --mining DIR      The VHP mining repo'
+  --clean           Don't skip CVEs already saved. SLOW!
+  --project PROJECT Shortname (subdomain) of the project to analyze (e.g. tomcat)
 
-              EXAMPLES
+EXAMPLES
 
-                vhp report weeklies --repo ../src
-              EOS
+  vhp weeklies --repo ../tomcat --mining ../vhp-mining --project tomcat
+
+EOS
             end
           end
 
