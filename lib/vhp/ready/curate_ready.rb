@@ -1,58 +1,59 @@
 require_relative '../utils/helper'
+require_relative '../yml_helper'
 
 module VHP
   class CurateReady
+    include YMLHelper
+
     def initialize(options)
-      @dir = VHP.handle_cves(options)
-      @print_ready = true
-      if options.key? 'unready'
-        @print_ready = false
-      end
-      @csv_path = nil
-      if options.key? 'csv'
-        @csv_path = VHP.handle_csv(options['csv'])
-      end
+      raise '--project required' unless options.key? :project
+      @project = options[:project]
+      @min_fixes = options[:min_fixes].to_i || 0
+      @min_vccs = options[:min_vccs].to_i || 0
+      @max_level = options.key?(:max_level) ? options[:max_level].to_f : 10000.0
+    end
+
+    def using_csv?
+      !@csv_path.nil?
+    end
+
+    def print_info
+      puts <<~EOS
+        === CVES READY TO CURATE FOR #{@project} ===
+        CVE\tCURATION_LEVEL\tFIXES\tVCCS
+      EOS
     end
 
     def print_readiness
-      dir = @dir + '/*.yml'
+      print_info
       begin
-        unless @csv_path.nil?
-          if @print_ready
-            path = File.join(@csv_path, 'curated_ready.csv')
-          else
-            path = File.join(@csv_path, 'curated_unready.csv')
-          end
-          file = File.open(path, "w+")
-        end
-        Dir.glob(dir) do |yml_file|
-          yml = File.open(yml_file) { |f| YAML.load(f) }
-          any_fix = yml['fixes'].inject(false) do |memo, fix|
-            memo || !fix['commit'].to_s.empty? || !fix[:commit].to_s.empty?
-          end
-          if !yml['curated']
-            if any_fix
-              if @print_ready # READY
-                puts yml['CVE']
-                unless @csv_path.nil?
-                  file.write(yml['CVE'] + "\n")
-                end
-              end
-            else
-              if !@print_ready # NOT READY
-                puts yml['CVE']
-                unless @csv_path.nil?
-                  file.write(yml['CVE'] + "\n")
-                end
-              end
-            end
-          end # if it's already curated, it's "done"
-        end
+        iterate_over_ymls("cves/#{@project}/*.yml")
       rescue IOError => e
         puts(e)
-      ensure
-        file.close unless file.nil?
       end
+    end
+
+    def iterate_over_ymls(dir)
+      Dir.glob(dir) do |yml_file|
+        yml = load_yml_the_vhp_way(yml_file)
+        num_fixes = fix_count(yml)
+        num_vccs = vcc_count(yml)
+        if num_fixes >= @min_fixes && num_vccs >= @min_vccs && yml[:curation_level].to_f <= @max_level
+          print <<~EOS
+            #{yml[:CVE]}\t#{'%1.1f' % yml[:curation_level].to_f }\t#{num_fixes}\t#{num_vccs}
+          EOS
+        end
+      end
+    end
+
+    def fix_count(yml)
+      fixes = yml[:fixes].select { |fix| !fix[:commit].to_s.empty? }
+      fixes.count
+    end
+
+    def vcc_count(yml)
+      vccs = yml[:vccs].select { |vcc| !vcc[:commit].to_s.empty? }
+      vccs.count
     end
   end
 end

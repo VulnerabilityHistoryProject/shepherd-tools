@@ -27,15 +27,19 @@ module VHP
           end
         end
 
+
         p.command(:list) do |c|
           c.syntax 'list <subcommand> <options>'
           c.description 'Lists information in terminal'
 
           c.command(:ready) do |s|
             s.syntax 'list ready <options>'
-            s.description 'Lists all CVEs not curated to level of skeleton'
-            s.option 'csv', '--csv FILE', 'Output to a csv file'
-            s.action do |args, options|
+            s.description 'List the curation readiness of the CVEs for a project.'
+            c.option :project, '--project PROJECT', 'Shortname (subdomain) of the project to lookup'
+            c.option :min_fixes, '--min-fixes NUM', 'Min number of fixes to show'
+            c.option :min_fixes, '--min-vccs NUM',  'Min number of vccs to show'
+            c.option :max_level, '--max-level NUM',  'Maximum curation level'
+            s.action do |_args, options|
               VHP::CurateReady.new(options).print_readiness
             end
           end
@@ -287,8 +291,8 @@ module VHP
 
               EXAMPLES
 
-                vhp list ready
-                vhp list ready --csv ready_cves.csv
+                vhp list ready --project kernel
+                vhp list ready --project tomcat --min-fixes 1 --min-vccs 1 --max-level 0.9
                 vhp list fixes
               EOS
             end
