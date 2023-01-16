@@ -38,7 +38,8 @@ module VHP
             c.option :project, '--project PROJECT', 'Shortname (subdomain) of the project to lookup'
             c.option :min_fixes, '--min-fixes NUM', 'Min number of fixes to show'
             c.option :min_fixes, '--min-vccs NUM',  'Min number of vccs to show'
-            c.option :max_level, '--max-level NUM',  'Maximum curation level'
+            c.option :max_level, '--max-level NUM', 'Maximum curation level'
+            c.option :full, '--full',               'Print out Fixes and VCCs'
             s.action do |_args, options|
               VHP::CurateReady.new(options).print_readiness
             end
@@ -129,8 +130,9 @@ module VHP
 
         p.command(:nvd)  do |c|
           c.syntax 'nvd'
-          c.description 'Updates all CVEs to get CVSS, announced data from NVD.'
-          c.option :apikey,  '--apikey FILE', 'File to the NVD API key, for faster loading'
+          c.description 'Updates the project CVEs to get CVSS, announced data from NVD.'
+          c.option :apikey,   '--apikey FILE', 'File to the NVD API key, for faster loading'
+          c.option :project,  '--project PROJECT', 'Shortname (subdomain) of the project to lookup'
           c.action do |_args, options|
             VHP::NVDLoader.new(options).run
           end

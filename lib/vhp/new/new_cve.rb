@@ -78,13 +78,14 @@ module VHP
 				url = ref["url"]
 				if fix_regex.match?(url)
 					sha = fix_regex.match(url)[:sha]
+
 					yml[:fixes] << {
 						commit: sha,
 						note: <<~EOS
 							Taken from NVD references list with Git commit. If you are
 							curating, please fact-check that this commit fixes the vulnerability and replace this comment with 'Manually confirmed'
 						EOS
-					}
+					} unless yml[:fixes].any? { |f| f[:commit] == sha } # already saved
 					puts "✅ Fix #{sha} found"
 				end
 			end
@@ -109,22 +110,5 @@ module VHP
 			end
 			return yml
 		end
-
-		def add_given_fixes(yml)
-			@fixes.each do |fix|
-				unless yml[:fixes].any? { |yml_fix| yml_fix == fix } # already saved
-					yml[:fixes] << {
-						commit: fix,
-						note: <<~EOS
-							Automatically collected. If you are
-							curating, please fact-check that this commit fixes the vulnerability and replace this comment with 'Manually confirmed'
-						EOS
-					}
-				end
-			end
-			puts "✅ Added in #{@fixes.size} fixes" if @fixes.any?
-			return yml
-		end
-
 	end
 end

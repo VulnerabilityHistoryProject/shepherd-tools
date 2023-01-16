@@ -11,6 +11,7 @@ module VHP
       @min_fixes = options[:min_fixes].to_i || 0
       @min_vccs = options[:min_vccs].to_i || 0
       @max_level = options.key?(:max_level) ? options[:max_level].to_f : 10000.0
+      @full = options.key?(:full)
     end
 
     def using_csv?
@@ -20,7 +21,7 @@ module VHP
     def print_info
       puts <<~EOS
         === CVES READY TO CURATE FOR #{@project} ===
-        CVE\tCURATION_LEVEL\tFIXES\tVCCS
+        CVE\tCURATION_LEVEL\tFIXES\tVCCS#{@full ? "\tFIX_SHAS\tVCC_SHAS" : ''}
       EOS
     end
 
@@ -40,7 +41,7 @@ module VHP
         num_vccs = vcc_count(yml)
         if num_fixes >= @min_fixes && num_vccs >= @min_vccs && yml[:curation_level].to_f <= @max_level
           print <<~EOS
-            #{yml[:CVE]}\t#{'%1.1f' % yml[:curation_level].to_f }\t#{num_fixes}\t#{num_vccs}
+            #{yml[:CVE]}\t#{'%1.1f' % yml[:curation_level].to_f }\t#{num_fixes}\t#{num_vccs}#{full_info(yml)}
           EOS
         end
       end
@@ -55,5 +56,15 @@ module VHP
       vccs = yml[:vccs].select { |vcc| !vcc[:commit].to_s.empty? }
       vccs.count
     end
+
+    def full_info(yml)
+      if @full
+        return "\t#{yml[:fixes].map{|f| f[:commit] }.join(',')}\t#{yml[:vccs].map{|f| f[:commit] }.join(',')}"
+      else
+        return ''
+      end
+    end
   end
 end
+
+
