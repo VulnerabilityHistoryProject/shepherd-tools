@@ -130,9 +130,11 @@ module VHP
 
         p.command(:nvd)  do |c|
           c.syntax 'nvd'
-          c.description 'Updates the project CVEs to get CVSS, announced data from NVD.'
-          c.option :apikey,   '--apikey FILE', 'File to the NVD API key, for faster loading'
+          c.description 'Updates the project CVEs to get CVSS, announced, and fix data from NVD.'
+          c.option :apikey,   '--api KEYFILE',     'Use the NVD API (THROTTLED!)'
+          c.option :nvd_repo,  '--nvd-repo DIR',    'Directory of the NVD repo (from: https://github.com/olbat/nvdcve)'
           c.option :project,  '--project PROJECT', 'Shortname (subdomain) of the project to lookup'
+          c.option :cve,  '--cve CVE-YYYY-NNNNN', 'If specified, only update the one CVE. Otherwise, do the whole project'
           c.action do |_args, options|
             VHP::NVDLoader.new(options).run
           end
@@ -194,16 +196,20 @@ module VHP
         end
 
         p.command(:new) do |c|
-          c.syntax 'new PROJECT_SLUG CVE'
+          c.syntax 'new CVE-YYYY-NNNNN [OPTIONS]'
           c.description 'Create a new CVE file, optionally looking up NVD info'
-          c.option :skip_nvd, '--skip-nvd', "Don't look up information from the NVD"
-          c.option :force, '--force', "Overwrite the file if it exists"
+          c.option :project,   '--project PROJECT', 'Shortname (subdomain) of the project to add to'
+          c.option :skip_nvd,  '--skip-nvd', "Don't look up information from the NVD"
+          c.option :force,     '--force', "Overwrite the file if it exists"
+          c.option :nvd_repo,  '--nvd-repo DIR',    'Directory of the NVD repo (from: https://github.com/olbat/nvdcve)'
           # c.option :apikey,  '--apikey FILE', 'File to the NVD API key, for faster loading'
           c.action do |args, options|
-            project = args[0].strip.downcase
-            cve = args[1].strip
-            skip_nvd = opts[:skip_nvd]
-            VHP::NewCVE.new(project, cve, skip_nvd).run
+            raise 'Project needed' unless options.key? :project
+            project = options[:project]
+            cve = args[0].strip
+            skip_nvd = options[:skip_nvd]
+            nvd_repo = options[:nvd_repo]
+            VHP::NewCVE.new(project, cve, skip_nvd, nvd_repo).run
           end
         end
 

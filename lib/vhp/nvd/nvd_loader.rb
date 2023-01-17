@@ -10,14 +10,18 @@ module VHP
     def initialize(opts)
       raise '--project required' unless opts.key? :project
       @project = opts[:project]
+      @cve = opts[:cve]
+      @nvd_repo = opts[:nvd_repo]
       @sleep_time = 5
       @http_opts = {
         read_timeout: 3
       }
-      if opts[:apikey].nil?
-        puts "WARN: No API key specified, so the NVD will likely throttle us. Sleeping #{@sleep_time} seconds "
-      else
-        @http_opts[:headers] = { apiKey: File.read(opts[:apikey]).strip }
+      if @nvd_repo.nil?
+        if opts[:apikey].nil?
+          puts "WARN: No API key specified, so the NVD will likely throttle us. Sleeping #{@sleep_time} seconds "
+        else
+          @http_opts[:headers] = { apiKey: File.read(opts[:apikey]).strip }
+        end
       end
     end
 
@@ -70,12 +74,17 @@ module VHP
         E there was an error on that. Aggregated and printed at the end.
       EOS
       errors = {}
-      yml_files = Dir["cves/#{@project}/*.yml"].to_a
+      yml_files = if @cve.nil? # do the whole project
+         Dir["cves/#{@project}/*.yml"].to_a
+      else
+        ["cves/#{@project}/#{@cve}.yml"] # just the one
+      end
+
       yml_files.each do |yml_file|
         begin
           process_cve(yml_file)
           print '.'
-          sleep @sleep_time
+          sleep @sleep_time if @nvd_repo.nil?
         rescue => e
           errors[yml_file] = e.message
           print 'E'
@@ -97,7 +106,7 @@ module VHP
       cve = yml[:CVE]
       r = pull_from_nvd(cve)
 
-      # yml = attempt_cvss(yml, r)
+      yml = attempt_cvss(yml, r)
       yml = attempt_dates(yml, r)
       yml = attempt_fixes(yml, r)
       yml = attempt_cwe(yml, r)
@@ -105,33 +114,27 @@ module VHP
 		end
 
 		def pull_from_nvd(cve)
-			url = "https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=#{cve}"
-			return HTTParty.get(url, @http_opts)
+      if @nvd_repo.empty?
+				url = "https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=#{@cve}"
+				r = HTTParty.get(url, @http_opts)
+				return r.dig("vulnerabilities", 0)
+			else
+				return JSON.parse(File.read("#{@nvd_repo}/nvdcve/#{@cve}.json"))
+			end
 		end
 
-    # Disabling to get things working for now
-
-		# def attempt_cvss(yml, r)
-		# 	cvss = r.dig("vulnerabilities",
-		# 								0,
-		# 								"cve",
-		# 								"metrics",
-		# 								"cvssMetricV31",
-		# 								0,
-		# 								"cvssData",
-		# 								"vectorString").to_s
-		# 	cvss3_regex = %r{^CVSS:3.1/AV:./AC:./PR:./UI:./S:./C:./I:./A:.$}
-		# 	if cvss3_regex.match?(cvss)
-		# 		yml[:CVSS] = cvss
-		# 		puts "✅ CVSS loaded"
-		# 	else
-		# 		puts "[WARN] No CVSS found"
-		# 	end
-		# 	return yml
-		# end
+    def attempt_cvss(yml, r)
+			# Just convert r to a string and regex search for the vector string for crying out loud. this json is so annoying...
+			cvss3_regex = %r{CVSS:3.1/AV:./AC:./PR:./UI:./S:./C:./I:./A:.}
+			nvd_string = r.to_s
+			if cvss3_regex.match?(nvd_string)
+				yml[:CVSS] = nvd_string[cvss3_regex]
+			end
+			return yml
+		end
 
 		def attempt_dates(yml, r)
-			published = r.dig("vulnerabilities",0, "cve", "published")
+			published = r.dig("publishedDate")
 			if published.nil?
 				puts "[WARN] Published date not found."
 			else
@@ -141,7 +144,7 @@ module VHP
 		end
 
 		def attempt_fixes(yml, r)
-			refs = r.dig("vulnerabilities",0, "cve","references")
+			refs = r.dig("cve","references", "reference_data")
 			fix_regex = /git.*(?<sha>[0-9a-z]{40})/
 			refs&.each do |ref|
 				url = ref["url"]
@@ -160,7 +163,7 @@ module VHP
 		end
 
 		def attempt_cwe(yml, r)
-			weaknesses = r.dig("vulnerabilities",0, "cve","weaknesses")
+			weaknesses = r.dig("vulnerabilities",0, "cve","problemtype")
 			cwe_regex = /CWE\-(?<cwe>\d+)/
 			weaknesses&.each do |weak|
 				weak_str = weak.to_s

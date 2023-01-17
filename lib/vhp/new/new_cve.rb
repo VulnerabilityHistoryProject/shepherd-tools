@@ -6,12 +6,12 @@ module VHP
 		include YMLHelper
 		include Paths
 
-		def initialize(project, cve, skip_nvd, apikey = nil, fixes = [])
+		def initialize(project, cve, skip_nvd, nvd_repo = '', apikey = nil)
 			@project = project
 			@cve = cve
 			@skip_nvd = skip_nvd
-			@fixes = fixes
 			@apikey = apikey
+			@nvd_repo = nvd_repo
 		end
 
 		def run
@@ -21,12 +21,12 @@ module VHP
 			unless @skip_nvd
 				puts "Looking up NVD data..."
 				r = pull_from_nvd
+				binding.irb
 				yml = attempt_cvss(yml, r)
 				yml = attempt_dates(yml, r)
 				yml = attempt_fixes(yml, r)
 				yml = attempt_cwe(yml, r)
 			end
-			yml = add_given_fixes(yml)
 
 			outfile = "cves/#{@project}/#{@cve}.yml"
 			write_yml_the_vhp_way(yml, outfile)
@@ -34,25 +34,23 @@ module VHP
 		end
 
 		def pull_from_nvd()
-			url = "https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=#{@cve}"
-			# http_opts = {}
-			# http_ops[:headers] = { apiKey: @apikey } if @apikey
-			r = HTTParty.get(url)
-			return r
+			if @nvd_repo.empty?
+				url = "https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=#{@cve}"
+				# http_opts = {}
+				# http_ops[:headers] = { apiKey: @apikey } if @apikey
+				r = HTTParty.get(url)
+				return r.dig("vulnerabilities", 0)
+			else
+				return JSON.parse(File.read("#{@nvd_repo}/nvdcve/#{@cve}.json"))
+			end
 		end
 
 		def attempt_cvss(yml, r)
-			cvss = r.dig("vulnerabilities",
-										0,
-										"cve",
-										"metrics",
-										"cvssMetricV31",
-										0,
-										"cvssData",
-										"vectorString").to_s
-			cvss3_regex = %r{^CVSS:3.1/AV:./AC:./PR:./UI:./S:./C:./I:./A:.$}
-			if cvss3_regex.match?(cvss)
-				yml[:CVSS] = cvss
+			# Just convert r to a string and regex search for the vector string for crying out loud. this json is so annoying...
+			cvss3_regex = %r{CVSS:3.1/AV:./AC:./PR:./UI:./S:./C:./I:./A:.}
+			nvd_string = r.to_s
+			if cvss3_regex.match?(nvd_string)
+				yml[:CVSS] = nvd_string[cvss3_regex]
 				puts "✅ CVSS loaded"
 			else
 				puts "[WARN] No CVSS found"
@@ -72,13 +70,12 @@ module VHP
 		end
 
 		def attempt_fixes(yml, r)
-			refs = r.dig("vulnerabilities",0, "cve","references")
+			refs = r.dig("cve","references", "reference_data")
 			fix_regex = /git.*(?<sha>[0-9a-z]{40})/
 			refs&.each do |ref|
 				url = ref["url"]
 				if fix_regex.match?(url)
 					sha = fix_regex.match(url)[:sha]
-
 					yml[:fixes] << {
 						commit: sha,
 						note: <<~EOS
@@ -93,7 +90,7 @@ module VHP
 		end
 
 		def attempt_cwe(yml, r)
-			weaknesses = r.dig("vulnerabilities",0, "cve","weaknesses")
+			weaknesses = r.dig("cve","problemtype")
 			cwe_regex = /CWE\-(?<cwe>\d+)/
 			weaknesses&.each do |weak|
 				weak_str = weak.to_s
