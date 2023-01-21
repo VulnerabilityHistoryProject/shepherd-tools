@@ -187,9 +187,9 @@ module VHP
         p.command(:update) do |c|
           c.syntax 'update [project]'
           c.description 'Check for an retrieve new CVEs for the given project'
-          c.option :dry_run, '--dry-run', 'Lists new CVEs without loading
-          them'
+          c.option :dry_run, '--dry-run',   'Lists new CVEs without loading them'
           c.option :skip_nvd, '--skip-nvd', "Don't look up information from the NVD"
+          c.option :nvd_repo,  '--nvd-repo DIR',    'Directory of the NVD repo (from: https://github.com/olbat/nvdcve)'
           c.action do |args, options|
             VHP::Update.new(args, options).run
           end
@@ -371,29 +371,29 @@ module VHP
             s.action do
               puts <<~EOS
 
-DESCRIPTION
+              DESCRIPTION
 
-  Collect various metrics for every active week on the timeline
-  of a vulnerability.
+                Collect various metrics for every active week on the timeline
+                of a vulnerability.
 
-  Saves to commits/weeklies/CVE-*.json
+                Saves to vhp-mining/weeklies/<project>/CVE-*.json
 
-SYNTAX
+              SYNTAX
 
-  vhp weeklies
+                vhp weeklies [OPTIONS]
 
-OPTIONS
+              OPTIONS
 
-  --repo DIR        The source repository to get from the gitlog.
-  --mining DIR      The VHP mining repo'
-  --clean           Don't skip CVEs already saved. SLOW!
-  --project PROJECT Shortname (subdomain) of the project to analyze (e.g. tomcat)
+                --repo DIR        The source repository to get from the gitlog.
+                --mining DIR      The VHP mining repo'
+                --clean           Don't skip CVEs already saved. SLOW!
+                --project PROJECT Shortname (subdomain) of the project to analyze (e.g. tomcat)
 
-EXAMPLES
+              EXAMPLES
 
-  vhp weeklies --repo ../tomcat --mining ../vhp-mining --project tomcat
+                vhp weeklies --repo ../tomcat --mining ../vhp-mining --project tomcat
 
-EOS
+              EOS
             end
           end
 

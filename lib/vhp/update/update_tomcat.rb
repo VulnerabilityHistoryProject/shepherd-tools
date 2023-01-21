@@ -7,10 +7,6 @@ module VHP
 		include YMLHelper
 		include Paths
 
-		def initialize(project)
-			@project = project
-		end
-
 		def tomcat_security_pages
 			%w(
 				https://tomcat.apache.org/security-10.html

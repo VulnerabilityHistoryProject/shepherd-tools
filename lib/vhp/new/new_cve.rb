@@ -6,12 +6,13 @@ module VHP
 		include YMLHelper
 		include Paths
 
-		def initialize(project, cve, skip_nvd, nvd_repo = '', apikey = nil)
+		def initialize(project, cve, skip_nvd, nvd_repo = '', apikey = nil, fixes = [])
 			@project = project
 			@cve = cve
 			@skip_nvd = skip_nvd
 			@apikey = apikey
 			@nvd_repo = nvd_repo
+			@fixes = fixes
 		end
 
 		def run
@@ -19,9 +20,10 @@ module VHP
 			yml = load_yml_the_vhp_way("skeletons/#{@project}.yml")
 			yml[:CVE] = @cve
 			unless @skip_nvd
+				puts "Putting in known fixes..."
+				yml = known_fixes(yml)
 				puts "Looking up NVD data..."
 				r = pull_from_nvd
-				binding.irb
 				yml = attempt_cvss(yml, r)
 				yml = attempt_dates(yml, r)
 				yml = attempt_fixes(yml, r)
@@ -104,6 +106,18 @@ module VHP
 					yml[:CWE].uniq!
 					puts "✅ CWE added"
 				end
+			end
+			return yml
+		end
+
+		def known_fixes(yml)
+			@fixes.each do |sha|
+				yml[:fixes] << {
+					commit: sha,
+					note: <<~EOS
+						Taken from development team records automatically. If you are curating, check that this is correct and replace this comment with "Manually confirmed".
+					EOS
+				} unless yml[:fixes].any? { |f| f[:commit] == sha } # already saved
 			end
 			return yml
 		end

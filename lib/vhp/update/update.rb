@@ -6,13 +6,16 @@ module VHP
 			@project = args[0].strip.downcase
 			@dry_run = options[:dry_run]
 			@nvd = !options[:skip_nvd]
+
 		end
 
 		def run
 			puts "Finding updater for #{@project}..."
 			new_cves = case @project
 			when 'tomcat'
-				VHP::UpdateTomcat.new(@project).run
+				VHP::UpdateTomcat.new.run
+			when 'django'
+				VHP::UpdateDjango.new.run
 			else
 				puts "[\e[31mERROR\e[0m] Updater not found for #{@project}. Looks like we haven't ported or written an updater for #{@project}. Check the deprecated [project]-vulnerabilities/scripts if we had any script from before."
 				[]
@@ -31,9 +34,9 @@ module VHP
 		# new_cves is a hash of CVE ID to a list of fix commits
 		def create_cves(new_cves)
 			errors = {}
-			new_cves.each do |cve, fixes|
+			new_cves.each do |cve, fixes_array|
 				begin
-					NewCVE.new(@project, cve, @dry_run, fixes).run
+					NewCVE.new(@project, cve, @dry_run, fixes = fixes_array).run
 				rescue => e
 					errors[cve] = e.message
 					puts "...skipping #{cve}"
