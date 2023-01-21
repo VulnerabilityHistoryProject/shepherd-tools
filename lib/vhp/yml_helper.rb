@@ -2,8 +2,12 @@ module VHP
   module YMLHelper
     # Load YML the way we expect: symbolized names,
     # even if they specified symbols or not
+    # NOTE: for Ruby 3.1+, Psych disallows Date classes by default.
+    #       We chose to allow dates.
     def load_yml_the_vhp_way(f)
-      YAML.load(File.read(f), symbolize_names: true)
+      YAML.load File.read(f),
+        symbolize_names: true,
+        permitted_classes: [Date, Symbol]
     end
 
     def write_yml_the_vhp_way(yml, outfile)
