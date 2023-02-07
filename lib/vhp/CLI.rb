@@ -95,6 +95,14 @@ module VHP
               VHP::ListVCCs.new_CLI(options).print_missing_vccs
             end
           end
+
+          c.command(:subsystems) do |s|
+            s.syntax 'subsystems'
+            s.description 'List all subsystems'
+            s.action do |_args, _options|
+              VHP::ListSubsystems.new.run
+            end
+          end
         end # list
 
         p.command(:find) do |c|
