@@ -195,9 +195,10 @@ module VHP
         p.command(:update) do |c|
           c.syntax 'update [project]'
           c.description 'Check for an retrieve new CVEs for the given project'
-          c.option :dry_run, '--dry-run',   'Lists new CVEs without loading them'
-          c.option :skip_nvd, '--skip-nvd', "Don't look up information from the NVD"
+          c.option :dry_run, '--dry-run',           'Lists new CVEs without loading them'
+          c.option :skip_nvd, '--skip-nvd',         "Don't look up information from the NVD"
           c.option :nvd_repo,  '--nvd-repo DIR',    'Directory of the NVD repo (from: https://github.com/olbat/nvdcve)'
+          c.option :kernel_cves,  '--kernel-cves DIR', 'If updating kernel, should point to local clone of: https://github.com/nluedtke/linux_kernel_cves'
           c.action do |args, options|
             VHP::Update.new(args, options).run
           end
