@@ -75,7 +75,7 @@ module VHP
       EOS
       errors = {}
       yml_files = if @cve.nil? # do the whole project
-         Dir["cves/#{@project}/*.yml"].to_a
+        Dir["cves/#{@project}/*.yml"].to_a
       else
         ["cves/#{@project}/#{@cve}.yml"] # just the one
       end
@@ -94,10 +94,8 @@ module VHP
       errors.each {|file,msg | puts "==== ERROR ON #{file} ====\n#{msg}" }
       puts <<~EOS
 
-      ✅Done! Processed #{yml_files.size} YMLs
-      There were #{errors.size} errors.
-
-      ERROR
+        ✅ Done! Processed #{yml_files.size} YMLs
+        There were #{errors.size} errors.
       EOS
     end
 
@@ -119,7 +117,7 @@ module VHP
 				r = HTTParty.get(url, @http_opts)
 				return r.dig("vulnerabilities", 0)
 			else
-				return JSON.parse(File.read("#{@nvd_repo}/nvdcve/#{@cve}.json"))
+        return JSON.parse(File.read("#{@nvd_repo}/nvdcve/#{cve}.json"))
 			end
 		end
 
@@ -138,7 +136,7 @@ module VHP
 			if published.nil?
 				puts "[WARN] Published date not found."
 			else
-				yml[:published_date] = published
+        yml[:published_date] = Date.strptime(published).strftime('%Y-%m-%d')
 			end
 			return yml
 		end

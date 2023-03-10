@@ -37,7 +37,7 @@ module VHP
             s.description 'List the curation readiness of the CVEs for a project.'
             c.option :project, '--project PROJECT', 'Shortname (subdomain) of the project to lookup'
             c.option :min_fixes, '--min-fixes NUM', 'Min number of fixes to show'
-            c.option :min_fixes, '--min-vccs NUM',  'Min number of vccs to show'
+            c.option :min_vccs, '--min-vccs NUM',  'Min number of vccs to show'
             c.option :max_level, '--max-level NUM', 'Maximum curation level'
             c.option :full, '--full',               'Print out Fixes and VCCs'
             s.action do |_args, options|
