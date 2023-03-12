@@ -158,12 +158,11 @@ module VHP
 
         p.command(:weeklies) do |c|
           c.syntax 'weeklies <options>'
-          c.description 'Collects weekly reports. See `vhp help weeklies`.'
-          c.option :repo,    '--repo DIR', 'Sets the repo directory'
+          c.description 'Collects weekly reports and save them to vhp-mining. Skips existing CVEs'
+          c.option :repo,    '--repo DIR', 'The source repo directory of the project'
           c.option :mining,  '--mining DIR', 'Sets the VHP mining repo'
           c.option :project, '--project PROJECT', 'Shortname (subdomain) of the project to lookup'
-          c.option :clean,   '--clean', "Don't skip CVEs already saved. SLOW!"
-          c.action do |args, options|
+          c.action do |_args, options|
             WeekliesGenerator.new(options).run
             puts "Done!"
           end
