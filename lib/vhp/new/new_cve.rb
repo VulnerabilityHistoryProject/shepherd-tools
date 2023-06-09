@@ -6,7 +6,7 @@ module VHP
 		include YMLHelper
 		include Paths
 
-		def initialize(project, cve, skip_nvd, nvd_repo = '', apikey = nil, fixes = [])
+		def initialize(project, cve, skip_nvd, nvd_repo='', apikey=nil, fixes=[])
 			@project = project
 			@cve = cve
 			@skip_nvd = skip_nvd

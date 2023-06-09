@@ -42,6 +42,10 @@ module VHP
       Dir["./cves/#{project}/*.yml"]
     end
 
+    def weekly_json_count(project="**")
+      Dir["#{@mining}/weeklies/#{@project}/*.json"].count
+    end
+
     def weekly_file(cve)
       "#{@mining}/weeklies/#{@project}/#{cve.upcase}-weekly.json"
     end

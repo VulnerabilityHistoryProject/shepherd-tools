@@ -1,6 +1,7 @@
 require_relative '../paths'
 require_relative '../yml_helper'
 require_relative '../parallelism'
+require 'open3'
 
 module VHP
   class WeekliesGenerator
@@ -14,38 +15,69 @@ module VHP
     attr_reader :clean
 
     def initialize(cli_options)
-      @clean = cli_options.key? :clean
       @mining = cli_options[:mining] || './tmp/vhp-mining'
-      raise "VHP Mining repo not found include #{@mining}" unless File.exist? @mining
+      raise "VHP Mining repo not found #{@mining}" unless File.exist? @mining
       @project = cli_options[:project].to_s.strip
+
       raise 'Need to specify --project' if @project.to_s.empty?
+
       @git_repo = project_source_repo(cli_options[:repo])
       @git_api = GitAPI.new(@mining, @git_repo, @project)
+
       @project_yml = load_yml_the_vhp_way(project_yml_file(@project))
       @code_ext = @project_yml[:source_code_extensions] || []
       @exclude_filepaths = @project_yml[:exclude_filepaths] || []
+
+      @errors = []
     end
 
     def run
       puts <<~EOS
         Progress key
-          v    vulnerability json written
-          .    commit looked up
+          ✅   vulnerability json written
+          .   commit looked up
+          ⏭️   skipped (already exists)
+          🤷   skipped (no offenders)
+          ❌   error
       EOS
       ymls = cve_ymls(@project)
-      parallel_maybe(ymls, progress: 'Generating Weeklies') do |file|
+      puts initial_report
+      parallel_maybe(ymls) do |file|
         cve_yml = load_yml_the_vhp_way(file)
-        fix_shas = extract_shas_from_commitlist(cve_yml, :fixes)
-        offenders = []
-        begin
-          offenders = @git_api.get_files_from_shas(fix_shas)
-        rescue
-          puts "ERROR #{file}: could not get files for #{fix_shas}"
+        cve = cve_yml[:CVE]
+        if File.exist? weekly_file(cve)
+          puts "#{cve}: ⏭️"
+        else
+          fix_shas = extract_shas_from_commitlist(cve_yml, :fixes)
+          offenders = []
+          begin
+            offenders = @git_api.get_files_from_shas(fix_shas)
+          rescue
+            @errors << "ERROR #{file}: could not get offender files for #{fix_shas}"
+            print '❌'
+          end
+          offenders = offenders.select {|o| is_code?(o) } # only source code pls
+          if offenders.any?
+            add(cve, offenders)
+            puts "#{cve}: ✅"
+          else
+            puts "#{cve}: 🤷"
+          end
         end
-        offenders = offenders.select {|o| is_code?(o) } # only source code pls
-        add(cve_yml[:CVE], offenders)
-        print 'v'
       end
+      @errors.each do |err|
+        puts "❌: #{err}"
+      end
+    end
+
+    def initial_report
+      yml_count = cve_ymls(@project).size
+      json_count = weekly_json_count(@project)
+      <<~EOS
+        CVE YAML files: #{yml_count}
+        JSON weeklies: #{json_count}
+        Weeklies to collect: #{yml_count - json_count}
+      EOS
     end
 
     def week_num(timestamp)
@@ -135,13 +167,15 @@ module VHP
       calendar = {} # Always start fresh - don't read in the old one
       devs = []
       drive_by_authors = @git_api.get_drive_by_authors()
-      begin
-        commits = `git -C #{@git_repo} log --author-date-order --reverse --pretty="%H" -- #{offenders.join(' ')}`.split("\n")
-      rescue => e
-        warn "ERROR with git listing commits for CVE #{cve}. Quitting this CVE."
-        warn "ERROR git error message for above problem: #{e.message}"
+      git_cmd = <<~CMD
+        git -C #{@git_repo} log --author-date-order --reverse --pretty="%H" -- #{offenders.join(' ')}
+      CMD
+      stdout, stderr, status = Open3.capture3(git_cmd)
+      if status != 0
+        @errors << "ERROR with git listing commits for CVE #{cve}. Quitting this CVE. Git command: #{git_cmd}. STDERR: #{stderr}"
         return
       end
+      commits = stdout.split("\n")
       commits.each do |sha|
         errored = false
         begin
@@ -171,8 +205,8 @@ module VHP
           print '.'
         rescue => e
           errored = true
-          warn "ERROR getting Git commit for CVE #{cve}. Skipping this commit."
-          warn "ERROR git error message for above problem. #{e.message}"
+          @errors << "ERROR getting Git commit for CVE #{cve}. Skipping this commit. Git error message #{e.message}"
+          print '❌'
         end
       end
       write(cve, calendar)

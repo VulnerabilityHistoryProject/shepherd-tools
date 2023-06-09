@@ -6,15 +6,15 @@ require 'parallel'
 module VHP
   module Parallelism
 
-    def parallel_maybe(iterable, in_processes: 8, progress: prog_string)
-      if OS.windows?
-        warn "WARNING: OS is Windows, so this won't run in parallel. Run in Linux for better performance."
+    def parallel_maybe(iterable, in_processes: 8)
+      # if OS.windows?
+        # warn "WARNING: OS is Windows, so this won't run in parallel. Run in Linux for better performance."
         iterable.each { |i| yield(i) }
-      else
-        Parallel.each(iterable, in_threads: 8, progress: 'Progress') do |i|
-          yield(i)
-        end
-      end
+      # else
+        # Parallel.each(iterable, in_threads: 8) do |i|
+        #   yield(i)
+        # end
+      # end
     end
 
   end

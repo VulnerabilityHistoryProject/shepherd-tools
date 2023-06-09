@@ -6,7 +6,8 @@ module VHP
 			@project = args[0].strip.downcase
 			@dry_run = options[:dry_run]
 			@nvd = !options[:skip_nvd]
-
+			@kernel_cves = options[:kernel_cves]
+			@nvd_repo = options[:nvd_repo]
 		end
 
 		def run
@@ -16,6 +17,8 @@ module VHP
 				VHP::UpdateTomcat.new.run
 			when 'django'
 				VHP::UpdateDjango.new.run
+			when 'kernel'
+				VHP::UpdateKernel.new(@kernel_cves).run
 			else
 				puts "[\e[31mERROR\e[0m] Updater not found for #{@project}. Looks like we haven't ported or written an updater for #{@project}. Check the deprecated [project]-vulnerabilities/scripts if we had any script from before."
 				[]
@@ -36,7 +39,8 @@ module VHP
 			errors = {}
 			new_cves.each do |cve, fixes_array|
 				begin
-					NewCVE.new(@project, cve, @dry_run, fixes = fixes_array).run
+					NewCVE.new(@project, cve, @dry_run,
+										 nvd_repo = @nvd_repo, fixes = fixes_array).run
 				rescue => e
 					errors[cve] = e.message
 					puts "...skipping #{cve}"
@@ -46,7 +50,6 @@ module VHP
 				puts "[\e[31mERROR\e[0m] on #{cve}: #{err}"
 			end
 			puts "\e[31mERROR\e[0ms: #{errors.size}" if errors.any?
-
 		end
 	end
 end
