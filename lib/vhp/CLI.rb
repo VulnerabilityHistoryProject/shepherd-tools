@@ -53,17 +53,17 @@ module VHP
                             options.key?('clean')).run
     end
 
-    desc 'update [OPTIONS]'
+    desc 'update [OPTIONS]', 'Check for an retrieve new CVEs for the given project'
     option :project, banner: 'Shortname (subdomain) of the project to lookup', required: true, type: :string
-    option :nvd_repo,  'Directory of the NVD repo (from: https://github.com/olbat/nvdcve)', required: true, type: :string
-    option :kernel_cves, "Directory of the kernel CVE repo (https://github.com/nluedtke/linux_kernel_cves)"
+    option :nvd_repo, banner: 'Directory of the NVD repo (from: https://github.com/olbat/nvdcve)', required: true, type: :string
+    option :kernel_cves, banner: "Directory of the kernel CVE repo (https://github.com/nluedtke/linux_kernel_cves)"
     def update
       VHP::Update.new(options['project'],
                       options['kernel_cves'],
                       options['nvd_repo']).run
     end
 
-    desc 'new [OPTIONS]'
+    desc 'new [OPTIONS]', 'Create a new CVE file, looking up NVD info'
     option :project, banner: 'Shortname (subdomain) of the project to lookup', required: true, type: :string
     option :nvd_repo, banner: 'Directory of the NVD repo (from: https://github.com/olbat/nvdcve)', required: true
     option :cve, banner: 'Format CVE-YYYY-NNNN, must exist in the NVD already', required: true, type: :string
@@ -72,6 +72,26 @@ module VHP
       VHP::NewCVE.new(options['project'],
                       options['cve'] ,
                       options['nvd_repo']).run
+    end
+
+    desc 'subsystems', 'List all subsystems for normalizing chore'
+    def subsystems
+       VHP::ListSubsystems.new.run
+    end
+
+    desc 'ready [OPTIONS]', 'List CVEs that are ready for curating'
+    option :project, banner: 'Shortname (subdomain) of the project to lookup', required: true, type: :string
+    option :min_fixes, banner: 'Min number of fixes to show', type: :numeric , default: 1
+    option :min_vccs,  banner: 'Min number of vccs to show', type: :numeric , default: 1
+    option :max_level, banner: 'Maximum curation level', type: :numeric , default: 100.0
+    option :full, banner: 'Show all information in CSV format', type: :boolean
+    def ready
+      VHP::CurateReady.new( options['project'],
+                            options['min_fixes'],
+                            options['min_vccs'],
+                            options['max_level'],
+                            options.key?('full')
+      ).print_readiness
     end
 
 		def self.exit_on_failure?

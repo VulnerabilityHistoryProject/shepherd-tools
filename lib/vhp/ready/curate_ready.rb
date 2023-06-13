@@ -5,13 +5,12 @@ module VHP
   class CurateReady
     include YMLHelper
 
-    def initialize(options)
-      raise '--project required' unless options.key? :project
-      @project = options[:project]
-      @min_fixes = options[:min_fixes].to_i || 0
-      @min_vccs = options[:min_vccs].to_i || 0
-      @max_level = options.key?(:max_level) ? options[:max_level].to_f : 10000.0
-      @full = options.key?(:full)
+    def initialize(project, min_fixes, min_vccs, max_level, full)
+      @project = project
+      @min_fixes = min_fixes
+      @min_vccs = min_vccs
+      @max_level = max_level
+      @full = full
     end
 
     def using_csv?
