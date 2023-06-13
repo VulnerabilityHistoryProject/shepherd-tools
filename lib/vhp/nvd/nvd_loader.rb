@@ -7,66 +7,11 @@ module VHP
     include Paths
     include YMLHelper
 
-    def initialize(opts)
-      raise '--project required' unless opts.key? :project
-      @project = opts[:project]
-      @cve = opts[:cve]
-      @nvd_repo = opts[:nvd_repo]
-      @sleep_time = 5
-      @http_opts = {
-        read_timeout: 3
-      }
-      if @nvd_repo.nil?
-        if opts[:apikey].nil?
-          puts "WARN: No API key specified, so the NVD will likely throttle us. Sleeping #{@sleep_time} seconds "
-        else
-          @http_opts[:headers] = { apiKey: File.read(opts[:apikey]).strip }
-        end
-      end
+    def initialize(project, nvd_repo, cve)
+      @project = project
+      @nvd_repo = nvd_repo
+      @cve = cve
     end
-
-    # def run
-    #   base_url = "https://services.nvd.nist.gov/rest/json/cve/1.0/"
-    #   errors = []
-    #   cve_ymls.each do |filename|
-    #     begin
-    #       cve = File.basename(filename, '.yml')
-    #       r = HTTParty.get(base_url + cve, @http_opts).parsed_response
-    #       puts "Sleeping."
-    #       sleep 0.5
-    #       cvss = r.dig("result",
-    #                   "CVE_Items",
-    #                   0,
-    #                   "impact",
-    #                   "baseMetricV2",
-    #                   "cvssV2",
-    #                   "vectorString").to_s
-    #       published = r.dig("result",
-    #                   "CVE_Items",
-    #                   0,
-    #                   "publishedDate")
-    #       cvss2_regex = %r{^AV:./AC:./Au:./C:./I:./A:.$}
-    #       cvss3_regex = %r{^AV:./AC:./PR:./UI:./S:./C:./I:./A:.$}
-
-    #       if cvss3_regex.match?(cvss) || cvss2_regex.match?(cvss)
-    #         yml_string = File.open(filename, 'r') { |f| f.read }
-    #         # default to announced == published until curators correct it
-    #         yml_string = yml_string.gsub(/announced_date:\s*\r?\n/, "announced_date: #{published}\n")
-    #         yml_string = yml_string.gsub(/published_date:\s*\r?\n/, "published_date: #{published}\n")
-    #         yml_string += "\nCVSS: #{cvss}\n"
-    #         File.open(filename, 'w') do |f|
-    #           f.write yml_string
-    #         end
-    #         print '.'
-    #       else
-    #         errors <<  "Could not find CVSS string for #{filename}, cvss string: #{cvss}"
-    #       end
-    #     rescue => e
-    #       errors << "Exception on #{filename}: #{e.message}"
-    #     end
-    #   end
-    #   errors.each { |e| warn e }
-    # end
 
     def run
       puts <<~EOS
@@ -112,13 +57,7 @@ module VHP
 		end
 
 		def pull_from_nvd(cve)
-      if @nvd_repo.empty?
-				url = "https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=#{@cve}"
-				r = HTTParty.get(url, @http_opts)
-				return r.dig("vulnerabilities", 0)
-			else
-        return JSON.parse(File.read("#{@nvd_repo}/nvdcve/#{cve}.json"))
-			end
+      return JSON.parse(File.read("#{@nvd_repo}/nvdcve/#{cve}.json"))
 		end
 
     def attempt_cvss(yml, r)

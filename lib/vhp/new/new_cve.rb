@@ -6,11 +6,9 @@ module VHP
 		include YMLHelper
 		include Paths
 
-		def initialize(project, cve, skip_nvd, nvd_repo='', apikey=nil, fixes=[])
+		def initialize(project, cve, nvd_repo='', fixes=[])
 			@project = project
 			@cve = cve
-			@skip_nvd = skip_nvd
-			@apikey = apikey
 			@nvd_repo = nvd_repo
 			@fixes = fixes
 		end
@@ -19,16 +17,14 @@ module VHP
 			puts "Loading skeleton for cves/#{@project}/#{@cve}.yml..."
 			yml = load_yml_the_vhp_way("skeletons/#{@project}.yml")
 			yml[:CVE] = @cve
-			unless @skip_nvd
-				puts "Putting in known fixes..."
-				yml = known_fixes(yml)
-				puts "Looking up NVD data..."
-				r = pull_from_nvd
-				yml = attempt_cvss(yml, r)
-				yml = attempt_dates(yml, r)
-				yml = attempt_fixes(yml, r)
-				yml = attempt_cwe(yml, r)
-			end
+			puts "Putting in known fixes..."
+			yml = known_fixes(yml)
+			puts "Looking up NVD data..."
+			r = pull_from_nvd
+			yml = attempt_cvss(yml, r)
+			yml = attempt_dates(yml, r)
+			yml = attempt_fixes(yml, r)
+			yml = attempt_cwe(yml, r)
 
 			outfile = "cves/#{@project}/#{@cve}.yml"
 			write_yml_the_vhp_way(yml, outfile)
@@ -36,15 +32,7 @@ module VHP
 		end
 
 		def pull_from_nvd()
-			if @nvd_repo.empty?
-				url = "https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=#{@cve}"
-				# http_opts = {}
-				# http_ops[:headers] = { apiKey: @apikey } if @apikey
-				r = HTTParty.get(url)
-				return r.dig("vulnerabilities", 0)
-			else
-				return JSON.parse(File.read("#{@nvd_repo}/nvdcve/#{@cve}.json"))
-			end
+			return JSON.parse(File.read("#{@nvd_repo}/nvdcve/#{@cve}.json"))
 		end
 
 		def attempt_cvss(yml, r)

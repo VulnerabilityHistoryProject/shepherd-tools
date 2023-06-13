@@ -12,15 +12,12 @@ module VHP
     include YMLHelper
     using VHP::StringRefinements
 
-    def initialize(cli_options)
-      @clean = cli_options.key? :clean
-      @mining = cli_options[:mining] || './tmp/vhp-mining'
+    def initialize(project, repo, mining, clean)
+      @clean = clean
+      @mining = mining.strip
       raise "VHP Mining repo not found in #{@mining}" unless File.exist? @mining
-      @project = cli_options[:project].strip
-      raise 'Need to specify --project' if @project.to_s.empty?
-      @git_api = GitAPI.new(@mining,
-                            project_source_repo(cli_options[:repo]),
-                            @project)
+      @project = project.strip
+      @git_api = GitAPI.new(@mining, project_source_repo(repo), @project)
     end
 
     def add_mentioned_commits

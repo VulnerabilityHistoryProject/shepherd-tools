@@ -17,21 +17,7 @@ You can get CLI documentation by running `vhp` by itself to get the list of comm
 
 # Examples
 
-The `vhp` command must always be run in the root of a `*-vulnerabilities` repo.
-
-```sh
-vhp validate
-vhp list curated
-vhp list uncurated --cves ../cves
-vhp list fixes
-vhp loadcommits --repo ../struts --clean
-vhp weeklies --repo ../django
-```
-
-# Other Tools
-
-* TODO: Document how to use archeogit
-* TODO: Document how to use various scripts/
+See the CHORES.md file in the `vulnerabilities` repo for up-to-date examples.
 
 # Using on RIT Research Cluster
 

@@ -2,10 +2,9 @@
 module VHP
 	class Update
 
-		def initialize(args, options)
-			@project = args[0].strip.downcase
-			@dry_run = options[:dry_run]
-			@nvd = !options[:skip_nvd]
+		def initialize(project, kernel_cves, nvd_repo)
+			@project = project.strip.downcase
+			@nvd = !skip_nvd
 			@kernel_cves = options[:kernel_cves]
 			@nvd_repo = options[:nvd_repo]
 		end
@@ -23,15 +22,10 @@ module VHP
 				puts "[\e[31mERROR\e[0m] Updater not found for #{@project}. Looks like we haven't ported or written an updater for #{@project}. Check the deprecated [project]-vulnerabilities/scripts if we had any script from before."
 				[]
 			end
-			puts "Found #{new_cves.size} CVEs"
-			if @dry_run
-				new_cves.keys.each { |key| puts key }
-			else
-				puts "Found these!"
-				puts new_cves.map {|k,v| "#{k}: #{v}"}.join("\n")
-				create_cves(new_cves)
-			end
-
+			puts "Found #{new_cves.size} CVEs: "
+			puts new_cves.map {|k,v| "#{k}: #{v}"}.join("\n")
+			puts "Creating YML entries..."
+			create_cves(new_cves)
 		end
 
 		# new_cves is a hash of CVE ID to a list of fix commits
@@ -39,8 +33,7 @@ module VHP
 			errors = {}
 			new_cves.each do |cve, fixes_array|
 				begin
-					NewCVE.new(@project, cve, @dry_run,
-										 nvd_repo = @nvd_repo, fixes = fixes_array).run
+					NewCVE.new(@project, cve, nvd_repo = @nvd_repo, fixes = fixes_array).run
 				rescue => e
 					errors[cve] = e.message
 					puts "...skipping #{cve}"

@@ -14,14 +14,12 @@ module VHP
 
     attr_reader :clean
 
-    def initialize(cli_options)
-      @mining = cli_options[:mining] || './tmp/vhp-mining'
-      raise "VHP Mining repo not found #{@mining}" unless File.exist? @mining
-      @project = cli_options[:project].to_s.strip
-
-      raise 'Need to specify --project' if @project.to_s.empty?
-
-      @git_repo = project_source_repo(cli_options[:repo])
+    def initialize(project, repo, mining, clean)
+      @clean = clean
+      @mining = mining.strip
+      raise "VHP Mining repo not found in #{@mining}" unless File.exist? @mining
+      @project = project.strip
+      @git_repo = project_source_repo(repo)
       @git_api = GitAPI.new(@mining, @git_repo, @project)
 
       @project_yml = load_yml_the_vhp_way(project_yml_file(@project))
