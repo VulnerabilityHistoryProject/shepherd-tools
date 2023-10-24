@@ -4,9 +4,8 @@ module VHP
 
 		def initialize(project, kernel_cves, nvd_repo)
 			@project = project.strip.downcase
-			@nvd = !skip_nvd
-			@kernel_cves = options[:kernel_cves]
-			@nvd_repo = options[:nvd_repo]
+			@kernel_cves = kernel_cves
+			@nvd_repo = nvd_repo
 		end
 
 		def run
