@@ -5,10 +5,12 @@ module VHP
   class CurateReady
     include YMLHelper
 
-    def initialize(project, min_fixes, min_vccs, max_level, full)
+    def initialize(project, min_fixes, max_fixes, min_vccs, max_vccs, max_level, full)
       @project = project
       @min_fixes = min_fixes
+      @max_fixes = max_fixes
       @min_vccs = min_vccs
+      @max_vccs = max_vccs
       @max_level = max_level
       @full = full
     end
@@ -38,7 +40,11 @@ module VHP
         yml = load_yml_the_vhp_way(yml_file)
         num_fixes = fix_count(yml)
         num_vccs = vcc_count(yml)
-        if num_fixes >= @min_fixes && num_vccs >= @min_vccs && yml[:curation_level].to_f <= @max_level
+        if (num_fixes >= @min_fixes &&
+           num_fixes <= @max_fixes &&
+           num_vccs >= @min_vccs &&
+           num_vccs <= @max_vccs &&
+           yml[:curation_level].to_f <= @max_level.to_f)
           print <<~EOS
             #{yml[:CVE]}\t#{'%1.1f' % yml[:curation_level].to_f }\t#{num_fixes}\t#{num_vccs}#{full_info(yml)}
           EOS
@@ -58,7 +64,10 @@ module VHP
 
     def full_info(yml)
       if @full
-        return "\t#{yml[:fixes].map{|f| f[:commit] }.join(',')}\t#{yml[:vccs].map{|f| f[:commit] }.join(',')}"
+
+        fixes = yml[:fixes].map{|f| f[:commit] }.compact.join(',')
+        vccs = yml[:vccs].map{|f| f[:commit] }.compact.join(',')
+        return "\t#{fixes}\t#{vccs}"
       else
         return ''
       end

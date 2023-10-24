@@ -56,7 +56,7 @@ module VHP
     desc 'update [OPTIONS]', 'Check for an retrieve new CVEs for the given project'
     option :project, banner: 'Shortname (subdomain) of the project to lookup', required: true, type: :string
     option :nvd_repo, banner: 'Directory of the NVD repo (from: https://github.com/olbat/nvdcve)', required: true, type: :string
-    option :kernel_cves, banner: "Directory of the kernel CVE repo (https://github.com/nluedtke/linux_kernel_cves)"
+    option :kernel_cves, banner: "Directory of the kernel CVE repo (https://github.com/nluedtke/lcdinux_kernel_cves)"
     def update
       VHP::Update.new(options['project'],
                       options['kernel_cves'],
@@ -82,13 +82,17 @@ module VHP
     desc 'ready [OPTIONS]', 'List CVEs that are ready for curating'
     option :project, banner: 'Shortname (subdomain) of the project to lookup', required: true, type: :string
     option :min_fixes, banner: 'Min number of fixes to show', type: :numeric , default: 1
+    option :max_fixes, banner: 'Max number of fixes to show', type: :numeric , default: 5
     option :min_vccs,  banner: 'Min number of vccs to show', type: :numeric , default: 1
-    option :max_level, banner: 'Maximum curation level', type: :numeric , default: 100.0
+    option :max_vccs,  banner: 'Max number of vccs to show', type: :numeric , default: 5
+    option :max_level, banner: 'Maximum curation level', type: :numeric , default: 0.0
     option :full, banner: 'Show all information in CSV format', type: :boolean
     def ready
       VHP::CurateReady.new( options['project'],
                             options['min_fixes'],
+                            options['max_fixes'],
                             options['min_vccs'],
+                            options['max_vccs'],
                             options['max_level'],
                             options.key?('full')
       ).print_readiness
